@@ -5,6 +5,7 @@
 import { create } from 'zustand';
 import {
   Agent,
+  JoeTutor,
   Alice,
   Amelie,
   Ari,
@@ -100,8 +101,9 @@ export const useAgent = create<{
   addAgent: (agent: Agent) => void;
   update: (agentId: string, adjustments: Partial<Agent>) => void;
 }>(set => ({
-  current: Alice,
+  current: JoeTutor,
   availablePresets: [
+    JoeTutor,
     Alice,
     Sam,
     Irene,
@@ -180,8 +182,8 @@ export const useUI = create<{
   incrementChangeCount: () => void;
   agentState: string | null;
   setAgentState: (state: string | null) => void;
-  mainTab: 'document' | 'transcript' | 'minutes' | 'audio-log';
-  setMainTab: (tab: 'document' | 'transcript' | 'minutes' | 'audio-log') => void;
+  mainTab: 'document' | 'transcript' | 'minutes' | 'audio-log' | 'visuals' | 'quiz';
+  setMainTab: (tab: 'document' | 'transcript' | 'minutes' | 'audio-log' | 'visuals' | 'quiz') => void;
   documentTab: 'editor' | 'rendered';
   setDocumentTab: (tab: 'editor' | 'rendered') => void;
   speechBubbleText: string | null;
@@ -209,7 +211,7 @@ export const useUI = create<{
   setShowDisclaimer: (show: boolean) => set({ showDisclaimer: show }),
   theme: themes[0].name,
   setTheme: (themeName: string) => set({ theme: themeName }),
-  font: 'Arial',
+  font: 'Plus Jakarta Sans',
   setFont: (fontName: string) => set({ font: fontName }),
   suppressRedundantLogs: false, // Default to OFF
   setSuppressRedundantLogs: (suppress: boolean) =>

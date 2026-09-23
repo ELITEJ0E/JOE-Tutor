@@ -143,8 +143,8 @@ export default function UserSettings() {
   return (
     <Modal onClose={() => setShowUserConfig(false)}>
       <div className="userSettings jazzy">
-        <h2>Configuration</h2>
-        <p className="config-description">Tell us about yourself and what you'd like to write today.</p>
+        <h2>JOE Tutor Settings</h2>
+        <p className="config-description">Customize your tutoring experience, active study topic, and companion preferences.</p>
 
         <form
           onSubmit={e => {
@@ -155,7 +155,7 @@ export default function UserSettings() {
         >
           <div className="settings-grid">
             <div>
-              <p>Your name</p>
+              <p>Student Name</p>
               <input
                 type="text"
                 name="name"
@@ -166,13 +166,13 @@ export default function UserSettings() {
             </div>
 
             <div>
-              <p>Topic</p>
+              <p>Subject / Topic</p>
               <input
                 type="text"
                 name="topic"
                 value={topic}
                 onChange={e => setTopic(e.target.value)}
-                placeholder="A journal entry, script for a play, recipe, poem, etc."
+                placeholder="e.g. Multivariable Calculus, Quantum Mechanics, Macroeconomics"
               />
             </div>
           </div>

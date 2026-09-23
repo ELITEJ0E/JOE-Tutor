@@ -42,6 +42,8 @@ import { pcmToWav, combineArrayBuffers } from '../../../lib/utils';
 import Modal from '../../Modal';
 import FunctionPlotter from './FunctionPlotter';
 import { MinutesLoadingAnimation } from '../../MinutesLoadingAnimation';
+import VisualsGallery from '../../stage/VisualsGallery';
+import QuizView from '../../study/QuizView';
 
 // Defines the shape for an entry in the text-based conversation transcript.
 type TranscriptEntry = {
@@ -101,56 +103,56 @@ declare const MathJax: any;
 const WelcomePlaceholder = () => (
   <div className="welcome-placeholder">
     <h1 className="welcome-placeholder-title">
-      <span className="welcome-prefix">Welcome to </span>Scribe
+      <span className="welcome-prefix">Welcome to </span>JOE Tutor
     </h1>
     <p className="welcome-placeholder-subtitle">
       Press the{' '}
       <span className="icon" style={{ verticalAlign: 'bottom' }}>
         play_arrow
       </span>{' '}
-      button below to begin your session.
+      button below to begin your active voice learning session.
     </p>
     <div className="placeholder-features-grid">
       <div className="placeholder-feature">
-        <span className="icon">graphic_eq</span>
+        <span className="icon">record_voice_over</span>
         <div>
-          <h3>Conversational Writing</h3>
-          <p className="feature-desc">Talk, and the scribe drafts your document in real-time.</p>
+          <h3>Interactive Voice Tutoring</h3>
+          <p className="feature-desc">Speak naturally with JOE — walk through problems, derivations, and concepts together.</p>
         </div>
       </div>
       <div className="placeholder-feature">
-        <span className="icon">search</span>
+        <span className="icon">functions</span>
         <div>
-          <h3>Google Search</h3>
-          <p className="feature-desc">Real-time web access for research and fact-checking.</p>
-        </div>
-      </div>
-      <div className="placeholder-feature">
-        <span className="icon">picture_as_pdf</span>
-        <div>
-          <h3>PDF Context</h3>
-          <p className="feature-desc">Upload documents to provide deep background information.</p>
+          <h3>LaTeX Math & Formulas</h3>
+          <p className="feature-desc">Real-time mathematical typesetting with full formula rendering.</p>
         </div>
       </div>
       <div className="placeholder-feature">
         <span className="icon">show_chart</span>
         <div>
-          <h3>Interactive Graphs</h3>
-          <p className="feature-desc">Plot mathematical functions with zoom and pan support.</p>
+          <h3>Interactive Function Plots</h3>
+          <p className="feature-desc">Plot mathematical curves, examine roots, and visualize coordinate domains.</p>
         </div>
       </div>
       <div className="placeholder-feature">
         <span className="icon">palette</span>
         <div>
-          <h3>Visual Illustrations</h3>
-          <p className="feature-desc">Ask for images and diagrams to visualize your ideas.</p>
+          <h3>AI Concept Illustrations</h3>
+          <p className="feature-desc">Generate scientific diagrams and conceptual illustrations on demand.</p>
         </div>
       </div>
       <div className="placeholder-feature">
-        <span className="icon">edit_document</span>
+        <span className="icon">quiz</span>
         <div>
-          <h3>You're in Control</h3>
-          <p className="feature-desc">Directly edit the document at any time to guide the process.</p>
+          <h3>Retention & Practice Lab</h3>
+          <p className="feature-desc">Self-test your mastery with instant flashcards and active recall questions.</p>
+        </div>
+      </div>
+      <div className="placeholder-feature">
+        <span className="icon">picture_as_pdf</span>
+        <div>
+          <h3>Export Study Packets</h3>
+          <p className="feature-desc">Download complete PDF study guides and structured lecture takeaways.</p>
         </div>
       </div>
     </div>
@@ -2495,6 +2497,18 @@ ${recentTranscript}`;
                 </div>
               </>
             )}
+          </div>
+        )}
+
+        {mainTab === 'visuals' && (
+          <div className="document-editor-container">
+            <VisualsGallery />
+          </div>
+        )}
+
+        {mainTab === 'quiz' && (
+          <div className="document-editor-container">
+            <QuizView />
           </div>
         )}
 

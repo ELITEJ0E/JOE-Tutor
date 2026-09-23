@@ -5,71 +5,59 @@
 import * as React from 'react';
 import { useEffect, useState, useMemo } from 'react';
 import { useUI } from '../lib/state';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles, BookOpen, LineChart, HelpCircle } from 'lucide-react';
+import joeAvatarImg from '../src/assets/images/joe_tutor_avatar_1790137644113.jpg';
 
-const TRANSLITERATIONS = [
-  { text: 'Scribe', lang: 'English' },
-  { text: 'Escriba', lang: 'Spanish' },
-  { text: 'Schreiber', lang: 'German' },
-  { text: 'Scriba', lang: 'Latin' },
-  { text: 'Писец', lang: 'Russian' },
-  { text: '書記', lang: 'Japanese' },
-  { text: '抄写员', lang: 'Chinese' },
-  { text: 'كاتب', lang: 'Arabic' },
-  { text: 'मुंशी', lang: 'Hindi' },
-  { text: 'Γραφέας', lang: 'Greek' },
-  { text: 'סופר', lang: 'Hebrew' },
-  { text: '서기', lang: 'Korean' },
-  { text: 'Người chép thuê', lang: 'Vietnamese' },
-  { text: 'อาลักษณ์', lang: 'Thai' },
-  { text: 'Schrijver', lang: 'Dutch' },
-  { text: 'Skrivare', lang: 'Swedish' },
-  { text: 'Yazıcı', lang: 'Turkish' },
-  { text: 'Scriba', lang: 'Italian' },
-  { text: 'Escriba', lang: 'Portuguese' },
-  { text: 'Scribe', lang: 'French' },
+const TUTOR_SUBJECTS = [
+  'Calculus & Real Analysis',
+  'Organic Chemistry',
+  'Quantum Mechanics',
+  'Macroeconomics',
+  'Data Structures & Algorithms',
+  'World History & Geopolitics',
+  'Neuroscience',
+  'Linear Algebra',
+  'Creative Writing',
+  'Biochemistry',
+  'Philosophy & Ethics',
+  'Statistics & Probability',
 ];
 
 /**
- * The initial welcome screen for the application. It provides a cinematic
- * entry sequence mimicking the Intute splash screen.
+ * The initial welcome screen for JOE Tutor.
+ * Presents a warm, premium, Y2K-inspired entry sequence introducing
+ * your intelligent personal AI learning companion.
  */
 export default function WelcomeScreen() {
   const { setShowWelcomeScreen, setShowDisclaimer } = useUI();
   const [isExiting, setIsExiting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Generate random positions and animations for transliterations once
+  // Generate random positions and animations for academic subjects
   const floatingElements = useMemo(() => {
-    return TRANSLITERATIONS.map((item, i) => ({
-      ...item,
+    return TUTOR_SUBJECTS.map((text, i) => ({
+      text,
       id: i,
-      top: `${Math.random() * 80 + 10}%`,
-      left: `${Math.random() * 80 + 10}%`,
-      fontSize: `${Math.random() * 1.5 + 1}rem`,
-      delay: `${Math.random() * 5}s`,
-      duration: `${Math.random() * 10 + 10}s`,
-      opacity: Math.random() * 0.3 + 0.1,
+      top: `${Math.random() * 75 + 12}%`,
+      left: `${Math.random() * 75 + 12}%`,
+      fontSize: `${Math.random() * 0.4 + 0.85}rem`,
+      delay: `${Math.random() * 4}s`,
+      duration: `${Math.random() * 8 + 10}s`,
+      opacity: Math.random() * 0.35 + 0.15,
     }));
   }, []);
 
-  // Trigger the entrance animation shortly after the component mounts.
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 100);
+    const timer = setTimeout(() => setIsVisible(true), 80);
     return () => clearTimeout(timer);
   }, []);
 
-  /**
-   * Handles the action to close the welcome screen. It triggers an exit
-   * animation and then proceeds to the main app.
-   */
   function handleClose() {
     setIsExiting(true);
-    // Wait for the exit animation to complete before changing the UI state.
     setTimeout(() => {
       setShowWelcomeScreen(false);
       setShowDisclaimer(true);
-    }, 800); // Match the CSS transition duration.
+    }, 600);
   }
 
   return (
@@ -78,7 +66,7 @@ export default function WelcomeScreen() {
         isExiting ? 'exiting' : ''
       }`}
     >
-      {/* Floating Transliterations */}
+      {/* Floating Subject Particles */}
       <div className="floating-container">
         {floatingElements.map((el) => (
           <div
@@ -100,31 +88,69 @@ export default function WelcomeScreen() {
 
       <div className="welcome-screen">
         <div className="welcome-content">
+          {/* Avatar Hero Badge */}
+          <div className="welcome-avatar-wrap">
+            <div className="welcome-avatar-glow" />
+            <img
+              src={joeAvatarImg}
+              alt="JOE Tutor"
+              className="welcome-avatar-img"
+            />
+            <span className="welcome-status-pill">
+              <span className="welcome-dot" /> Live Voice Companion
+            </span>
+          </div>
+
           <div className="welcome-header">
-            <h1 className="welcome-title">SCRIBE</h1>
+            <h1 className="welcome-title">
+              JOE <span className="welcome-title-accent">TUTOR</span>
+            </h1>
             <p className="welcome-subtitle">
-              Your collaborative AI writing assistant
+              Your intelligent personal tutor who is always there beside you.
             </p>
           </div>
 
+          {/* Core Feature Highlights */}
+          <div className="welcome-features-row">
+            <div className="welcome-feat-card">
+              <div className="feat-icon-wrap">
+                <Sparkles size={16} className="text-cherry-500" />
+              </div>
+              <div>
+                <strong className="feat-title">Conversational Tutoring</strong>
+                <p className="feat-desc">Natural 2-way voice dialogue that adapts to your learning pace.</p>
+              </div>
+            </div>
+
+            <div className="welcome-feat-card">
+              <div className="feat-icon-wrap">
+                <LineChart size={16} className="text-cherry-500" />
+              </div>
+              <div>
+                <strong className="feat-title">Math & Diagram Lab</strong>
+                <p className="feat-desc">Live LaTeX derivations, function plots, and AI concept illustrations.</p>
+              </div>
+            </div>
+
+            <div className="welcome-feat-card">
+              <div className="feat-icon-wrap">
+                <HelpCircle size={16} className="text-cherry-500" />
+              </div>
+              <div>
+                <strong className="feat-title">Active Recall & Quizzes</strong>
+                <p className="feat-desc">Instant practice cards and downloadable PDF study guides.</p>
+              </div>
+            </div>
+          </div>
+
           <button onClick={handleClose} className="start-button glass-button">
-            <span>Start session</span>
-            <ArrowRight size={20} className="arrow-icon" />
+            <span>Meet JOE & Start Learning</span>
+            <ArrowRight size={18} className="arrow-icon" />
           </button>
 
           <div className="powered-by-gemini welcome-footer">
-            <svg
-              className="gemini-star"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"
-                fill="currentColor"
-              />
-            </svg>
-            <span>Powered by Gemini</span>
+            <span className="gemini-sparkle-icon">✦</span>
+            <span>Powered by Gemini Live Multimodal API</span>
           </div>
         </div>
       </div>

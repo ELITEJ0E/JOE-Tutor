@@ -1,27 +1,30 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
+ */
+
+import React, { useEffect, useState, useRef } from 'react';
+import cn from 'classnames';
 import { useLiveAPIContext } from '../contexts/LiveAPIContext';
 import { Agent } from '../lib/presets/agents';
 import { useAgent, useUI, useUser } from '../lib/state';
-import { FONT_OPTIONS } from '../lib/constants';
-import c from 'classnames';
-import { useEffect, useState, useRef } from 'react';
-import { 
-  Eye, 
-  Edit3, 
-  MessageSquare, 
-  ClipboardList, 
+import {
+  Sparkles,
+  BookOpen,
+  LineChart,
+  HelpCircle,
+  MessageSquare,
+  ClipboardList,
   Volume2,
   ChevronDown,
+  Settings,
+  Bug,
+  GraduationCap,
+  Layers,
+  CheckCircle2,
 } from 'lucide-react';
+import joeAvatarImg from '../src/assets/images/joe_tutor_avatar_1790137644113.jpg';
 
-/**
- * The main header component for the application. It displays the current
- * agent's name, provides a dropdown to switch between agents, and contains
- * controls for accessing user settings, the debug log, and help.
- */
 export default function Header() {
   const {
     showUserConfig,
@@ -37,19 +40,17 @@ export default function Header() {
     outputModality,
     setOutputModality,
   } = useUI();
-  const { name } = useUser();
+  const { name, topic } = useUser();
   const { current, setCurrent, availablePresets } = useAgent();
-  const { disconnect } = useLiveAPIContext();
+  const { disconnect, connected } = useLiveAPIContext();
 
-  // State to manage the visibility of dropdowns.
   const [showRoomList, setShowRoomList] = useState(false);
   const [showOutputMenu, setShowOutputMenu] = useState(false);
   const [showViewMenu, setShowViewMenu] = useState(false);
-  
+
   const outputMenuRef = useRef<HTMLDivElement>(null);
   const viewMenuRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdowns when clicking outside.
   useEffect(() => {
     const closeDropdowns = (e: MouseEvent) => {
       setShowRoomList(false);
@@ -60,259 +61,189 @@ export default function Header() {
         setShowViewMenu(false);
       }
     };
-    addEventListener('click', closeDropdowns);
-    return () => removeEventListener('click', closeDropdowns);
+    window.addEventListener('click', closeDropdowns);
+    return () => window.removeEventListener('click', closeDropdowns);
   }, []);
 
-  /**
-   * Handles changing the current agent.
-   */
   function changeAgent(agent: Agent | string) {
     disconnect();
     setCurrent(agent);
   }
 
-  const getOutputLabel = () => {
-    switch (outputModality) {
-      case 'audio': return 'Audio';
-      case 'text': return 'Text';
-      case 'both': return 'Both';
-      default: return 'Output';
-    }
-  };
-
-  const getViewLabel = () => {
-    if (mainTab === 'document') {
-      return documentTab === 'rendered' ? 'Rendered' : 'Editor';
-    }
-    switch (mainTab) {
-      case 'transcript': return 'Transcript';
-      case 'minutes': return 'Minutes';
-      case 'audio-log': return 'Audio Log';
-      default: return 'View';
-    }
-  };
-
   const isSuperUser = name === 'Root' || name === 'root';
+  const isJoeTutor = current.id === 'joe_tutor';
 
   return (
-    <header>
-      <div className="roomInfo">
-        <div className="roomName">
-          <button
-            onClick={e => {
-              e.stopPropagation();
-              setShowRoomList(!showRoomList);
-            }}
-          >
-            <h1 className={c({ active: showRoomList })}>
-              {current.name.split(' (')[0]}
-              {isSuperUser && (
-                <span
-                  className="icon edit-agent-icon"
-                  onClick={e => {
-                    e.stopPropagation();
-                    setShowAgentEdit(true);
-                  }}
-                  role="button"
-                  tabIndex={0}
-                  title="Edit agent"
-                >
-                  edit
+    <header className="joe-tutor-header">
+      {/* Brand & Persona Switcher */}
+      <div className="header-brand-section">
+        <div className="brand-logo-wrap">
+          <div className="brand-avatar-thumbnail">
+            {isJoeTutor ? (
+              <img src={joeAvatarImg} alt="JOE Tutor" className="brand-avatar-img" />
+            ) : (
+              <div
+                className="brand-avatar-dot"
+                style={{ backgroundColor: current.bodyColor }}
+              />
+            )}
+            <span
+              className={cn('brand-status-dot', {
+                connected: connected,
+              })}
+            />
+          </div>
+
+          <div className="brand-text-block">
+            <div className="brand-title-row">
+              <span className="brand-name">JOE TUTOR</span>
+              <span className="brand-tag">Y2K POP</span>
+            </div>
+            <div className="brand-persona-selector">
+              <button
+                className="persona-dropdown-trigger"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowRoomList(!showRoomList);
+                }}
+                title="Switch Learning Companion Persona"
+              >
+                <span className="current-persona-name">
+                  {current.name.split(' (')[0]}
                 </span>
-              )}
-              <span className="icon">arrow_drop_down</span>
-            </h1>
-          </button>
+                <ChevronDown size={12} className={cn('chevron-icon', { open: showRoomList })} />
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* The agent selection dropdown list */}
-        <div className={c('roomList', { active: showRoomList })}>
-          <div>
-            <ul>
-              {availablePresets
-                .filter(agent => agent.id !== current.id)
-                .map(agent => (
-                  <li
-                    key={agent.name}
-                    className={c({ active: agent.id === current.id })}
+        {/* Persona Dropdown Menu */}
+        {showRoomList && (
+          <div className="persona-dropdown-menu" onClick={(e) => e.stopPropagation()}>
+            <div className="dropdown-section-title">Select Companion Persona</div>
+            <ul className="persona-list">
+              {availablePresets.map((agent) => (
+                <li key={agent.id}>
+                  <button
+                    className={cn('persona-option-btn', { active: agent.id === current.id })}
+                    onClick={() => {
+                      changeAgent(agent);
+                      setShowRoomList(false);
+                    }}
                   >
-                    <button onClick={() => changeAgent(agent)}>
-                      {agent.name}
-                    </button>
-                  </li>
-                ))}
+                    <span
+                      className="persona-color-chip"
+                      style={{ backgroundColor: agent.bodyColor }}
+                    />
+                    <div className="persona-info-wrap">
+                      <span className="persona-name-text">{agent.name}</span>
+                      <span className="persona-voice-text">Voice: {agent.voice}</span>
+                    </div>
+                    {agent.id === current.id && (
+                      <CheckCircle2 size={14} className="text-cherry-500 ml-auto" />
+                    )}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
-        </div>
-
-        {/* Output Menu Dropdown */}
-        <div className="header-menu-container">
-          <span className="header-menu-title">Output:</span>
-          <div className="header-menu-wrapper" ref={outputMenuRef}>
-            <button 
-              className={c('header-menu-trigger', { active: showOutputMenu })}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowOutputMenu(!showOutputMenu);
-              }}
-            >
-              <div className="trigger-icon mobile-only">
-                {outputModality === 'audio' && <Volume2 size={16} />}
-                {outputModality === 'text' && <MessageSquare size={16} />}
-                {outputModality === 'both' && (
-                  <div className="flex items-center gap-0.5">
-                    <Volume2 size={12} />
-                    <MessageSquare size={12} />
-                  </div>
-                )}
-              </div>
-              <span className="menu-label">{getOutputLabel()}</span>
-              <ChevronDown size={14} className={c('chevron', { open: showOutputMenu })} />
-            </button>
-            
-            {showOutputMenu && (
-              <div className="header-dropdown-menu">
-                <button 
-                  className={c('menu-item', { active: outputModality === 'audio' })}
-                  onClick={() => {
-                    setOutputModality('audio');
-                    setShowOutputMenu(false);
-                  }}
-                >
-                  <Volume2 size={16} />
-                  <span>Audio</span>
-                </button>
-                <button 
-                  className={c('menu-item', { active: outputModality === 'text' })}
-                  onClick={() => {
-                    setOutputModality('text');
-                    setShowOutputMenu(false);
-                  }}
-                >
-                  <MessageSquare size={16} />
-                  <span>Text</span>
-                </button>
-                <button 
-                  className={c('menu-item', { active: outputModality === 'both' })}
-                  onClick={() => {
-                    setOutputModality('both');
-                    setShowOutputMenu(false);
-                  }}
-                >
-                  <div className="flex items-center gap-1">
-                    <Volume2 size={14} />
-                    <MessageSquare size={14} />
-                  </div>
-                  <span>Both</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* View Menu Dropdown */}
-        <div className="header-menu-container">
-          <span className="header-menu-title">View:</span>
-          <div className="header-menu-wrapper" ref={viewMenuRef}>
-            <button 
-              className={c('header-menu-trigger', { active: showViewMenu })}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowViewMenu(!showViewMenu);
-              }}
-            >
-              <div className="trigger-icon mobile-only">
-                {mainTab === 'document' && documentTab === 'rendered' && <Eye size={16} />}
-                {mainTab === 'document' && documentTab === 'editor' && <Edit3 size={16} />}
-                {mainTab === 'transcript' && <MessageSquare size={16} />}
-                {mainTab === 'minutes' && <ClipboardList size={16} />}
-                {mainTab === 'audio-log' && <Volume2 size={16} />}
-              </div>
-              <span className="menu-label">{getViewLabel()}</span>
-              <ChevronDown size={14} className={c('chevron', { open: showViewMenu })} />
-            </button>
-            
-            {showViewMenu && (
-              <div className="header-dropdown-menu">
-                <button 
-                  className={c('menu-item', { active: mainTab === 'document' && documentTab === 'rendered' })}
-                  onClick={() => {
-                    setMainTab('document');
-                    setDocumentTab('rendered');
-                    setShowViewMenu(false);
-                  }}
-                >
-                  <Eye size={16} />
-                  <span>Rendered</span>
-                </button>
-                <button 
-                  className={c('menu-item', { active: mainTab === 'document' && documentTab === 'editor' })}
-                  onClick={() => {
-                    setMainTab('document');
-                    setDocumentTab('editor');
-                    setShowViewMenu(false);
-                  }}
-                >
-                  <Edit3 size={16} />
-                  <span>Editor</span>
-                </button>
-                <button 
-                  className={c('menu-item', { active: mainTab === 'transcript' })}
-                  onClick={() => {
-                    setMainTab('transcript');
-                    setShowViewMenu(false);
-                  }}
-                >
-                  <MessageSquare size={16} />
-                  <span>Transcript</span>
-                </button>
-                <button 
-                  className={c('menu-item', { active: mainTab === 'minutes' })}
-                  onClick={() => {
-                    setMainTab('minutes');
-                    setShowViewMenu(false);
-                  }}
-                >
-                  <ClipboardList size={16} />
-                  <span>Minutes</span>
-                </button>
-                <button 
-                  className={c('menu-item', { active: mainTab === 'audio-log' })}
-                  onClick={() => {
-                    setMainTab('audio-log');
-                    setShowViewMenu(false);
-                  }}
-                >
-                  <Volume2 size={16} />
-                  <span>Audio Log</span>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+        )}
       </div>
 
-      <div className="header-controls">
-        {/* Displays the number of times the model has edited the document */}
-        <div className="change-counter" title="Number of edits by the model">
-          <span className="change-counter-number">{changeCount}</span>
+      {/* Main Tab Navigation Bar */}
+      <nav className="header-nav-tabs">
+        <button
+          className={cn('header-nav-tab', { active: mainTab === 'document' })}
+          onClick={() => {
+            setMainTab('document');
+            if (mainTab !== 'document') setDocumentTab('rendered');
+          }}
+          title="Interactive Study Notes and Mathematical Derivations"
+        >
+          <BookOpen size={15} />
+          <span className="tab-text">Notes</span>
+        </button>
+
+        <button
+          className={cn('header-nav-tab', { active: mainTab === 'visuals' })}
+          onClick={() => setMainTab('visuals')}
+          title="Mathematical Function Plots and Concept Diagrams"
+        >
+          <LineChart size={15} />
+          <span className="tab-text">Visuals Lab</span>
+        </button>
+
+        <button
+          className={cn('header-nav-tab', { active: mainTab === 'quiz' })}
+          onClick={() => setMainTab('quiz')}
+          title="Active Recall Practice and Flashcards"
+        >
+          <HelpCircle size={15} />
+          <span className="tab-text">Quiz & Recall</span>
+        </button>
+
+        <button
+          className={cn('header-nav-tab', { active: mainTab === 'transcript' })}
+          onClick={() => setMainTab('transcript')}
+          title="Full Conversation Dialogue Transcript"
+        >
+          <MessageSquare size={15} />
+          <span className="tab-text">Transcript</span>
+        </button>
+
+        <button
+          className={cn('header-nav-tab', { active: mainTab === 'minutes' })}
+          onClick={() => setMainTab('minutes')}
+          title="Structured Summary and Key Takeaways"
+        >
+          <ClipboardList size={15} />
+          <span className="tab-text">Minutes</span>
+        </button>
+
+        <button
+          className={cn('header-nav-tab', { active: mainTab === 'audio-log' })}
+          onClick={() => setMainTab('audio-log')}
+          title="Raw Audio Snippets and Log"
+        >
+          <Volume2 size={15} />
+          <span className="tab-text">Audio</span>
+        </button>
+      </nav>
+
+      {/* Right Controls Area */}
+      <div className="header-right-controls">
+        {/* Topic Badge if set */}
+        {topic && (
+          <div className="header-topic-badge" title={`Active Study Subject: ${topic}`}>
+            <Sparkles size={12} className="text-cherry-500" />
+            <span className="topic-text-truncate">{topic}</span>
+          </div>
+        )}
+
+        {/* Edit Counter */}
+        <div className="header-stat-badge" title="Tutor Note Updates">
+          <span className="stat-label">Edits:</span>
+          <span className="stat-value">{changeCount}</span>
         </div>
-        {/* The "Debug Log" button is a special feature, conditionally shown. */}
+
+        {/* SuperUser Debug */}
         {isSuperUser && (
           <button
-            className="userSettingsButton"
+            className="header-icon-button"
             onClick={() => setShowDebugModal(true)}
-            title="Debug Log"
+            title="Debug Diagnostics"
           >
-            <span className="icon">bug_report</span>
+            <Bug size={17} />
           </button>
         )}
+
+        {/* Settings Toggle */}
         <button
-          className="userSettingsButton"
+          className={cn('header-icon-button', { active: showUserConfig })}
           onClick={() => setShowUserConfig(!showUserConfig)}
+          title="Session & Companion Settings"
         >
-          <span className="icon">tune</span>
+          <Settings size={18} />
         </button>
       </div>
     </header>

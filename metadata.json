@@ -1,6 +1,6 @@
 {
   "name": "JOE Tutor",
-  "description": "Talk to a smart, collaborative agent who will write for you. Communicate thoughts, brainstorm ideas and create interactive multimodal documents.",
+  "description": "Your intelligent personal AI tutor and learning companion. Interactive voice tutoring with real-time derivations, LaTeX formulas, function plots, concept diagrams, and flashcard quizzes.",
   "requestFramePermissions": [
     "microphone"
   ],
