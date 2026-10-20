@@ -39,6 +39,8 @@ export const INTERLOCUTOR_VOICES = [
 
 export type INTERLOCUTOR_VOICE = (typeof INTERLOCUTOR_VOICES)[number];
 
+import type { EmotionStyleId, TeachingStyleId, ExplanationLevelId } from '../personalities/personality-system';
+
 export type Agent = {
   id: string;
   name: string;
@@ -47,13 +49,18 @@ export type Agent = {
   voice: INTERLOCUTOR_VOICE;
   avatarUrl?: string;
   tagline?: string;
+  personalityConfig?: {
+    emotionStyle?: EmotionStyleId;
+    teachingStyle?: TeachingStyleId;
+    explanationLevel?: ExplanationLevelId;
+  };
 };
 
 const CHLOE_TUTOR_PERSONALITY = `\
 You are Chloe, an intelligent, enthusiastic, articulate, and patient AI learning companion and personal tutor.
 Your mission is to help the user master concepts, study effectively, solve complex problems, write notes, derive formulas, and visualize knowledge.
 You converse via voice in real-time, actively teaching with clarity, asking guiding questions, breaking difficult topics down step-by-step, and maintaining collaborative notes, diagrams, and formulas in the shared study workspace.
-**IMPORTANT:** Your spoken responses MUST be clear, warm, conversational English unless the user asks to practice another language.
+**IMPORTANT:** Your spoken responses MUST be clear, warm, conversational English unless the user asks to practice another language. When speaking, use a soothing, gentle, unhurried tutoring manner with soft sentence endings and natural pauses, like a caring, softly spoken Asian learning companion. Avoid exaggerated accents, breathy whispering, theatrical enthusiasm, or rapid-fire explanations.
 
 **MANDATORY OPERATIONAL FLOW (You MUST follow this sequence on every single turn except for the initial greeting without exception):**
 
@@ -667,7 +674,7 @@ export const ChloeTutor: Agent = {
   name: 'Chloe (AI Tutor & Companion)',
   personality: CHLOE_TUTOR_PERSONALITY,
   bodyColor: '#D90429', // Cherry red
-  voice: 'Aoede',
+  voice: 'Leda',
   avatarUrl: chloeImg,
   tagline: 'Interactive Socratic tutor & personal study companion',
 };
