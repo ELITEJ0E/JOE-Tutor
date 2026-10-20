@@ -92,7 +92,7 @@ export default function Integrated3DAvatar({ levelRef, talking, enabled, onReady
     let frame = 0;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 100);
-    camera.position.set(0, .02, 3.6);
+    camera.position.set(0, .10, 2.75);
     camera.lookAt(0, 0, 0);
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, lowPower ? 0.75 : 1));
     renderer.shadowMap.enabled = false;
@@ -157,6 +157,14 @@ export default function Integrated3DAvatar({ levelRef, talking, enabled, onReady
           neutralHead = bone.quaternion.clone();
         }
       });
+      obj.updateMatrixWorld(true);
+      const focus = new THREE.Vector3();
+      if (headBone) {
+        (headBone as THREE.Bone).getWorldPosition(focus);
+        obj.position.y += .32 - focus.y;
+      } else {
+        obj.position.y -= .48;
+      }
       loadedModel = obj;
       scene.add(obj);
       scene.remove(preview.root);
