@@ -7,6 +7,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import cn from 'classnames';
 import { useLiveAPIContext } from '../contexts/LiveAPIContext';
 import { Agent } from '../lib/presets/agents';
+import { getCharacterIntroduction } from '../lib/presets/character-intros';
 import { useAgent, useUI, useUser } from '../lib/state';
 import {
   Sparkles,
@@ -104,7 +105,7 @@ export default function Header() {
 
           <div className="brand-text-block">
             <div className="brand-title-row">
-              <span className="brand-name">CHLOE TUTOR</span>
+              <span className="brand-name">CHLOE & COMPANIONS</span>
             </div>
             <div className="brand-persona-selector">
               <button
@@ -113,7 +114,7 @@ export default function Header() {
                   e.stopPropagation();
                   setShowRoomList(!showRoomList);
                 }}
-                title="Switch Learning Companion Persona"
+                title="Choose your companion character"
               >
                 <span className="current-persona-name">
                   {current.name.split(' (')[0]}
@@ -128,7 +129,7 @@ export default function Header() {
         {showRoomList && (
           <div className="persona-dropdown-menu" onClick={(e) => e.stopPropagation()}>
             <div className="dropdown-section-title">
-              <span>Select Learning Companion</span>
+              <span>Meet your companions</span>
             </div>
             <ul className="persona-list">
               {availablePresets.map((agent) => (
@@ -175,7 +176,7 @@ export default function Header() {
                     )}
                     <div className="persona-info-wrap">
                       <span className="persona-name-text">{agent.name}</span>
-                      <span className="persona-voice-text">{agent.tagline || `Voice: ${agent.voice}`}</span>
+                      <span className="persona-voice-text">{getCharacterIntroduction(agent).tagline}</span>
                     </div>
                     {agent.id === current.id && (
                       <CheckCircle2 size={14} className="text-cherry-500 ml-auto" />
