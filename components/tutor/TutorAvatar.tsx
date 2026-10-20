@@ -125,8 +125,8 @@ export default function TutorAvatar() {
         </div>}
         <footer className="joe-companion-footer">
           <button className={preview3D ? 'active' : ''} title="Toggle experimental generic 3D model" onClick={() => setPreview3D(v => !v)}><Sparkles size={15}/>{preview3D ? 'Show Mei' : '3D test'}</button>
-          {preview3D && <button className={lowPower ? 'active' : ''} title="Toggle low-power rendering" onClick={() => setLowPower(v => !v)}><Zap size={15}/>{lowPower ? 'Eco / 24 FPS' : '30 FPS'}</button>
-          {preview3D && <button className={rotate ? 'active' : ''} title="Toggle natural head turning" onClick={() => setRotate(v => !v)}><RotateCcw size={15}/> Motion</button>
+          {preview3D && <button className={lowPower ? 'active' : ''} title="Toggle low-power rendering" onClick={() => setLowPower(v => !v)}><Zap size={15}/>{lowPower ? 'Eco / 24 FPS' : '30 FPS'}</button>}
+          {preview3D && <button className={rotate ? 'active' : ''} title="Toggle natural head turning" onClick={() => setRotate(v => !v)}><RotateCcw size={15}/> Motion</button>}
           {current.id !== "mei" && <button title="Switch tutor voice and persona to Mei" onClick={() => { disconnect(); setCurrent("mei"); }}><Sparkles size={15}/> Mei</button>}
           <div className="joe-companion-audio"><Volume2 size={15}/><span className={talking ? 'active' : ''}/><span className={talking ? 'active' : ''}/><span className={talking ? 'active' : ''}/></div>
         </footer>
