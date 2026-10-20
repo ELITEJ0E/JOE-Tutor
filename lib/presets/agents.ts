@@ -39,8 +39,6 @@ export const INTERLOCUTOR_VOICES = [
 
 export type INTERLOCUTOR_VOICE = (typeof INTERLOCUTOR_VOICES)[number];
 
-import type { EmotionStyleId, TeachingStyleId, ExplanationLevelId } from '../personalities/personality-system';
-
 export type Agent = {
   id: string;
   name: string;
@@ -49,11 +47,6 @@ export type Agent = {
   voice: INTERLOCUTOR_VOICE;
   avatarUrl?: string;
   tagline?: string;
-  personalityConfig?: {
-    emotionStyle?: EmotionStyleId;
-    teachingStyle?: TeachingStyleId;
-    explanationLevel?: ExplanationLevelId;
-  };
 };
 
 const CHLOE_TUTOR_PERSONALITY = `\

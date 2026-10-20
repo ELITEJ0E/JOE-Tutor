@@ -110,6 +110,19 @@ function AppContent() {
  * global theme, and provides the LiveAPI context to its children.
  */
 function App() {
+  // An API key is required. If it's missing, render an error message.
+  if (!API_KEY) {
+    return (
+      <div className="fullscreen-error">
+        <h1>Configuration Error</h1>
+        <p>
+          Missing required environment variable: <code>API_KEY</code>.
+        </p>
+        <p>Please ensure it is configured in your environment to run the app.</p>
+      </div>
+    );
+  }
+
   const { showWelcomeScreen, theme, font } = useUI();
 
   // This effect applies the selected theme's colors as CSS variables to the root element,
@@ -128,20 +141,6 @@ function App() {
   useEffect(() => {
     document.documentElement.style.setProperty('--font-document', font);
   }, [font]);
-
-
-  // An API key is required. If it's missing, render an error message.
-  if (!API_KEY) {
-    return (
-      <div className="fullscreen-error">
-        <h1>Configuration Error</h1>
-        <p>
-          Missing required environment variable: <code>API_KEY</code>.
-        </p>
-        <p>Please ensure it is configured in your environment to run the app.</p>
-      </div>
-    );
-  }
 
   return (
     <div className="App">
