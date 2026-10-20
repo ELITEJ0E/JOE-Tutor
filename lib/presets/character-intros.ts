@@ -92,13 +92,13 @@ export const CHARACTER_INTRODUCTIONS: Record<string, CharacterIntroduction> = {
   },
   hiro: {
     introTitle: 'Meet Hiro',
-    introText: 'Light-voiced, gentle and thoughtfully playful, Hiro shares soft Japanese conversations, language practice and little everyday stories.'
+    introText: 'Light-voiced, gentle and thoughtfully playful, Hiro shares soft Japanese conversations, language practice and little everyday stories.',
     firstGreeting: 'こんにちは、ヒロです。今日は勉強する？ それとも、のんびりおしゃべりしようか？',
     tagline: 'Soft, sweet Japanese voice · Achernar'
   },
   yuna: {
     introTitle: 'Meet Yuna',
-    introText: 'Sweet, youthful and softly cheerful, Yuna brings calming Korean conversations, playful support and gentle encouragement.'
+    introText: 'Sweet, youthful and softly cheerful, Yuna brings calming Korean conversations, playful support and gentle encouragement.',
     firstGreeting: '안녕! 나는 유나야. 오늘은 공부할까, 수다 떨까, 아니면 그냥 편하게 쉬면서 이야기할까?',
     tagline: 'Cute, gentle Korean voice · Leda'
   },
