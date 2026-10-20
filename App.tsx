@@ -93,20 +93,6 @@ function AppContent() {
 function App() {
   const [meiMode, setMeiMode] = useState(() => typeof window !== 'undefined' && window.location.hash === '#mei');
   useEffect(() => { const sync = () => setMeiMode(window.location.hash === '#mei'); window.addEventListener('hashchange', sync); return () => window.removeEventListener('hashchange', sync); }, []);
-  if (meiMode) return <MeiStudio onBack={() => { window.location.hash = ''; setMeiMode(false); }} />;
-  // An API key is required. If it's missing, render an error message.
-  if (!API_KEY) {
-    return (
-      <div className="fullscreen-error">
-        <h1>Configuration Error</h1>
-        <p>
-          Missing required environment variable: <code>API_KEY</code>.
-        </p>
-        <p>Please ensure it is configured in your environment to run the app.</p>
-      </div>
-    );
-  }
-
   const { showWelcomeScreen, theme, font } = useUI();
 
   // This effect applies the selected theme's colors as CSS variables to the root element,
@@ -125,6 +111,22 @@ function App() {
   useEffect(() => {
     document.documentElement.style.setProperty('--font-document', font);
   }, [font]);
+
+
+  // An API key is required. If it's missing, render an error message.
+  if (!API_KEY && !meiMode) {
+    return (
+      <div className="fullscreen-error">
+        <h1>Configuration Error</h1>
+        <p>
+          Missing required environment variable: <code>API_KEY</code>.
+        </p>
+        <p>Please ensure it is configured in your environment to run the app.</p>
+      </div>
+    );
+  }
+
+  if (meiMode) return <MeiStudio onBack={() => { window.location.hash = ''; setMeiMode(false); }} />;
 
   return (
     <div className="App">
