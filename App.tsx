@@ -30,6 +30,7 @@ import { LiveAPIProvider, useLiveAPIContext } from './contexts/LiveAPIContext';
 import { useAgent, useUI } from './lib/state';
 // Fix: Import React to resolve "Cannot find namespace 'React'" error.
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import MeiStudio from './components/mei/MeiStudio';
 import { themes } from './lib/themes';
 import FloatingAvatar from './components/FloatingAvatar';
 import HelpModal from './components/HelpModal';
@@ -61,6 +62,7 @@ function AppContent() {
     <>
       <ErrorScreen />
       <Header />
+      <button className="mei-launch-pill" onClick={() => { window.location.hash = 'mei'; }} aria-label="Open Mei Studio"><span className="mei-launch-sparkle">✦</span> Mei Studio <span>↗</span></button>
 
       <FloatingAvatar />
 
@@ -88,6 +90,9 @@ function AppContent() {
  * global theme, and provides the LiveAPI context to its children.
  */
 function App() {
+  const [meiMode, setMeiMode] = useState(() => typeof window !== 'undefined' && window.location.hash === '#mei');
+  useEffect(() => { const sync = () => setMeiMode(window.location.hash === '#mei'); window.addEventListener('hashchange', sync); return () => window.removeEventListener('hashchange', sync); }, []);
+  if (meiMode) return <MeiStudio onBack={() => { window.location.hash = ''; setMeiMode(false); }} />;
   // An API key is required. If it's missing, render an error message.
   if (!API_KEY) {
     return (
