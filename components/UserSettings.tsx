@@ -88,7 +88,7 @@ export default function UserSettings() {
   const { name, info, topic, format, setName, setInfo, setTopic, setFormat, pdfFiles, addPdfFile, removePdfFile } =
     useUser();
   // Hooks to manage UI state (modal visibility, current theme)
-  const { setShowUserConfig, font, setFont, useSearch, setUseSearch, liveApiModel, setLiveApiModel, documentContent } = useUI();
+  const { setShowUserConfig, font, setFont, useSearch, setUseSearch, documentContent } = useUI();
   // Hooks to manage agent state (needed for updating agent color on theme change)
   const { current: agent, update: updateAgent } = useAgent();
 
@@ -143,8 +143,8 @@ export default function UserSettings() {
   return (
     <Modal onClose={() => setShowUserConfig(false)}>
       <div className="userSettings jazzy">
-        <h2>JOE Tutor Settings</h2>
-        <p className="config-description">Customize your tutoring experience, active study topic, and companion preferences.</p>
+        <h2>Companion & Session Settings</h2>
+        <p className="config-description">Personalize conversations, study sessions, document appearance, and your companion experience.</p>
 
         <form
           onSubmit={e => {
@@ -155,7 +155,7 @@ export default function UserSettings() {
         >
           <div className="settings-grid">
             <div>
-              <p>Student Name</p>
+              <p>Your Name</p>
               <input
                 type="text"
                 name="name"
@@ -166,13 +166,13 @@ export default function UserSettings() {
             </div>
 
             <div>
-              <p>Subject / Topic</p>
+              <p>Topic or Conversation Focus (Optional)</p>
               <input
                 type="text"
                 name="topic"
                 value={topic}
                 onChange={e => setTopic(e.target.value)}
-                placeholder="e.g. Multivariable Calculus, Quantum Mechanics, Macroeconomics"
+                placeholder="e.g. Chat, Japanese practice, mathematics, creative writing"
               />
             </div>
           </div>
@@ -189,12 +189,11 @@ export default function UserSettings() {
             </div>
 
             <div>
-              <p>Live API Model</p>
-              <CustomDropdown
-                value={liveApiModel === 'gemini-2.5-flash-native-audio-preview-12-2025' ? '12-2025' : '09-2025 (Default)'}
-                options={['12-2025', '09-2025 (Default)']}
-                onChange={(val) => setLiveApiModel(val === '12-2025' ? 'gemini-2.5-flash-native-audio-preview-12-2025' : 'gemini-2.5-flash-native-audio-preview-09-2025')}
-              />
+              <p>Voice Companion</p>
+              <div className="companion-settings-display">
+                <strong>{agent.name}</strong>
+                <span>Choose another character from the companion menu at the top left.</span>
+              </div>
             </div>
           </div>
 
@@ -206,15 +205,15 @@ export default function UserSettings() {
                 onChange={e => setUseSearch(e.target.checked)}
                 style={{ width: '18px', height: '18px' }}
               />
-              <span>Use search as needed</span>
+              <span>Allow web search when helpful</span>
             </label>
           </div>
 
           <details style={{ marginTop: '15px' }}>
-            <summary>Context (Optional)</summary>
+            <summary>About You (Optional)</summary>
             <div className="details-content">
               <p className="context-description">
-                Provide any background info worth knowing for this session.
+                Share background details or preferences to help your companion respond more naturally.
               </p>
               <textarea
                 rows={3}
