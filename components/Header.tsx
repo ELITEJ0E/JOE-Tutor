@@ -47,6 +47,7 @@ export default function Header() {
   const { disconnect, connected } = useLiveAPIContext();
 
   const [showRoomList, setShowRoomList] = useState(false);
+  const [genderFilter, setGenderFilter] = useState<'female' | 'male'>('female');
   const [showOutputMenu, setShowOutputMenu] = useState(false);
   const [showViewMenu, setShowViewMenu] = useState(false);
 
@@ -113,6 +114,7 @@ export default function Header() {
                 className="persona-dropdown-trigger"
                 onClick={(e) => {
                   e.stopPropagation();
+                  if (!showRoomList) setGenderFilter(current.gender || (['sam','tom','rahul','ramon','ari','hiro','hans','newton'].includes(current.id) ? 'male' : 'female'));
                   setShowRoomList(!showRoomList);
                 }}
                 title="Choose your companion character"
@@ -132,8 +134,12 @@ export default function Header() {
             <div className="dropdown-section-title">
               <span>Meet your companions</span>
             </div>
+            <div className="companion-gender-switch" role="group" aria-label="Companion gender">
+              <button type="button" aria-pressed={genderFilter === 'female'} className={genderFilter === 'female' ? 'active' : ''} onClick={() => setGenderFilter('female')}>Female</button>
+              <button type="button" aria-pressed={genderFilter === 'male'} className={genderFilter === 'male' ? 'active' : ''} onClick={() => setGenderFilter('male')}>Male</button>
+            </div>
             <ul className="persona-list">
-              {availablePresets.map((agent) => (
+              {availablePresets.filter(agent => (agent.gender || (['sam','tom','rahul','ramon','ari','hiro','hans','newton'].includes(agent.id) ? 'male' : 'female')) === genderFilter).map((agent) => (
                 <li key={agent.id}>
                   <button
                     className={cn('persona-option-btn', { active: agent.id === current.id })}
