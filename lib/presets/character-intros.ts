@@ -159,6 +159,6 @@ export function getCharacterIntroduction(agent: Agent): CharacterIntroduction {
     introTitle: agent.introTitle || saved?.introTitle || 'Meet ' + name,
     introText: agent.introText || saved?.introText || (name + ' is here to learn, create and talk with you at your pace.'),
     firstGreeting: agent.firstGreeting || saved?.firstGreeting || ("Hi, I'm " + name + ". What would you like to do together today?"),
-    tagline: agent.tagline || saved?.tagline || 'Your versatile AI companion',
+    tagline: saved?.tagline || agent.tagline || 'Your versatile AI companion',
   };
 }
