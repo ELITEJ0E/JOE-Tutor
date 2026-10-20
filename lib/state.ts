@@ -25,6 +25,7 @@ import {
   Ramon,
   Sam,
   Tom,
+  Ethan, Joon, Haruka, Hao, YuChen, Niran, Anika, Sofia, Julien, Noa, Lena, Maxim, Marco, Ada,
 } from './presets/agents';
 import { themes } from './themes';
 import { FONT_OPTIONS, PLACEHOLDER_DOC } from './constants';
@@ -103,27 +104,13 @@ export const useAgent = create<{
 }>(set => ({
   current: ChloeTutor,
   availablePresets: [
-    // English companions
-    ChloeTutor,
-    Alice,
-    Sam,
-    Irene,
-    Tom,
-    // Soft Asian-language voices, immediately beneath the English companions
-    Yuna,
-    Hiro,
-    XiaoYuTaiwan,
-    Nicha,
-    Mei,
-    // Remaining languages and specialists
-    Rahul,
-    Ramon,
-    Amelie,
-    Ari,
-    Hans,
-    Newton,
-    Olga,
-    Luca,
+    // English
+    ChloeTutor, Alice, Irene, Sam, Tom, Ethan,
+    // Korean, Japanese, Taiwanese Mandarin, Thai and Mandarin
+    Yuna, Joon, Haruka, Hiro, XiaoYuTaiwan, YuChen, Nicha, Niran, Mei, Hao,
+    // Additional languages
+    Rahul, Anika, Ramon, Sofia, Amelie, Julien, Ari, Noa,
+    Hans, Lena, Newton, Ada, Olga, Maxim, Luca, Marco,
   ],
   availablePersonal: [],
 

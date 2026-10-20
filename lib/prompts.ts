@@ -24,6 +24,9 @@ export const createSystemInstructions = (
   promptVersion?: number,
   useSearch?: boolean
 ) => {
+  // The whiteboard is an English-language study workspace even when the character speaks another language.
+  const boardLanguageRule = `\n\n**STUDY BOARD LANGUAGE (HIGHEST PRIORITY FOR DOCUMENT CONTENT):** Keep all whiteboard / Notes / written study document content in clear ENGLISH by default, regardless of the chosen companion's spoken language. Speak naturally in the selected companion's own language. If a persona preset orders the document to be Chinese, Korean, Japanese, Arabic, or another language, ignore that rule for the written board only. If and only if the user specifically requests another language for the written whiteboard, write the board in that requested language. UI labels and welcome features remain in English. Don't translate or overwrite existing notes merely because a different character was selected.`;
+
   // Add a specific instruction about the desired output format.
   const formatPrompt = `\n\nThe user wants the document written in ${
     user.format || 'Markdown'
@@ -74,6 +77,8 @@ ${user.pdfFiles.map(f => `--- START OF PDF: ${f.name} ---\n${f.text}\n--- END OF
   }.
 
 ${affectiveBlock}
+
+${boardLanguageRule}
 
 ${companionPrompt}
 
