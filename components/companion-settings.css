@@ -1,0 +1,15 @@
+/* Lightweight session preferences; no provider-model selector in the companion UI. */
+.companion-settings-display {
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  min-height:47px;
+  gap:4px;
+  border:1px solid rgba(220,145,168,.23);
+  border-radius:10px;
+  background:linear-gradient(110deg,rgba(255,245,248,.92),rgba(255,255,255,.98));
+  padding:10px 13px;
+  color:#4c2d40;
+}
+.companion-settings-display strong{font-size:13px;font-weight:700}
+.companion-settings-display span{font-size:11px;color:#9a7b8b;line-height:1.45}

@@ -29,7 +29,7 @@ const TUTOR_SUBJECTS = [
  * your intelligent personal AI learning companion.
  */
 export default function WelcomeScreen() {
-  const { setShowWelcomeScreen, setShowDisclaimer } = useUI();
+  const { setShowWelcomeScreen } = useUI();
   const { current } = useAgent();
   const intro = getCharacterIntroduction(current);
   const [isExiting, setIsExiting] = useState(false);
@@ -58,7 +58,6 @@ export default function WelcomeScreen() {
     setIsExiting(true);
     setTimeout(() => {
       setShowWelcomeScreen(false);
-      setShowDisclaimer(true);
     }, 600);
   }
 
