@@ -8,6 +8,7 @@ import { Minimize2, Maximize2, Move, RotateCcw, Sparkles, Volume2, X, Zap } from
 import { useAgent, useUI } from '../../lib/state';
 import { useLiveAPIContext } from '../../contexts/LiveAPIContext';
 import Integrated3DAvatar from './Integrated3DAvatar';
+import meiPortrait from '../../src/assets/images/mei.jpg';
 import './integrated-avatar.css';
 
 const TALKING_THRESHOLD = .038;
@@ -19,6 +20,7 @@ export default function TutorAvatar() {
   const { connected, volumeRef, disconnect } = useLiveAPIContext();
   const [open, setOpen] = useState(() => typeof window === 'undefined' || window.innerWidth > 900);
   const [lowPower, setLowPower] = useState(true);
+  const [preview3D, setPreview3D] = useState(false);
   const [rotate, setRotate] = useState(true);
   const [talking, setTalking] = useState(false);
   const [modelReady, setModelReady] = useState('Preparing');
@@ -91,9 +93,9 @@ export default function TutorAvatar() {
     style={position.x ? { left: position.x, top: position.y, right: 'auto' } : undefined}
   >
     {!open ? (
-      <button className="joe-companion-reopen" onClick={() => setOpen(true)} title="Open integrated 3D tutor avatar">
+      <button className="joe-companion-reopen" onClick={() => setOpen(true)} title="Open Mei companion">
         <span className="joe-companion-orb"><Sparkles size={20}/></span>
-        <span><strong>3D Companion</strong><small>Tap to expand</small></span>
+        <span><strong>Mei Companion</strong><small>Tap to expand</small></span>
         <Maximize2 size={16}/>
       </button>
     ) : (
@@ -109,12 +111,12 @@ export default function TutorAvatar() {
         </header>
         <div className="joe-companion-scene">
           <div className="joe-companion-grid"/>
-          <Integrated3DAvatar levelRef={volumeRef} talking={talking} enabled={open} lowPower={lowPower} rotate={rotate} onReady={setModelReady}/>
-          <div className="joe-companion-scene-top"><span><span className="joe-companion-pulse"/> LIVE 3D</span><span>FREE WEBGL</span></div>
+          {preview3D ? <Integrated3DAvatar levelRef={volumeRef} talking={talking} enabled={open} lowPower={lowPower} rotate={rotate} onReady={setModelReady}/> : <div className={'joe-pretty-portrait' + (talking ? ' is-speaking' : '')} style={{ backgroundImage: 'url(' + meiPortrait + ')' }} role="img" aria-label="Mei original portrait" />}
+          <div className="joe-companion-scene-top"><span><span className="joe-companion-pulse"/> {preview3D ? '3D PREVIEW' : 'ORIGINAL MEI'}</span><span>{preview3D ? 'EXPERIMENTAL' : 'PORTRAIT'}</span></div>
           <div className="joe-companion-caption">
             <div className="joe-companion-overline">INTERACTIVE CHARACTER</div>
             <div className="joe-companion-heading">A voice with a <em>presence.</em></div>
-            <p>{modelReady === 'Ready' ? 'Real 3D human model · audio-reactive expression' : 'Real-time 3D animation · lightweight preview while loading'}</p>
+            <p>{preview3D ? 'Experimental open-source model — not Mei’s likeness' : 'Original Mei appearance · natural, lightweight motion'}</p>
           </div>
         </div>
         {speechBubbleText && <div className="joe-companion-bubble">
@@ -122,8 +124,9 @@ export default function TutorAvatar() {
           {speechBubbleText}
         </div>}
         <footer className="joe-companion-footer">
-          <button className={lowPower ? 'active' : ''} title="Toggle low-power rendering" onClick={() => setLowPower(v => !v)}><Zap size={15}/>{lowPower ? 'Eco / 24 FPS' : '30 FPS'}</button>
-          <button className={rotate ? 'active' : ''} title="Toggle natural head turning" onClick={() => setRotate(v => !v)}><RotateCcw size={15}/> Motion</button>
+          <button className={preview3D ? 'active' : ''} title="Toggle experimental generic 3D model" onClick={() => setPreview3D(v => !v)}><Sparkles size={15}/>{preview3D ? 'Show Mei' : '3D test'}</button>
+          {preview3D && <button className={lowPower ? 'active' : ''} title="Toggle low-power rendering" onClick={() => setLowPower(v => !v)}><Zap size={15}/>{lowPower ? 'Eco / 24 FPS' : '30 FPS'}</button>
+          {preview3D && <button className={rotate ? 'active' : ''} title="Toggle natural head turning" onClick={() => setRotate(v => !v)}><RotateCcw size={15}/> Motion</button>
           {current.id !== "mei" && <button title="Switch tutor voice and persona to Mei" onClick={() => { disconnect(); setCurrent("mei"); }}><Sparkles size={15}/> Mei</button>}
           <div className="joe-companion-audio"><Volume2 size={15}/><span className={talking ? 'active' : ''}/><span className={talking ? 'active' : ''}/><span className={talking ? 'active' : ''}/></div>
         </footer>
