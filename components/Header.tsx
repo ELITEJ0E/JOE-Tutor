@@ -108,7 +108,7 @@ export default function Header() {
 
           <div className="brand-text-block">
             <div className="brand-title-row">
-              <span className="brand-name">CHLOE & COMPANIONS</span>
+              <span className="brand-name">TUTORS</span>
             </div>
             <div className="brand-persona-selector">
               <button
@@ -118,7 +118,7 @@ export default function Header() {
                   if (!showRoomList) setGenderFilter(current.gender || (['sam','tom','rahul','ramon','ari','hiro','hans','newton'].includes(current.id) ? 'male' : 'female'));
                   setShowRoomList(!showRoomList);
                 }}
-                title="Choose your companion character"
+                title="Click to switch tutors and companions"
               >
                 <span className="current-persona-name">
                   {current.name.split(' (')[0]}
@@ -133,7 +133,7 @@ export default function Header() {
         {showRoomList && (
           <div className="persona-dropdown-menu" onClick={(e) => e.stopPropagation()}>
             <div className="dropdown-section-title">
-              <span>Meet your companions</span>
+              <span>Choose your tutor or companion</span>
             </div>
             <div className="companion-gender-switch" role="group" aria-label="Companion gender">
               <button type="button" aria-pressed={genderFilter === 'female'} className={genderFilter === 'female' ? 'active' : ''} onClick={() => setGenderFilter('female')}>Female</button>
