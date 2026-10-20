@@ -30,6 +30,8 @@ import { LiveAPIProvider, useLiveAPIContext } from './contexts/LiveAPIContext';
 import { useAgent, useUI } from './lib/state';
 // Fix: Import React to resolve "Cannot find namespace 'React'" error.
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import MeiStudio from './components/mei/MeiStudio';
+import './components/mei/mei-studio.css';
 import { themes } from './lib/themes';
 import FloatingAvatar from './components/FloatingAvatar';
 import HelpModal from './components/HelpModal';
@@ -83,6 +85,7 @@ function AppContent() {
       <CompanionBackground />
       <ErrorScreen />
       <Header />
+      <button className="mei-launch-pill" onClick={() => { window.location.hash = 'mei'; }} aria-label="Open Mei Studio"><span className="mei-launch-sparkle">✦</span> Mei Studio <span>↗</span></button>
 
       <FloatingAvatar />
 
@@ -110,19 +113,8 @@ function AppContent() {
  * global theme, and provides the LiveAPI context to its children.
  */
 function App() {
-  // An API key is required. If it's missing, render an error message.
-  if (!API_KEY) {
-    return (
-      <div className="fullscreen-error">
-        <h1>Configuration Error</h1>
-        <p>
-          Missing required environment variable: <code>API_KEY</code>.
-        </p>
-        <p>Please ensure it is configured in your environment to run the app.</p>
-      </div>
-    );
-  }
-
+  const [meiMode, setMeiMode] = useState(() => typeof window !== 'undefined' && window.location.hash === '#mei');
+  useEffect(() => { const sync = () => setMeiMode(window.location.hash === '#mei'); window.addEventListener('hashchange', sync); return () => window.removeEventListener('hashchange', sync); }, []);
   const { showWelcomeScreen, theme, font } = useUI();
 
   // This effect applies the selected theme's colors as CSS variables to the root element,
@@ -141,6 +133,22 @@ function App() {
   useEffect(() => {
     document.documentElement.style.setProperty('--font-document', font);
   }, [font]);
+
+
+  // An API key is required. If it's missing, render an error message.
+  if (!API_KEY && !meiMode) {
+    return (
+      <div className="fullscreen-error">
+        <h1>Configuration Error</h1>
+        <p>
+          Missing required environment variable: <code>API_KEY</code>.
+        </p>
+        <p>Please ensure it is configured in your environment to run the app.</p>
+      </div>
+    );
+  }
+
+  if (meiMode) return <MeiStudio onBack={() => { window.location.hash = ''; setMeiMode(false); }} />;
 
   return (
     <div className="App">
