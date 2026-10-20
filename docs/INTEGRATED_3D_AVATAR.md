@@ -13,9 +13,9 @@ The avatar is now **part of the existing JOE-Tutor interface**, using `component
 
 ### Avatar and license
 
-The default 3D character is the CC0 example avatar **`mpfb.glb`** published with [met4citizen/TalkingHead](https://github.com/met4citizen/TalkingHead). It is created with MPFB/Blender and is credited as CC0 by the maintainer. The original file is ~36.8 MB, **not yet an optimized or compact GLB**. Its geometry is animated locally in your visitor's browser by Three.js, using available ARKit-like morph targets for approximate jaw/eye animation. If the external model download fails, an intentionally simplified procedural 3D character renders instead. The procedural character is not photorealistic.
+The default 3D character is an optimized copy of the CC0 **`mpfb.glb`** example published with [met4citizen/TalkingHead](https://github.com/met4citizen/TalkingHead). It was created with MPFB/Blender, and is credited as CC0 by the maintainer. We compressed the source from ~36.8 MB to **~2.8 MB** using glTF Transform with Meshopt geometry and WebP textures, and self-host it in `public/models/mei-mpfb-cc0.glb`. Its facial mesh animates locally in the visitor's browser by Three.js, using available ARKit-like morph targets. If the model download or WebGL initialization fails, a simplified procedural 3D character appears instead; that fallback is not photorealistic.
 
-The model is loaded from public GitHub raw hosting rather than bundled in the site's Vercel deployment. External download availability and rate limits are outside this application's control. For a production launch, self-host an optimized GLB under `public/models/` and update `SAMPLE_URL` in `Integrated3DAvatar.tsx`.
+The optimized GLB is shipped as a static asset by Vite and is served directly by the deployed website. No third-party runtime model URL is required. The source model and compression process remain documented in the optimizer workflow.
 
 ### Motion quality
 
@@ -37,9 +37,9 @@ npm run build
 
 ## Limitations and next optimization stage
 
-- The MPFB source model is large (~36.8 MB); model downloads may be slow on mobile data.
+- The original MPFB model was 36.8 MB. The bundled compressed variant is about 2.8 MB, but GPU memory use after decompression is higher than the download size.
 - Realistic skin and facial quality are below the neural lip-sync video in the original Reel.
 - Target 24/30 FPS is a target rather than guaranteed on Intel Iris Xe.
-- A later pass should compress MPFB geometry/textures (Meshopt + WebP) and self-host the optimized GLB, before describing the asset as lightweight.
+- Meshopt + WebP compression and self-hosting are now implemented. A follow-up visual QA pass should verify skin shaders and facial rig operation on the exact deployed browser.
 
 Source attribution: [TalkingHead README](https://github.com/met4citizen/TalkingHead/blob/main/README.md).
