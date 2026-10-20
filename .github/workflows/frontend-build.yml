@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   frontend:
@@ -19,6 +19,18 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+      - name: Repair dependency lockfile
+        run: npm install --package-lock-only --no-audit --no-fund
+      - name: Commit repaired lockfile
+        if: github.event_name == 'push' && github.ref_name == 'feat/integrated-free-webgl-avatar'
+        run: |
+          if ! git diff --quiet package-lock.json; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add package-lock.json
+            git commit -m 'chore: regenerate npm dependency lockfile'
+            git push origin HEAD:feat/integrated-free-webgl-avatar
+          fi
       - run: npm ci
       - run: npm run lint
       - run: npm run build
