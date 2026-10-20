@@ -93,11 +93,11 @@ export default function WelcomeScreen() {
           {/* Avatar Hero Badge */}
           <div className="welcome-avatar-wrap">
             <div className="welcome-avatar-glow" />
-            <img
-              src={current.avatarUrl}
-              alt={current.name}
-              className="welcome-avatar-img"
-            />
+            {current.avatarUrl ? (
+              <img src={current.avatarUrl} alt={current.name} className="welcome-avatar-img" />
+            ) : (
+              <div className="welcome-avatar-placeholder" aria-hidden="true"><Sparkles size={40} /></div>
+            )}
             <span className="welcome-status-pill">
               <span className="welcome-dot" /> Live Voice Companion
             </span>
