@@ -115,6 +115,7 @@ const WelcomePlaceholder = () => {
       </span>{' '}
       button below to meet your companion. Learn, create or just chat together.
     </p>
+    <p className="welcome-companion-intro"><strong>{intro.introTitle}:</strong> “{intro.firstGreeting}”</p>
     <div className="placeholder-features-grid">
       <div className="placeholder-feature">
         <span className="icon">record_voice_over</span>
