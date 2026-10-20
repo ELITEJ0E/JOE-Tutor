@@ -6,7 +6,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 import { useLiveAPIContext } from '../../contexts/LiveAPIContext';
-import { usePerfLogStore, useUI, useUser } from '../../lib/state';
+import { usePerfLogStore, useUI, useUser, useAgent } from '../../lib/state';
 import { AudioRecorder } from '../../lib/audio-recorder';
 import { QUICK_TOPICS } from '../../lib/constants';
 import {
@@ -70,6 +70,7 @@ export default function ControlDeck({
     setOutputModality,
   } = useUI();
   const { topic, setTopic } = useUser();
+  const { current } = useAgent();
   const { addLog: addPerfLog } = usePerfLogStore();
   const { client, connected, connect, disconnect, isConnecting } = useLiveAPIContext();
 
@@ -321,7 +322,7 @@ export default function ControlDeck({
               ref={inputRef}
               type="text"
               className="deck-input-field"
-              placeholder="Ask Chloe a question or request a note revision..."
+              placeholder={`Ask ${current.name.split(" (")[0]} anything…`}
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
               onKeyDown={(e) => {
@@ -393,6 +394,9 @@ export default function ControlDeck({
         {/* Center: Hero Action Button (Connect / Stop) */}
         <div className="deck-group center">
           <button
+            id="tutor-session-action"
+            type="button"
+            aria-label={connected ? 'Pause active voice session' : 'Start a voice session with your tutor'}
             className={cn('hero-connect-button', {
               'is-connected': connected,
               'is-connecting': isConnecting,
