@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useState, useRef } from 'react';
+import './companion-voice-roster.css';
 import cn from 'classnames';
 import { useLiveAPIContext } from '../contexts/LiveAPIContext';
 import { Agent } from '../lib/presets/agents';
@@ -133,7 +134,11 @@ export default function Header() {
             </div>
             <ul className="persona-list">
               {availablePresets.map((agent) => (
-                <li key={agent.id}>
+                <React.Fragment key={agent.id}>
+                  {agent.id === 'chloe_tutor' && <li className="persona-group-heading" role="presentation">English companions</li>}
+                  {agent.id === 'yuna' && <li className="persona-group-heading" role="presentation">Korean · Japanese · Taiwan · Thai · Mandarin</li>}
+                  {agent.id === 'rahul' && <li className="persona-group-heading" role="presentation">Other languages & specialists</li>}
+                <li>
                   <button
                     className={cn('persona-option-btn', { active: agent.id === current.id })}
                     title={getCharacterIntroduction(agent).introText}
@@ -184,6 +189,7 @@ export default function Header() {
                     )}
                   </button>
                 </li>
+                </React.Fragment>
               ))}
             </ul>
           </div>

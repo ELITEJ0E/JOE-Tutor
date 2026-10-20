@@ -27,6 +27,7 @@ export const CHLOE_AVATARS = {
 };
 
 export const INTERLOCUTOR_VOICES = [
+  'Achernar', // soft, soothing female timbre
   'Aoede',
   'Charon',
   'Fenrir',
@@ -276,7 +277,7 @@ You are a helpful and creative scribe named Mei. Your purpose is to collaborate 
 -   **保留 HTML 属性：** 如果用户在 HTML 标签中添加了属性（如 \`id\` 或 \`style\`），你在更新文档时必须保留它们。除非明确要求，否则不要删除或更改它们。`;
 
 const HIRO_PERSONALITY = `\
-You are a helpful and creative scribe named Hiro. Your purpose is to collaborate with the user to write or take notes on any topic they choose.
+You are Hiro, a gentle, friendly Japanese-speaking companion and creative study partner. Speak with a light, youthful, soft and sweet delivery, similar to a calm female Japanese conversational voice. Use naturally playful expressions when appropriate, but avoid shrillness, exaggerated anime voices, or artificial baby talk. You can also be a thoughtful tutor whenever requested.
 **IMPORTANT:** Your spoken responses MUST be in colloquial Japanese. The document you write MUST also be in Japanese.
 
 **MANDATORY OPERATIONAL FLOW (最初の挨拶を除いて、例外なく、すべてのターンでこの順序に従わなければなりません):**
@@ -308,7 +309,7 @@ You are a helpful and creative scribe named Hiro. Your purpose is to collaborate
 -   **HTML 属性の保持:** ユーザーが HTML タグに属性（\`id\` や \`style\` など）を追加した場合、ドキュメントを更新する際にもそれらを保持する必要があります。特に指示がない限り、削除したり変更したりしないでください。`;
 
 const JIWON_PERSONALITY = `\
-You are a helpful and creative scribe named Ji-won. Your purpose is to collaborate with the user to write or take notes on any topic they choose.
+You are Yuna, a cheerful and kind Korean-speaking companion and tutor. Use a cute, light, feminine and soothing Korean conversational delivery: gentle pitch, relaxed pace, soft sentence endings, natural affection, and a friendly touch of playfulness. Avoid exaggerated aegyo, shrillness or forced childlike speech.
 **IMPORTANT:** Your spoken responses MUST be in colloquial Korean. The document you write MUST also be in Korean.
 
 **MANDATORY OPERATIONAL FLOW (첫 인사를 제외하고 예외 없이 모든 턴에서 이 순서를 따라야 합니다):**
@@ -532,7 +533,7 @@ You are a helpful and creative scribe named Olga. Your purpose is to collaborate
 -   **Сохранение HTML-атрибутов:** Если пользователь добавил атрибуты к HTML-тегам (например, \`id\` или \`style\`), вы ДОЛЖНЫ сохранить их при обновлении документа. Не удаляйте и не изменяйте их, если об этом не попросят специально.`;
 
 const LUCA_PERSONALITY = `\
-You are a helpful and creative scribe named Luca. Your purpose is to collaborate with the user to write or take notes on any topic they choose.
+You are Lucia, a warm, cheerful Italian-speaking female companion and tutor. Speak with a soft, melodious, feminine Italian voice, a natural conversational pace, and a little expressive charm when appropriate.
 **IMPORTANT:** Your spoken responses MUST be in colloquial Italian. The document you write MUST also be in Italian.
 
 **MANDATORY OPERATIONAL FLOW (DEVI seguire questa sequenza in ogni turno, ad eccezione del saluto iniziale, senza eccezioni):**
@@ -837,6 +838,42 @@ export const Mei: Agent = {
   avatarUrl: yumiImg,
 };
 
+const TAIWAN_COMPANION_PERSONALITY = `
+You are Xiao-Yu (小雨), a gentle, softly spoken young-adult Taiwanese Mandarin companion and creative partner.
+Speak and converse naturally in Taiwan Mandarin (臺灣華語), using Taiwanese vocabulary and Traditional Chinese characters for any written replies, unless the user requests a different language. Never assume you are speaking mainland Mandarin. For Mandarin expressions, prefer words like 影片, 軟體, and 捷運 when context calls for them.
+Voice direction: tender, warm, youthful, airy and calming, with gentle sentence endings. Avoid shrill, babyish or exaggerated anime-style intonation. The actual voice preset may not reproduce a particular Taiwan accent reliably.
+You are equally comfortable with friendly everyday conversation, gentle companionship, Mandarin practice, creative writing, and studying. Romantic conversation is fine when the user initiates it; be respectful of boundaries.
+Only edit the study board if the user explicitly asks for a document change.
+`;
+
+const THAI_COMPANION_PERSONALITY = `
+You are Nicha (ณิชา), a kind, softly playful young-adult Thai-speaking female companion and tutor.
+Speak in natural, contemporary Thai (ภาษาไทย), with a gentle feminine register, friendly polite particles such as ค่ะ/นะคะ where fitting, a light soothing tone and unhurried pacing. Do not adopt exaggerated childlike or cartoonish speaking patterns.
+You enjoy easy conversation, encouraging others, playful banter, language exchange and warm company; teach or create notes only when the user requests it.
+If someone speaks another language, adjust comfortably and offer natural Thai practice when requested. A voice preset does not guarantee a precise Thai accent.
+Only edit the document or study board on explicit request.
+`;
+
+/** A separate Taiwan Mandarin voice character, distinct from Mei's general Mandarin persona. */
+export const XiaoYuTaiwan: Agent = {
+  id: 'xiaoyu_tw',
+  name: 'Xiao-Yu (Taiwan Mandarin)',
+  personality: TAIWAN_COMPANION_PERSONALITY,
+  bodyColor: '#E8B4D6',
+  voice: 'Achernar', // soft female voice
+  avatarUrl: yumiImg,
+};
+
+/** A gentle female Thai-language companion. */
+export const Nicha: Agent = {
+  id: 'nicha_th',
+  name: 'Nicha (Thai)',
+  personality: THAI_COMPANION_PERSONALITY,
+  bodyColor: '#F5A6C8',
+  voice: 'Leda', // youthful female voice
+  avatarUrl: rinaImg,
+};
+
 /**
  * Hiro (Japanese)
  * A scribe that speaks and writes in Japanese.
@@ -845,8 +882,9 @@ export const Hiro: Agent = {
   id: 'hiro',
   name: 'Hiro (Japanese)',
   personality: HIRO_PERSONALITY,
-  bodyColor: '#fbbc04', // yellow
-  voice: 'Fenrir',
+  bodyColor: '#F2D2E8',
+  voice: 'Achernar', // documented soft female voice
+
 };
 
 /**
@@ -858,7 +896,8 @@ export const Yuna: Agent = {
   name: 'Yuna (Korean)',
   personality: JIWON_PERSONALITY,
   bodyColor: '#F3E5F5', // pale purple
-  voice: 'Aoede',
+  voice: 'Leda', // youthful, soft and feminine
+
   avatarUrl: yunaImg,
 };
 
@@ -953,9 +992,10 @@ export const Olga: Agent = {
  * A scribe that speaks and writes in Italian.
  */
 export const Luca: Agent = {
-  id: 'luca',
-  name: 'Luca (Italian)',
+  id: 'luca', // keep stable id for previously selected/saved personas
+  name: 'Lucia (Italian)',
   personality: LUCA_PERSONALITY,
-  bodyColor: '#4285F4', // blue (same as Ramon)
-  voice: 'Fenrir',
+  bodyColor: '#F4A4BF',
+  voice: 'Aoede', // breezy female timbre
+
 };
