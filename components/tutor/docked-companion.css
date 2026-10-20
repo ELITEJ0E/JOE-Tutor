@@ -1,0 +1,26 @@
+/* Chloe — anchored companion and quiet premium polish */
+.chloe-dock{position:fixed;z-index:80;right:clamp(12px,2.2vw,30px);bottom:74px;width:192px;pointer-events:none;display:flex;flex-direction:column;align-items:stretch;filter:drop-shadow(0 18px 24px rgba(96,44,70,.17))}
+.chloe-dock-portrait{height:220px;overflow:hidden;border:1px solid rgba(241,126,164,.28);border-bottom:0;border-radius:90px 90px 0 0;background:linear-gradient(160deg,#fff1f4 10%,#ffe0eb 75%,#fffafd 100%);position:relative;transform-origin:bottom center;animation:chloe-soft-breathe 6.5s ease-in-out infinite}
+.chloe-dock-portrait:after{position:absolute;inset:40% 0 0;content:"";pointer-events:none;background:linear-gradient(transparent 0%,rgba(255,234,243,.12) 64%,rgba(255,234,243,.45) 100%)}
+.chloe-dock-portrait img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 22%;transform:scale(1.05);user-select:none}
+.chloe-dock--speaking .chloe-dock-portrait{animation-duration:4.5s}
+.chloe-dock-monogram{display:grid;place-items:center;height:100%;color:#d73c71}
+.chloe-dock-base{pointer-events:auto;display:flex;align-items:center;gap:8px;min-height:51px;border-radius:0 0 16px 16px;border:1px solid #f1b5c8;background:rgba(255,250,252,.96);padding:8px 9px;color:#311925;box-shadow:0 8px 22px rgba(130,61,83,.11);backdrop-filter:blur(14px)}
+.chloe-dock-signal{display:flex}.chloe-dock-dot{display:block;width:8px;height:8px;border-radius:50%;background:#adb1bd}.chloe-dock-dot.connected{background:#47ba7d;box-shadow:0 0 0 3px #b6f1d2}
+.chloe-dock-meta{display:flex;min-width:0;flex:1;flex-direction:column;gap:1px;line-height:1.2}.chloe-dock-meta strong{font-size:12px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.chloe-dock-meta small{font-size:10px;color:#9a7381}
+.chloe-dock-base button{display:grid;place-items:center;width:27px;height:27px;background:#fff;border:1px solid #f5d5e0;border-radius:9px;cursor:pointer;color:#a04666}
+.chloe-dock-level{display:flex;gap:2px;align-items:center;height:18px}.chloe-dock-level i{display:block;width:2px;height:5px;background:#e9b4c4;border-radius:6px}.chloe-dock-level i:nth-child(2){height:11px}.chloe-dock-level i:nth-child(3){height:8px}.chloe-dock-level.active i{background:#ee477e;animation:chloe-wave .65s ease-in-out infinite alternate}.chloe-dock-level.active i:nth-child(2){animation-delay:.15s}.chloe-dock-level.active i:nth-child(3){animation-delay:.3s}
+.chloe-dock-bubble{position:absolute;bottom:calc(100% + 13px);right:0;width:min(286px,70vw);pointer-events:auto;border:1px solid #f2c8d7;border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.98);color:#543042;box-shadow:0 12px 36px #985e7730;line-height:1.45}
+.chloe-dock-bubble strong{display:block;color:#bb355f;font-size:11px;margin-bottom:6px}.chloe-dock-bubble p{margin:0;font-size:12px;max-height:120px;overflow:auto}.chloe-dock-bubble button{position:absolute;right:7px;top:7px;border:0;background:transparent;color:#ad6682;cursor:pointer}
+.chloe-dock--minimized{width:164px}.chloe-dock--minimized .chloe-dock-base{border-radius:14px}
+@keyframes chloe-soft-breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-2px) scale(1.007)}}
+@keyframes chloe-wave{to{height:16px}}
+/* Give the bottom-right desk edge breathing room so the dock doesn't obstruct primary controls. */
+.control-deck-footer{isolation:isolate}
+.control-deck-island{box-shadow:0 15px 42px rgba(65,23,39,.10);border:1px solid rgba(233,163,186,.28)}
+.deck-chip-btn{transition:background-color .18s ease,transform .18s ease,box-shadow .18s ease}
+.deck-chip-btn:hover{transform:translateY(-1px);box-shadow:0 4px 13px rgba(193,73,114,.08)}
+.header-nav-tabs .header-nav-tab{transition:background-color .18s ease,color .18s ease}
+@media(max-width:950px){.chloe-dock{right:10px;bottom:76px;width:145px}.chloe-dock-portrait{height:163px}.chloe-dock-base{padding:6px;min-height:45px}.chloe-dock-meta strong{font-size:11px}}
+@media(max-width:600px){.chloe-dock{right:9px;bottom:78px;width:105px}.chloe-dock-portrait{height:115px}.chloe-dock-base{min-height:39px;gap:4px;padding:5px}.chloe-dock-meta strong{font-size:10px}.chloe-dock-meta small,.chloe-dock-level{display:none}.chloe-dock-base button{width:22px;height:22px}.chloe-dock--minimized{width:112px}}
+@media(prefers-reduced-motion:reduce){.chloe-dock-portrait,.chloe-dock-level.active i{animation:none}.deck-chip-btn{transition:none}}
