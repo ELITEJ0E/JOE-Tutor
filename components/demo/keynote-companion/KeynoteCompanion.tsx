@@ -103,63 +103,40 @@ declare const MathJax: any;
  */
 const WelcomePlaceholder = () => {
   const { current } = useAgent();
-  return <div className="welcome-placeholder">
-    <h1 className="welcome-placeholder-title">
-      <span className="welcome-prefix">Welcome to </span>{current.name.split(' (')[0]}
-    </h1>
-    <p className="welcome-placeholder-subtitle">
-      Press the{' '}
-      <span className="icon" style={{ verticalAlign: 'bottom' }}>
-        play_arrow
-      </span>{' '}
-      button below to meet your companion. Learn, create or just chat together.
-    </p>
-    <p className="welcome-companion-intro"><strong>Your companion:</strong> {current.name.split(' (')[0]} is ready to talk, study, or create with you. Choose Start Tutoring to begin.</p>
-    <div className="placeholder-features-grid">
-      <div className="placeholder-feature">
-        <span className="icon">record_voice_over</span>
-        <div>
-          <h3>Interactive Voice Tutoring</h3>
-          <p className="feature-desc">Speak naturally with your companion. Explore ideas, solve problems, or simply enjoy a conversation.</p>
+  const name = current.name.split(' (')[0];
+  return (
+    <section className="welcome-placeholder joe-workspace-empty" aria-label="Get started">
+      <div className="joe-empty-eyebrow"><span className="joe-empty-status"/> YOUR LEARNING SPACE</div>
+      <h1 className="welcome-placeholder-title">A fresh page, <span>ready for you.</span></h1>
+      <p className="welcome-placeholder-subtitle">
+        Start a voice conversation with {name}, explore a new topic, or simply chat.
+        Your notes and ideas can grow from here.
+      </p>
+      <div className="joe-empty-companion-note">
+        <span className="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
+        <span><strong>{name} is ready.</strong> Use the Start Tutoring button below when you want to talk.</span>
+      </div>
+      <div className="placeholder-features-grid">
+        <div className="placeholder-feature">
+          <span className="material-symbols-outlined icon" aria-hidden="true">record_voice_over</span>
+          <div><h3>Talk naturally</h3><p className="feature-desc">Ask questions, practice languages or share ideas.</p></div>
+        </div>
+        <div className="placeholder-feature">
+          <span className="material-symbols-outlined icon" aria-hidden="true">edit_note</span>
+          <div><h3>Capture your notes</h3><p className="feature-desc">Turn conversations into useful study material.</p></div>
+        </div>
+        <div className="placeholder-feature">
+          <span className="material-symbols-outlined icon" aria-hidden="true">monitoring</span>
+          <div><h3>Make it visual</h3><p className="feature-desc">Explore equations, graphs and explanations.</p></div>
+        </div>
+        <div className="placeholder-feature">
+          <span className="material-symbols-outlined icon" aria-hidden="true">psychology</span>
+          <div><h3>Practice and recall</h3><p className="feature-desc">Reinforce what you've learned with quick quizzes.</p></div>
         </div>
       </div>
-      <div className="placeholder-feature">
-        <span className="icon">functions</span>
-        <div>
-          <h3>LaTeX Math & Formulas</h3>
-          <p className="feature-desc">Real-time mathematical typesetting with full formula rendering.</p>
-        </div>
-      </div>
-      <div className="placeholder-feature">
-        <span className="icon">show_chart</span>
-        <div>
-          <h3>Interactive Function Plots</h3>
-          <p className="feature-desc">Plot mathematical curves, examine roots, and visualize coordinate domains.</p>
-        </div>
-      </div>
-      <div className="placeholder-feature">
-        <span className="icon">palette</span>
-        <div>
-          <h3>AI Concept Illustrations</h3>
-          <p className="feature-desc">Generate scientific diagrams and conceptual illustrations on demand.</p>
-        </div>
-      </div>
-      <div className="placeholder-feature">
-        <span className="icon">quiz</span>
-        <div>
-          <h3>Retention & Practice Lab</h3>
-          <p className="feature-desc">Self-test your mastery with instant flashcards and active recall questions.</p>
-        </div>
-      </div>
-      <div className="placeholder-feature">
-        <span className="icon">picture_as_pdf</span>
-        <div>
-          <h3>Export Study Packets</h3>
-          <p className="feature-desc">Download complete PDF study guides and structured lecture takeaways.</p>
-        </div>
-      </div>
-    </div>
-  </div>;
+      <p className="joe-empty-footnote">You can also type a message using <strong>Text</strong> in the voice controls.</p>
+    </section>
+  );
 };
 
 /**

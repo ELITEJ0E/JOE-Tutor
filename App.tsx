@@ -33,6 +33,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { themes } from './lib/themes';
 import FloatingAvatar from './components/FloatingAvatar';
 import HelpModal from './components/HelpModal';
+import './components/workspace-responsive.css';
 
 const API_KEY =
   typeof process !== 'undefined' && process.env
@@ -83,8 +84,6 @@ function AppContent() {
       <ErrorScreen />
       <Header />
 
-      <FloatingAvatar />
-
       {/* Conditionally render modals based on UI state */}
       {showUserConfig && <UserSettings />}
       {showAgentEdit && <AgentEdit />}
@@ -92,8 +91,13 @@ function AppContent() {
       {showHelpModal && <HelpModal />}
       <div className="streaming-console">
         <main>
-          <div className="main-app-area">
-            <KeynoteCompanion />
+          <div className="tutor-workspace-shell">
+            <div className="main-app-area">
+              <KeynoteCompanion />
+            </div>
+            <div className="tutor-companion-column" aria-label="Current companion">
+              <FloatingAvatar />
+            </div>
           </div>
 
           <ControlDeck />
