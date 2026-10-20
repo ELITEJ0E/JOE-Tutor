@@ -1,33 +1,16 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
-*/
-import * as React from 'react';
-import { useEffect, useState, useMemo } from 'react';
-import { useUI, useAgent } from '../lib/state';
-import { getCharacterIntroduction } from '../lib/presets/character-intros';
-import { ArrowRight, Sparkles, BookOpen, LineChart, HelpCircle } from 'lucide-react';
-
-const TUTOR_SUBJECTS = [
-  'Calculus & Real Analysis',
-  'Organic Chemistry',
-  'Quantum Mechanics',
-  'Macroeconomics',
-  'Data Structures & Algorithms',
-  'World History & Geopolitics',
-  'Neuroscience',
-  'Linear Algebra',
-  'Creative Writing',
-  'Biochemistry',
-  'Philosophy & Ethics',
-  'Statistics & Probability',
-];
-
-/**
- * The initial welcome screen for Chloe Tutor.
- * Presents a warm, premium entry sequence introducing
- * your intelligent personal AI learning companion.
  */
+import { useEffect, useState } from 'react';
+import { useAgent, useUI } from '../lib/state';
+import { getCharacterIntroduction } from '../lib/presets/character-intros';
+import {
+  ArrowRight, AudioLines, BookOpen, BrainCircuit, ChartNoAxesCombined,
+  CheckCircle2, Heart, Sparkles, WandSparkles,
+} from 'lucide-react';
+import './welcome-redesign.css';
+
 export default function WelcomeScreen() {
   const { setShowWelcomeScreen } = useUI();
   const { current } = useAgent();
@@ -35,126 +18,60 @@ export default function WelcomeScreen() {
   const [isExiting, setIsExiting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Generate random positions and animations for academic subjects
-  const floatingElements = useMemo(() => {
-    return TUTOR_SUBJECTS.map((text, i) => ({
-      text,
-      id: i,
-      top: `${Math.random() * 75 + 12}%`,
-      left: `${Math.random() * 75 + 12}%`,
-      fontSize: `${Math.random() * 0.4 + 0.85}rem`,
-      delay: `${Math.random() * 4}s`,
-      duration: `${Math.random() * 8 + 10}s`,
-      opacity: Math.random() * 0.35 + 0.15,
-    }));
-  }, []);
-
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 80);
-    return () => clearTimeout(timer);
+    const timer = window.setTimeout(() => setIsVisible(true), 50);
+    return () => window.clearTimeout(timer);
   }, []);
 
-  function handleClose() {
+  const close = () => {
+    if (isExiting) return;
     setIsExiting(true);
-    setTimeout(() => {
-      setShowWelcomeScreen(false);
-    }, 600);
-  }
+    window.setTimeout(() => setShowWelcomeScreen(false), 330);
+  };
 
   return (
-    <div
-      className={`welcome-screen-shroud ${isVisible ? 'visible' : ''} ${
-        isExiting ? 'exiting' : ''
-      }`}
-    >
-      {/* Floating Subject Particles */}
-      <div className="floating-container">
-        {floatingElements.map((el) => (
-          <div
-            key={el.id}
-            className="floating-text"
-            style={{
-              top: el.top,
-              left: el.left,
-              fontSize: el.fontSize,
-              animationDelay: el.delay,
-              animationDuration: el.duration,
-              opacity: el.opacity,
-            } as React.CSSProperties}
-          >
-            {el.text}
-          </div>
-        ))}
-      </div>
-
-      <div className="welcome-screen">
-        <div className="welcome-content">
-          {/* Avatar Hero Badge */}
-          <div className="welcome-avatar-wrap">
-            <div className="welcome-avatar-glow" />
-            {current.avatarUrl ? (
-              <img src={current.avatarUrl} alt={current.name} className="welcome-avatar-img" />
-            ) : (
-              <div className="welcome-avatar-placeholder" aria-hidden="true"><Sparkles size={40} /></div>
-            )}
-            <span className="welcome-status-pill">
-              <span className="welcome-dot" /> Live Voice Companion
-            </span>
-          </div>
-
-          <div className="welcome-header">
-            <h1 className="welcome-title">
-              {current.name.split(' (')[0]} <span className="welcome-title-accent">& YOU</span>
-            </h1>
-            <p className="welcome-subtitle">
-              {intro.introText}
-            </p>
-          </div>
-
-          {/* Core Feature Highlights */}
-          <div className="welcome-features-row">
-            <div className="welcome-feat-card">
-              <div className="feat-icon-wrap">
-                <Sparkles size={16} className="text-cherry-500" />
-              </div>
-              <div>
-                <strong className="feat-title">{intro.introTitle}</strong>
-                <p className="feat-desc">{intro.firstGreeting}</p>
-              </div>
+    <div className={`welcome-screen-shroud joe-home-overlay ${isVisible ? 'visible' : ''} ${isExiting ? 'exiting' : ''}`}>
+      <main className="joe-homepage" aria-label="JOE Tutor welcome">
+        <div className="joe-homepage-grid">
+          <section className="joe-home-copy">
+            <div className="joe-home-brand"><span className="joe-home-brand-mark"><Sparkles size={17}/></span> JOE TUTOR <span className="joe-home-brand-separator"/> <span className="joe-home-brand-sub">AI LEARNING SPACE</span></div>
+            <div className="joe-home-intro-pill"><span className="joe-home-live-dot"/> Learn naturally. Talk freely. Create together.</div>
+            <h1>Your space to<br/><em>learn, think</em> <span>& connect.</span></h1>
+            <p className="joe-home-lead">Real-time conversations, beautifully organized notes, visual explanations, and companions who adapt to you.</p>
+            <div className="joe-home-actions">
+              <button className="joe-home-primary" onClick={close}><span>Enter JOE Tutor</span><ArrowRight size={20}/></button>
+              <span className="joe-home-action-note"><CheckCircle2 size={15}/> Learn at your own pace</span>
             </div>
-
-            <div className="welcome-feat-card">
-              <div className="feat-icon-wrap">
-                <LineChart size={16} className="text-cherry-500" />
-              </div>
-              <div>
-                <strong className="feat-title">Math & Diagram Lab</strong>
-                <p className="feat-desc">Live LaTeX derivations, function plots, and AI concept illustrations.</p>
-              </div>
+            <div className="joe-home-feature-line">
+              <span><AudioLines size={16}/> Natural voice conversations</span>
+              <span><BookOpen size={16}/> Smart notes</span>
+              <span><BrainCircuit size={16}/> Practice & recall</span>
             </div>
+          </section>
 
-            <div className="welcome-feat-card">
-              <div className="feat-icon-wrap">
-                <HelpCircle size={16} className="text-cherry-500" />
-              </div>
-              <div>
-                <strong className="feat-title">Active Recall & Quizzes</strong>
-                <p className="feat-desc">Instant practice cards and downloadable PDF study guides.</p>
-              </div>
+          <section className="joe-home-visual" aria-label="Selected AI companion">
+            <div className="joe-home-visual-orbit joe-home-visual-orbit-one"/>
+            <div className="joe-home-visual-orbit joe-home-visual-orbit-two"/>
+            <div className="joe-home-visual-light"/>
+            <span className="joe-home-visual-label"><span className="joe-home-visual-dot"/> YOUR COMPANION</span>
+            <div className="joe-home-character">
+              {current.avatarUrl ? <img src={current.avatarUrl} alt={current.name} draggable={false}/> : <div className="joe-home-character-fallback"><Sparkles size={70}/></div>}
             </div>
-          </div>
-
-          <button onClick={handleClose} className="start-button glass-button">
-            <span>Meet {current.name.split(' (')[0]} & Begin</span>
-            <ArrowRight size={18} className="arrow-icon" />
-          </button>
-
-          <div className="powered-by-gemini welcome-footer">
-            <span className="gemini-sparkle-icon">✦</span>
-            <span>Powered by Gemini Live Multimodal API</span>
-          </div>
+            <div className="joe-home-identity">
+              <span>MEET YOUR COMPANION</span>
+              <h2>{current.name.split(' (')[0]}</h2>
+              <p>{intro.tagline}</p>
+            </div>
+            <div className="joe-home-talk"><span><Heart size={14}/></span> “{intro.firstGreeting}”</div>
+          </section>
         </div>
-      </div>
+        <section className="joe-home-toolbelt" aria-label="Learning tools">
+          <div className="joe-home-tool"><span className="joe-home-tool-icon pink"><BookOpen size={20}/></span><div><strong>Study smarter</strong><p>Notes, summaries, and structured takeaways.</p></div></div>
+          <div className="joe-home-tool"><span className="joe-home-tool-icon peach"><ChartNoAxesCombined size={20}/></span><div><strong>See ideas clearly</strong><p>Visuals, equations, and interactive graphs.</p></div></div>
+          <div className="joe-home-tool"><span className="joe-home-tool-icon lilac"><WandSparkles size={20}/></span><div><strong>Make it yours</strong><p>Practice, create, or just have a conversation.</p></div></div>
+        </section>
+        <div className="joe-home-footer"><span>JOE TUTOR <span aria-hidden="true">✦</span> A MORE PERSONAL WAY TO LEARN</span><span>Built for curiosity, not just classrooms.</span></div>
+      </main>
     </div>
   );
 }
