@@ -7,14 +7,14 @@ const intros = readFileSync('lib/presets/character-intros.ts', 'utf8');
 const rosterMatch = state.match(/availablePresets:\s*\[([\s\S]*?)\],/);
 assert.ok(rosterMatch, 'Main companion roster must exist');
 const roster = rosterMatch[1].split('\n')
-  .map(line => line.replace(/\/\/.*$/, '').trim().replace(/,$/, ''))
+  .flatMap(line => line.replace(/\/\/.*$/, '').split(',').map(item => item.trim()).filter(Boolean))
   .filter(Boolean);
 const expected = ['ChloeTutor','Alice','Irene','Sam','Tom','Ethan','Yuna','Joon','Haruka','Hiro','XiaoYuTaiwan','YuChen','Nicha','Niran','Mei','Hao','Rahul','Anika','Ramon','Sofia','Amelie','Julien','Ari','Noa','Hans','Lena','Newton','Ada','Olga','Maxim','Luca','Marco'];
 assert.deepEqual(roster, expected, 'Roster order differs from English > Asian > other requested order');
 for (const removed of ['Defne','Karim','Reza','Ines']) assert.ok(!roster.includes(removed), removed + ' must be removed from selector');
 const checks = {
   Yuna: 'Leda',
-  Hiro: 'Achernar',
+  Hiro: 'Charon',
   XiaoYuTaiwan: 'Leda',
   Nicha: 'Leda',
   Luca: 'Aoede',
