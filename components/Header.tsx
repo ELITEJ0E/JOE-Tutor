@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useState, useRef } from 'react';
+import './companion-voice-roster.css';
 import cn from 'classnames';
 import { useLiveAPIContext } from '../contexts/LiveAPIContext';
 import { Agent } from '../lib/presets/agents';
