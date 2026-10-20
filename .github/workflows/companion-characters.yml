@@ -1,0 +1,32 @@
+name: Companion character build
+on:
+  push:
+    branches: [feat/character-cutouts-companion-introductions]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: TypeScript check
+        run: npm run lint
+      - name: Build frontend
+        run: npm run build
+      - name: Inspect original portrait transparency
+        run: |
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from PIL import Image
+          for file in ['Chloe.png', 'Lia.png', 'Rina.png', 'Yumi.png', 'Yuna.png']:
+              im=Image.open('src/assets/images/'+file).convert('RGBA')
+              alphas=im.getchannel('A')
+              print(file, 'size=',im.size, 'alpha_extrema=',alphas.getextrema(), 'corner=',im.getpixel((0,0)), 'transparent_pixels=',sum(1 for x in alphas.getdata() if x < 240))
+          PY

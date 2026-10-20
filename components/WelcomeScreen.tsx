@@ -4,9 +4,9 @@
 */
 import * as React from 'react';
 import { useEffect, useState, useMemo } from 'react';
-import { useUI } from '../lib/state';
+import { useUI, useAgent } from '../lib/state';
+import { getCharacterIntroduction } from '../lib/presets/character-intros';
 import { ArrowRight, Sparkles, BookOpen, LineChart, HelpCircle } from 'lucide-react';
-import chloeAvatarImg from '../src/assets/images/Chloe.png';
 
 const TUTOR_SUBJECTS = [
   'Calculus & Real Analysis',
@@ -30,6 +30,8 @@ const TUTOR_SUBJECTS = [
  */
 export default function WelcomeScreen() {
   const { setShowWelcomeScreen, setShowDisclaimer } = useUI();
+  const { current } = useAgent();
+  const intro = getCharacterIntroduction(current);
   const [isExiting, setIsExiting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -91,11 +93,11 @@ export default function WelcomeScreen() {
           {/* Avatar Hero Badge */}
           <div className="welcome-avatar-wrap">
             <div className="welcome-avatar-glow" />
-            <img
-              src={chloeAvatarImg}
-              alt="Chloe Tutor"
-              className="welcome-avatar-img"
-            />
+            {current.avatarUrl ? (
+              <img src={current.avatarUrl} alt={current.name} className="welcome-avatar-img" />
+            ) : (
+              <div className="welcome-avatar-placeholder" aria-hidden="true"><Sparkles size={40} /></div>
+            )}
             <span className="welcome-status-pill">
               <span className="welcome-dot" /> Live Voice Companion
             </span>
@@ -103,10 +105,10 @@ export default function WelcomeScreen() {
 
           <div className="welcome-header">
             <h1 className="welcome-title">
-              CHLOE <span className="welcome-title-accent">TUTOR</span>
+              {current.name.split(' (')[0]} <span className="welcome-title-accent">& YOU</span>
             </h1>
             <p className="welcome-subtitle">
-              Your intelligent personal tutor who is always there beside you.
+              {intro.introText}
             </p>
           </div>
 
@@ -117,8 +119,8 @@ export default function WelcomeScreen() {
                 <Sparkles size={16} className="text-cherry-500" />
               </div>
               <div>
-                <strong className="feat-title">Conversational Tutoring</strong>
-                <p className="feat-desc">Natural 2-way voice dialogue that adapts to your learning pace.</p>
+                <strong className="feat-title">{intro.introTitle}</strong>
+                <p className="feat-desc">{intro.firstGreeting}</p>
               </div>
             </div>
 
@@ -144,7 +146,7 @@ export default function WelcomeScreen() {
           </div>
 
           <button onClick={handleClose} className="start-button glass-button">
-            <span>Meet Chloe & Start Learning</span>
+            <span>Meet {current.name.split(' (')[0]} & Begin</span>
             <ArrowRight size={18} className="arrow-icon" />
           </button>
 

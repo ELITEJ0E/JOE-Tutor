@@ -28,6 +28,7 @@ import { jsPDF } from 'jspdf';
 
 import { useLiveAPIContext } from '../../../contexts/LiveAPIContext';
 import { createSystemInstructions } from '../../../lib/prompts';
+import { getCharacterIntroduction } from '../../../lib/presets/character-intros';
 import { FONT_OPTIONS, PLACEHOLDER_DOC } from '../../../lib/constants';
 import {
   useAgent,
@@ -100,24 +101,27 @@ declare const MathJax: any;
  * The placeholder component shown when the document is empty.
  * It introduces the key features of the application.
  */
-const WelcomePlaceholder = () => (
-  <div className="welcome-placeholder">
+const WelcomePlaceholder = () => {
+  const { current } = useAgent();
+  const intro = getCharacterIntroduction(current);
+  return <div className="welcome-placeholder">
     <h1 className="welcome-placeholder-title">
-      <span className="welcome-prefix">Welcome to </span>Chloe Tutor
+      <span className="welcome-prefix">Welcome to </span>{current.name.split(' (')[0]}
     </h1>
     <p className="welcome-placeholder-subtitle">
       Press the{' '}
       <span className="icon" style={{ verticalAlign: 'bottom' }}>
         play_arrow
       </span>{' '}
-      button below to begin your active voice learning session.
+      button below to meet your companion. Learn, create or just chat together.
     </p>
+    <p className="welcome-companion-intro"><strong>{intro.introTitle}:</strong> “{intro.firstGreeting}”</p>
     <div className="placeholder-features-grid">
       <div className="placeholder-feature">
         <span className="icon">record_voice_over</span>
         <div>
           <h3>Interactive Voice Tutoring</h3>
-          <p className="feature-desc">Speak naturally with Chloe — walk through problems, derivations, and concepts together.</p>
+          <p className="feature-desc">{intro.introText}</p>
         </div>
       </div>
       <div className="placeholder-feature">
@@ -156,8 +160,8 @@ const WelcomePlaceholder = () => (
         </div>
       </div>
     </div>
-  </div>
-);
+  </div>;
+};
 
 /**
  * A memoized component to render HTML content and then apply MathJax typesetting.
@@ -1085,9 +1089,10 @@ export default function KeynoteCompanion() {
   useEffect(() => {
     if (connected && !hasSentGreetingRef.current) {
       const isWarmStart = documentContentRef.current !== PLACEHOLDER_DOC;
-      const message = isWarmStart 
-        ? `(System message: The session has been resumed. You already have the current document in your context. Please welcome the user back and ask how to continue.)`
-        : `(System message: The conversation has just begun. Please greet the user now based on your instructions.)`;
+      const introduction = getCharacterIntroduction(current);
+      const message = isWarmStart
+        ? `(System message: Welcome the user back naturally as ${current.name}. Your persona's greeting style is: ${introduction.firstGreeting}. Ask whether they would like to chat, continue working or do something else. Do not update the document during a greeting.)`
+        : `(System message: This is your first spoken turn. Introduce yourself naturally as ${current.name}, with this unique greeting as a guide: ${introduction.firstGreeting}. Speak one or two friendly sentences in your character's language. This is a social greeting, NOT a request to call document tools.)`;
       
       setAgentState('Thinking');
       client.send([{ text: message }]);
@@ -1106,7 +1111,7 @@ export default function KeynoteCompanion() {
     } else if (!connected) {
       hasSentGreetingRef.current = false;
     }
-  }, [connected, client]);
+  }, [connected, client, current]);
 
   // Declarations for the functions the agent can call.
   const getContextDeclaration: FunctionDeclaration = {
