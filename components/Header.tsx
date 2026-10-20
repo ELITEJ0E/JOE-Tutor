@@ -136,6 +136,7 @@ export default function Header() {
                 <li key={agent.id}>
                   <button
                     className={cn('persona-option-btn', { active: agent.id === current.id })}
+                    title={getCharacterIntroduction(agent).introText}
                     onClick={() => {
                       changeAgent(agent);
                       setShowRoomList(false);
