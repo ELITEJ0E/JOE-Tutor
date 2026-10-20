@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowUp, AudioLines, Check, ChevronDown, Cpu, Globe2, ImagePlus, Mic, MicOff, Moon, RotateCcw, Settings2, Sparkles, Volume2, VolumeX, WandSparkles, X } from 'lucide-react';
+import { ArrowLeft, ArrowUp, AudioLines, ChevronDown, Cpu, ImagePlus, Mic, MicOff, Moon, RotateCcw, Settings2, Sparkles, Volume2, VolumeX, WandSparkles, X } from 'lucide-react';
 import AvatarStage from './AvatarStage';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
