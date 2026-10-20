@@ -9,7 +9,6 @@ import { useAgent, useUI } from '../../lib/state';
 import BasicFace from '../demo/basic-face/BasicFace';
 import cn from 'classnames';
 import { Volume2, Mic, Sparkles, MessageSquare, X } from 'lucide-react';
-import joeAvatarImg from '../../src/assets/images/joe_tutor_avatar_1790137644113.jpg';
 
 // Minimum volume level that indicates audio output is occurring.
 const AUDIO_OUTPUT_DETECTION_THRESHOLD = 0.04;
@@ -31,7 +30,10 @@ export default function TutorAvatar() {
   const bubbleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [audioLevel, setAudioLevel] = useState(0);
 
-  const isJoeTutor = current.id === 'joe_tutor';
+  const isChloePreset = current.id.startsWith('chloe_') || current.id === 'joe_tutor';
+
+  // Determine active avatar image based on current companion
+  const activeAvatarImg = current.avatarUrl;
 
   // Handle speech bubble text
   useEffect(() => {
@@ -51,8 +53,8 @@ export default function TutorAvatar() {
   useEffect(() => {
     const isMobile = window.innerWidth < 768;
     setPosition({
-      x: isMobile ? window.innerWidth - 120 : window.innerWidth - 240,
-      y: 72,
+      x: isMobile ? window.innerWidth - 150 : window.innerWidth - 220,
+      y: 76,
     });
   }, []);
 
@@ -61,8 +63,8 @@ export default function TutorAvatar() {
     const handleResize = () => {
       setPosition((prev) => {
         if (prev.x === -1000) return prev;
-        const avatarWidth = 140;
-        const avatarHeight = 140;
+        const avatarWidth = 160;
+        const avatarHeight = 220;
 
         return {
           x: Math.min(Math.max(12, prev.x), window.innerWidth - avatarWidth - 12),
@@ -196,11 +198,11 @@ export default function TutorAvatar() {
 
       {/* Main Avatar Card Frame */}
       <div className="tutor-avatar-frame">
-        {isJoeTutor ? (
+        {activeAvatarImg ? (
           <div className="tutor-portrait-container">
             <img
-              src={joeAvatarImg}
-              alt="JOE Tutor"
+              src={activeAvatarImg}
+              alt={current.name}
               className={cn('tutor-portrait-img', {
                 'talking-bounce': isTalking,
               })}
@@ -219,8 +221,8 @@ export default function TutorAvatar() {
           <div className="tutor-basic-canvas-wrap">
             <BasicFace
               canvasRef={canvasRef}
-              radius={46}
-              color={current.bodyColor}
+              radius={56}
+              color={current.bodyColor || '#4285F4'}
               isTalking={isTalking}
             />
           </div>

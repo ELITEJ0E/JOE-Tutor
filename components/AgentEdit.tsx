@@ -2,7 +2,7 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import {
   Agent,
   INTERLOCUTOR_VOICE,
@@ -12,35 +12,24 @@ import Modal from './Modal';
 import { useAgent, useUI } from '../lib/state';
 
 /**
- * A modal component for editing the properties of the currently active agent.
- * It allows changing the agent's name, personality prompt, and voice in a
- * streamlined, text-focused interface.
+ * Clean modal component for customizing the active companion's name, voice, and personality.
  */
 export default function EditAgent() {
-  // Fetches the current agent's data and the function to update it from the Zustand store.
   const agent = useAgent(state => state.current);
   const updateAgent = useAgent(state => state.update);
-  const nameInput = useRef(null);
-  // Fetches the function to control the visibility of this modal from the UI store.
+  const nameInput = useRef<HTMLInputElement>(null);
   const { setShowAgentEdit } = useUI();
 
-  /**
-   * Closes the agent editing modal.
-   */
   function onClose() {
     setShowAgentEdit(false);
   }
 
-  /**
-   * A helper function to update the current agent's properties.
-   * @param adjustments A partial object of the Agent type containing the fields to update.
-   */
   function updateCurrentAgent(adjustments: Partial<Agent>) {
     updateAgent(agent.id, adjustments);
   }
 
   return (
-    <Modal onClose={() => onClose()} className="agent-edit-modal">
+    <Modal onClose={onClose} className="agent-edit-modal">
       <form
         className="edit-agent-form"
         onSubmit={e => {
@@ -88,7 +77,7 @@ export default function EditAgent() {
           <textarea
             value={agent.personality}
             onChange={e => updateCurrentAgent({ personality: e.target.value })}
-            placeholder="How should this assistant act? What is its purpose?"
+            placeholder="How should this learning companion teach and assist?"
           />
         </div>
       </form>

@@ -50,6 +50,27 @@ const AUDIO_OUTPUT_DETECTION_THRESHOLD = 0.05;
 const TALKING_STATE_COOLDOWN_MS = 2000;
 
 /**
+ * Ambient background layer displaying the active companion's artwork subtly.
+ */
+function CompanionBackground() {
+  const { current } = useAgent();
+  const avatarUrl = current.avatarUrl;
+
+  return (
+    <div className="companion-ambient-bg" aria-hidden="true">
+      {avatarUrl && (
+        <div
+          key={current.id}
+          className="companion-bg-layer"
+          style={{ backgroundImage: `url(${avatarUrl})` }}
+        />
+      )}
+      <div className="companion-bg-overlay" />
+    </div>
+  );
+}
+
+/**
  * Renders the main content of the application, including the header, modals,
  * the draggable agent avatar, the primary app area (KeynoteCompanion), and the control tray.
  */
@@ -59,6 +80,7 @@ function AppContent() {
 
   return (
     <>
+      <CompanionBackground />
       <ErrorScreen />
       <Header />
 

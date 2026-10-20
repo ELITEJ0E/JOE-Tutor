@@ -42,9 +42,9 @@ export const FONT_OPTIONS = [
   'Space Mono',
 ];
 
-export const PLACEHOLDER_DOC = `# Welcome to JOE Tutor! 🌸✨
+export const PLACEHOLDER_DOC = `# Welcome to Chloe Tutor! 🌸✨
 
-I'm **JOE**, your interactive AI learning companion. Together, we can explore any subject, solve difficult problems, take interactive notes, and visualize complex ideas.
+I'm **Chloe**, your interactive AI learning companion. Together, we can explore any subject, solve difficult problems, take interactive notes, and visualize complex ideas.
 
 ### How we learn together:
 - 🎙️ **Natural Voice Conversation:** Just speak! I explain concepts step-by-step, answer your questions, and adapt to your pace.

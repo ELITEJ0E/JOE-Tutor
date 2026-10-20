@@ -6,7 +6,7 @@ import * as React from 'react';
 import { useEffect, useState, useMemo } from 'react';
 import { useUI } from '../lib/state';
 import { ArrowRight, Sparkles, BookOpen, LineChart, HelpCircle } from 'lucide-react';
-import joeAvatarImg from '../src/assets/images/joe_tutor_avatar_1790137644113.jpg';
+import chloeAvatarImg from '../src/assets/images/Chloe.png';
 
 const TUTOR_SUBJECTS = [
   'Calculus & Real Analysis',
@@ -24,8 +24,8 @@ const TUTOR_SUBJECTS = [
 ];
 
 /**
- * The initial welcome screen for JOE Tutor.
- * Presents a warm, premium, Y2K-inspired entry sequence introducing
+ * The initial welcome screen for Chloe Tutor.
+ * Presents a warm, premium entry sequence introducing
  * your intelligent personal AI learning companion.
  */
 export default function WelcomeScreen() {
@@ -92,8 +92,8 @@ export default function WelcomeScreen() {
           <div className="welcome-avatar-wrap">
             <div className="welcome-avatar-glow" />
             <img
-              src={joeAvatarImg}
-              alt="JOE Tutor"
+              src={chloeAvatarImg}
+              alt="Chloe Tutor"
               className="welcome-avatar-img"
             />
             <span className="welcome-status-pill">
@@ -103,7 +103,7 @@ export default function WelcomeScreen() {
 
           <div className="welcome-header">
             <h1 className="welcome-title">
-              JOE <span className="welcome-title-accent">TUTOR</span>
+              CHLOE <span className="welcome-title-accent">TUTOR</span>
             </h1>
             <p className="welcome-subtitle">
               Your intelligent personal tutor who is always there beside you.
@@ -144,7 +144,7 @@ export default function WelcomeScreen() {
           </div>
 
           <button onClick={handleClose} className="start-button glass-button">
-            <span>Meet JOE & Start Learning</span>
+            <span>Meet Chloe & Start Learning</span>
             <ArrowRight size={18} className="arrow-icon" />
           </button>
 

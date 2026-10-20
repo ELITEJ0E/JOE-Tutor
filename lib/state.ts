@@ -5,6 +5,7 @@
 import { create } from 'zustand';
 import {
   Agent,
+  ChloeTutor,
   JoeTutor,
   Alice,
   Amelie,
@@ -14,6 +15,7 @@ import {
   Hiro,
   Ines,
   Irene,
+  Yuna,
   Jiwon,
   Karim,
   Luca,
@@ -101,9 +103,9 @@ export const useAgent = create<{
   addAgent: (agent: Agent) => void;
   update: (agentId: string, adjustments: Partial<Agent>) => void;
 }>(set => ({
-  current: JoeTutor,
+  current: ChloeTutor,
   availablePresets: [
-    JoeTutor,
+    ChloeTutor,
     Alice,
     Sam,
     Irene,
@@ -114,7 +116,7 @@ export const useAgent = create<{
     Ari,
     Mei,
     Hiro,
-    Jiwon,
+    Yuna,
     Hans,
     Newton,
     Defne,
@@ -241,7 +243,7 @@ export const useUI = create<{
     })),
   outputModality: 'audio',
   setOutputModality: (modality: 'audio' | 'text' | 'both') => set({ outputModality: modality }),
-  useSearch: true,
+  useSearch: false,
   setUseSearch: (useSearch: boolean) => set({ useSearch }),
   liveApiModel: 'gemini-2.5-flash-native-audio-preview-09-2025',
   setLiveApiModel: (model: string) => set({ liveApiModel: model }),

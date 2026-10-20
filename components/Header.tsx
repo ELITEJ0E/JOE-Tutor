@@ -23,7 +23,7 @@ import {
   Layers,
   CheckCircle2,
 } from 'lucide-react';
-import joeAvatarImg from '../src/assets/images/joe_tutor_avatar_1790137644113.jpg';
+import chloeIdleImg from '../src/assets/images/chloe_tutor_idle_1790148991910.jpg';
 
 export default function Header() {
   const {
@@ -71,7 +71,7 @@ export default function Header() {
   }
 
   const isSuperUser = name === 'Root' || name === 'root';
-  const isJoeTutor = current.id === 'joe_tutor';
+  const hasAvatar = !!current.avatarUrl;
 
   return (
     <header className="joe-tutor-header">
@@ -79,13 +79,21 @@ export default function Header() {
       <div className="header-brand-section">
         <div className="brand-logo-wrap">
           <div className="brand-avatar-thumbnail">
-            {isJoeTutor ? (
-              <img src={joeAvatarImg} alt="JOE Tutor" className="brand-avatar-img" />
+            {hasAvatar ? (
+              <img src={current.avatarUrl} alt={current.name} className="brand-avatar-img" />
             ) : (
               <div
-                className="brand-avatar-dot"
-                style={{ backgroundColor: current.bodyColor }}
-              />
+                className="brand-avatar-fallback flex items-center justify-center font-bold text-xs text-white uppercase"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '50%',
+                  backgroundColor: current.bodyColor || '#3A86FF',
+                  border: '2px solid rgba(255, 255, 255, 0.4)',
+                }}
+              >
+                {current.name.charAt(0)}
+              </div>
             )}
             <span
               className={cn('brand-status-dot', {
@@ -96,8 +104,7 @@ export default function Header() {
 
           <div className="brand-text-block">
             <div className="brand-title-row">
-              <span className="brand-name">JOE TUTOR</span>
-              <span className="brand-tag">Y2K POP</span>
+              <span className="brand-name">CHLOE TUTOR</span>
             </div>
             <div className="brand-persona-selector">
               <button
@@ -120,7 +127,9 @@ export default function Header() {
         {/* Persona Dropdown Menu */}
         {showRoomList && (
           <div className="persona-dropdown-menu" onClick={(e) => e.stopPropagation()}>
-            <div className="dropdown-section-title">Select Companion Persona</div>
+            <div className="dropdown-section-title">
+              <span>Select Learning Companion</span>
+            </div>
             <ul className="persona-list">
               {availablePresets.map((agent) => (
                 <li key={agent.id}>
@@ -131,13 +140,42 @@ export default function Header() {
                       setShowRoomList(false);
                     }}
                   >
-                    <span
-                      className="persona-color-chip"
-                      style={{ backgroundColor: agent.bodyColor }}
-                    />
+                    {agent.avatarUrl ? (
+                      <img
+                        src={agent.avatarUrl}
+                        alt={agent.name}
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                          flexShrink: 0,
+                          border: '1.5px solid rgba(217, 4, 41, 0.25)',
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: '28px',
+                          height: '28px',
+                          borderRadius: '50%',
+                          backgroundColor: agent.bodyColor || '#64748b',
+                          color: '#fff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 'bold',
+                          fontSize: '11px',
+                          flexShrink: 0,
+                          border: '1.5px solid rgba(0, 0, 0, 0.1)',
+                        }}
+                      >
+                        {agent.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <div className="persona-info-wrap">
                       <span className="persona-name-text">{agent.name}</span>
-                      <span className="persona-voice-text">Voice: {agent.voice}</span>
+                      <span className="persona-voice-text">{agent.tagline || `Voice: ${agent.voice}`}</span>
                     </div>
                     {agent.id === current.id && (
                       <CheckCircle2 size={14} className="text-cherry-500 ml-auto" />

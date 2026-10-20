@@ -4,6 +4,7 @@
 */
 import { Agent } from './presets/agents';
 import { User } from './state';
+import { buildAffectivePrompt } from './personalities/personality-system';
 
 /**
  * Dynamically constructs the system instructions prompt that is sent to the
@@ -55,12 +56,20 @@ Please acknowledge the existing content and continue from where you left off.`
 ${user.pdfFiles.map(f => `--- START OF PDF: ${f.name} ---\n${f.text}\n--- END OF PDF: ${f.name} ---`).join('\n\n')}`
     : '';
 
+  const affectiveBlock = buildAffectivePrompt(
+    agent.personalityConfig?.emotionStyle || 'cute',
+    agent.personalityConfig?.teachingStyle || 'balanced',
+    agent.personalityConfig?.explanationLevel || 'normal'
+  );
+
   // Assemble the final prompt string.
   return `You are an AI assistant with the personality of "${
     agent.name
   }". Your persona is defined by the following characteristics: ${
     agent.personality
   }.
+
+${affectiveBlock}
 
 You are speaking to "${user.name || 'the user'}".
 

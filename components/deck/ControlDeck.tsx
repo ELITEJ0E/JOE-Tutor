@@ -321,7 +321,7 @@ export default function ControlDeck({
               ref={inputRef}
               type="text"
               className="deck-input-field"
-              placeholder="Ask JOE Tutor a question or request a note revision..."
+              placeholder="Ask Chloe a question or request a note revision..."
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
               onKeyDown={(e) => {

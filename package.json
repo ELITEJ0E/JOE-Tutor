@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@google/genai": "latest",
+    "@types/animejs": "^4.0.0",
+    "animejs": "^4.5.0",
     "classnames": "^2.5.1",
     "diff": "^5.2.0",
     "eventemitter3": "^5.0.1",

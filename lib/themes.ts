@@ -18,31 +18,23 @@ export type Theme = {
  */
 export const themes: Theme[] = [
   {
-    name: 'Cherry Pop (Y2K)',
-    colors: ['#FFF5F7', '#FFFFFF', '#D90429', '#241417', '#FFFFFF'],
+    name: 'Glossy Candy Y2K',
+    colors: ['#FFF5F8', '#FFFFFF', '#E6194B', '#2A0E17', '#FFFFFF'],
   },
   {
-    name: 'Glossy Rose',
-    colors: ['#FDF2F4', '#FFFFFF', '#FF3366', '#331B22', '#FFFFFF'],
+    name: 'Cherry Red & Chrome',
+    colors: ['#FFE8EE', '#FFFFFF', '#D90429', '#1A040A', '#FFFFFF'],
   },
   {
-    name: 'Midnight Cherry',
-    colors: ['#1A1013', '#2B1A20', '#FF4D6D', '#FFF0F3', '#1F1317'],
+    name: 'Cyber Candy (Dark)',
+    colors: ['#1C1017', '#2A1723', '#FF2A6D', '#FFF0F5', '#160B12'],
   },
   {
-    name: 'Light Classic',
-    colors: ['#f4f4f7', '#ffffff', '#4285F4', '#202124', '#FFFFFF'],
+    name: 'Rose Gold',
+    colors: ['#fdf0f0', '#ffffff', '#e6a1a1', '#5c3a3a', '#ffffff'],
   },
   {
-    name: 'Dark Classic',
-    colors: ['#202326', '#36393b', '#8AB4F8', '#E8EAED', '#1A1C1E'],
-  },
-  {
-    name: 'Mint Chocolate',
-    colors: ['#3d5a55', '#4f756f', '#a3d9d2', '#ffffff', '#4f756f'],
-  },
-  {
-    name: 'Sunset',
-    colors: ['#4c3a69', '#6e5d8d', '#f7b267', '#ffffff', '#6e5d8d'],
+    name: 'Classic Light',
+    colors: ['#d9d9df', '#e9e9ef', '#4285F4', '#202124', '#FFFFFF'],
   },
 ];

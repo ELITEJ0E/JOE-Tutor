@@ -103,7 +103,7 @@ declare const MathJax: any;
 const WelcomePlaceholder = () => (
   <div className="welcome-placeholder">
     <h1 className="welcome-placeholder-title">
-      <span className="welcome-prefix">Welcome to </span>JOE Tutor
+      <span className="welcome-prefix">Welcome to </span>Chloe Tutor
     </h1>
     <p className="welcome-placeholder-subtitle">
       Press the{' '}
@@ -117,7 +117,7 @@ const WelcomePlaceholder = () => (
         <span className="icon">record_voice_over</span>
         <div>
           <h3>Interactive Voice Tutoring</h3>
-          <p className="feature-desc">Speak naturally with JOE — walk through problems, derivations, and concepts together.</p>
+          <p className="feature-desc">Speak naturally with Chloe — walk through problems, derivations, and concepts together.</p>
         </div>
       </div>
       <div className="placeholder-feature">
