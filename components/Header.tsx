@@ -48,6 +48,7 @@ export default function Header() {
   const { disconnect, connected } = useLiveAPIContext();
 
   const [showRoomList, setShowRoomList] = useState(false);
+  const [showMobileMore, setShowMobileMore] = useState(false);
   const [genderFilter, setGenderFilter] = useState<'female' | 'male'>('female');
   const [showOutputMenu, setShowOutputMenu] = useState(false);
   const [showViewMenu, setShowViewMenu] = useState(false);
@@ -113,6 +114,8 @@ export default function Header() {
             <div className="brand-persona-selector">
               <button
                 className="persona-dropdown-trigger"
+                aria-label={"Switch tutor, current: " + current.name}
+                aria-expanded={showRoomList}
                 onClick={(e) => {
                   e.stopPropagation();
                   if (!showRoomList) setGenderFilter(current.gender || (['sam','tom','rahul','ramon','ari','hiro','hans','newton'].includes(current.id) ? 'male' : 'female'));
@@ -294,6 +297,47 @@ export default function Header() {
           <Settings size={18} />
         </button>
       </div>
+
+      {/* Five touch-friendly tabs, separate from the desktop navigation. */}
+      <nav className="mobile-tutor-nav" aria-label="Mobile workspace navigation">
+        <button type="button" className={cn('mobile-nav-item', {active: mainTab === 'document'})}
+          aria-current={mainTab === 'document' ? 'page' : undefined}
+          onClick={() => {setMainTab('document'); setShowMobileMore(false);}}>
+          <BookOpen size={20}/><span>Notes</span>
+        </button>
+        <button type="button" className={cn('mobile-nav-item', {active: mainTab === 'visuals'})}
+          aria-current={mainTab === 'visuals' ? 'page' : undefined}
+          onClick={() => {setMainTab('visuals'); setShowMobileMore(false);}}>
+          <LineChart size={20}/><span>Visuals</span>
+        </button>
+        <button type="button" className="mobile-nav-item mobile-nav-tutor"
+          onClick={() => {setMainTab('document'); setShowMobileMore(false); document.getElementById('tutor-session-action')?.focus();}}
+          title="Focus voice session controls">
+          <Volume2 size={20}/><span>Tutor</span>
+        </button>
+        <button type="button" className={cn('mobile-nav-item', {active: mainTab === 'quiz'})}
+          aria-current={mainTab === 'quiz' ? 'page' : undefined}
+          onClick={() => {setMainTab('quiz'); setShowMobileMore(false);}}>
+          <HelpCircle size={20}/><span>Quiz</span>
+        </button>
+        <button type="button" className={cn('mobile-nav-item', {active: showMobileMore || ['transcript','minutes','audio-log'].includes(mainTab)})}
+          aria-expanded={showMobileMore} aria-controls="mobile-tutor-more"
+          onClick={() => setShowMobileMore(v => !v)}>
+          <Layers size={20}/><span>More</span>
+        </button>
+      </nav>
+      {showMobileMore && (
+        <>
+          <button type="button" className="mobile-tutor-more-backdrop" aria-label="Close more menu" onClick={() => setShowMobileMore(false)} />
+          <div className="mobile-tutor-more-sheet" id="mobile-tutor-more" role="menu" aria-label="More workspace tools">
+            <strong>More tools</strong>
+            <button role="menuitem" type="button" onClick={() => {setMainTab('transcript');setShowMobileMore(false);}}><MessageSquare size={18}/> Transcript</button>
+            <button role="menuitem" type="button" onClick={() => {setMainTab('minutes');setShowMobileMore(false);}}><ClipboardList size={18}/> Minutes & summaries</button>
+            <button role="menuitem" type="button" onClick={() => {setMainTab('audio-log');setShowMobileMore(false);}}><Volume2 size={18}/> Audio history</button>
+            <button role="menuitem" type="button" onClick={() => {setShowUserConfig(true);setShowMobileMore(false);}}><Settings size={18}/> Preferences</button>
+          </div>
+        </>
+      )}
     </header>
   );
 }
