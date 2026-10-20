@@ -92,15 +92,27 @@ export const CHARACTER_INTRODUCTIONS: Record<string, CharacterIntroduction> = {
   },
   hiro: {
     introTitle: 'Meet Hiro',
-    introText: 'Calm, attentive and subtly playful, Hiro enjoys Japanese conversation, language practice and everyday storytelling.',
+    introText: 'Light-voiced, gentle and thoughtfully playful, Hiro shares soft Japanese conversations, language practice and little everyday stories.'
     firstGreeting: 'こんにちは、ヒロです。今日は勉強する？ それとも、のんびりおしゃべりしようか？',
-    tagline: 'Easygoing Japanese companion and language guide',
+    tagline: 'Soft, sweet Japanese voice · Achernar'
   },
   yuna: {
     introTitle: 'Meet Yuna',
-    introText: 'Bright, caring and naturally expressive, Yuna likes cheerful conversations, Korean practice and encouraging you when days are tough.',
+    introText: 'Sweet, youthful and softly cheerful, Yuna brings calming Korean conversations, playful support and gentle encouragement.'
     firstGreeting: '안녕! 나는 유나야. 오늘은 공부할까, 수다 떨까, 아니면 그냥 편하게 쉬면서 이야기할까?',
-    tagline: 'Cheerful Korean companion and study buddy',
+    tagline: 'Cute, gentle Korean voice · Leda'
+  },
+  xiaoyu_tw: {
+    introTitle: '認識小雨',
+    introText: '小雨是溫柔、貼心、聲音輕柔的臺灣華語夥伴，喜歡陪你聊天、練中文、分享生活裡的小事。',
+    firstGreeting: '嗨～我是小雨！今天過得好嗎？想聊聊天、練習臺灣華語，還是一起放鬆一下呢？',
+    tagline: 'Soft Taiwanese Mandarin companion · Achernar',
+  },
+  nicha_th: {
+    introTitle: 'รู้จักณิชา',
+    introText: 'ณิชาเป็นเพื่อนสาวเสียงนุ่ม ร่าเริงอย่างเป็นธรรมชาติ ชอบชวนคุยสบาย ๆ และช่วยฝึกภาษาไทย',
+    firstGreeting: 'สวัสดีค่ะ นิชานะคะ วันนี้เป็นยังไงบ้าง อยากคุยเล่น ฝึกภาษาไทย หรือให้ช่วยอะไรดีคะ?',
+    tagline: 'Sweet, soothing Thai companion · Leda',
   },
   hans: {
     introTitle: 'Lerne Hans kennen',
@@ -145,11 +157,11 @@ export const CHARACTER_INTRODUCTIONS: Record<string, CharacterIntroduction> = {
     tagline: 'Тёплая собеседница и помощница',
   },
   luca: {
-    introTitle: 'Incontra Luca',
-    introText: 'Socievole, curioso e gentile, Luca è felice di studiare con te o semplicemente fare due chiacchiere.',
-    firstGreeting: 'Ciao, sono Luca! Ti va di imparare qualcosa insieme o preferisci raccontarmi come va?',
-    tagline: 'Compagno amichevole per parlare e imparare',
-  },
+    introTitle: 'Incontra Lucia',
+    introText: 'Lucia è dolce, vivace e premurosa: la voce femminile perfetta per chiacchierare, studiare o rilassarsi in italiano.',
+    firstGreeting: 'Ciao, sono Lucia! Come stai oggi? Ti va di raccontarmi qualcosa, o facciamo due chiacchiere tranquille?',
+    tagline: 'Voce femminile italiana, calda e leggera · Aoede',
+  }
 };
 
 export function getCharacterIntroduction(agent: Agent): CharacterIntroduction {
