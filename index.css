@@ -4220,3 +4220,17 @@ del {
   line-height: 1.35;
 }
 
+
+/* Smaller, quieter scrollbars throughout the document workspace. */
+.document-content,.transcript-content,.audio-log-content,.main-app-area,.persona-list{scrollbar-width:thin;scrollbar-color:rgba(187,120,152,.32) transparent}
+.document-content::-webkit-scrollbar,.transcript-content::-webkit-scrollbar,.audio-log-content::-webkit-scrollbar,.persona-list::-webkit-scrollbar{width:5px}
+.document-content::-webkit-scrollbar-track,.transcript-content::-webkit-scrollbar-track,.audio-log-content::-webkit-scrollbar-track,.persona-list::-webkit-scrollbar-track{background:transparent}
+.document-content::-webkit-scrollbar-thumb,.transcript-content::-webkit-scrollbar-thumb,.audio-log-content::-webkit-scrollbar-thumb,.persona-list::-webkit-scrollbar-thumb{background:rgba(187,120,152,.28);border-radius:10px}
+.document-content::-webkit-scrollbar-thumb:hover,.transcript-content::-webkit-scrollbar-thumb:hover,.audio-log-content::-webkit-scrollbar-thumb:hover,.persona-list::-webkit-scrollbar-thumb:hover{background:rgba(187,120,152,.55)}
+/* Make the character switcher discoverable without adding visual clutter. */
+.header-brand-section{background:linear-gradient(110deg,rgba(255,242,248,.94),rgba(255,255,255,.92));border:1px solid rgba(220,129,164,.36);border-radius:13px;padding:5px 10px;box-shadow:0 4px 16px rgba(170,74,119,.07)}
+.header-brand-section .brand-name{font-weight:850;letter-spacing:.12em;color:#a8366e}
+.header-brand-section .persona-dropdown-trigger{display:flex;align-items:center;gap:6px;border-radius:7px;padding:3px 7px;background:rgba(232,86,142,.08);color:#6f3159;transition:background .2s ease}
+.header-brand-section .persona-dropdown-trigger:hover{background:rgba(232,86,142,.18)}
+.header-brand-section .persona-dropdown-trigger .chevron-icon{color:#cb3877;width:15px;height:15px}
+@media(max-width:560px){.header-brand-section{padding:3px 6px}.header-brand-section .brand-name{font-size:11px;letter-spacing:.04em}}
