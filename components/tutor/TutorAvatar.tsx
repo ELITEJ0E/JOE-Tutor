@@ -14,9 +14,9 @@ const TALKING_THRESHOLD = .038;
 const TALKING_HOLD_MS = 280;
 
 export default function TutorAvatar() {
-  const { current } = useAgent();
+  const { current, setCurrent } = useAgent();
   const { agentState, speechBubbleText, setSpeechBubbleText } = useUI();
-  const { connected, volumeRef } = useLiveAPIContext();
+  const { connected, volumeRef, disconnect } = useLiveAPIContext();
   const [open, setOpen] = useState(() => typeof window === 'undefined' || window.innerWidth > 900);
   const [lowPower, setLowPower] = useState(true);
   const [rotate, setRotate] = useState(true);
@@ -124,6 +124,7 @@ export default function TutorAvatar() {
         <footer className="joe-companion-footer">
           <button className={lowPower ? 'active' : ''} title="Toggle low-power rendering" onClick={() => setLowPower(v => !v)}><Zap size={15}/>{lowPower ? 'Eco / 24 FPS' : '30 FPS'}</button>
           <button className={rotate ? 'active' : ''} title="Toggle natural head turning" onClick={() => setRotate(v => !v)}><RotateCcw size={15}/> Motion</button>
+          {current.id !== "mei" && <button title="Switch tutor voice and persona to Mei" onClick={() => { disconnect(); setCurrent("mei"); }}><Sparkles size={15}/> Mei</button>}
           <div className="joe-companion-audio"><Volume2 size={15}/><span className={talking ? 'active' : ''}/><span className={talking ? 'active' : ''}/><span className={talking ? 'active' : ''}/></div>
         </footer>
       </>
