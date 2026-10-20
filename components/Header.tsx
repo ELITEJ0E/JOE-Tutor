@@ -134,11 +134,7 @@ export default function Header() {
             </div>
             <ul className="persona-list">
               {availablePresets.map((agent) => (
-                <React.Fragment key={agent.id}>
-                  {agent.id === 'chloe_tutor' && <li className="persona-group-heading" role="presentation">English companions</li>}
-                  {agent.id === 'yuna' && <li className="persona-group-heading" role="presentation">Korean · Japanese · Taiwan · Thai · Mandarin</li>}
-                  {agent.id === 'rahul' && <li className="persona-group-heading" role="presentation">Other languages & specialists</li>}
-                <li>
+                <li key={agent.id}>
                   <button
                     className={cn('persona-option-btn', { active: agent.id === current.id })}
                     title={getCharacterIntroduction(agent).introText}
@@ -189,7 +185,6 @@ export default function Header() {
                     )}
                   </button>
                 </li>
-                </React.Fragment>
               ))}
             </ul>
           </div>

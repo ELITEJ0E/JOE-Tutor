@@ -15,9 +15,10 @@ for (const removed of ['Defne','Karim','Reza','Ines']) assert.ok(!roster.include
 const checks = {
   Yuna: 'Leda',
   Hiro: 'Achernar',
-  XiaoYuTaiwan: 'Achernar',
+  XiaoYuTaiwan: 'Leda',
   Nicha: 'Leda',
   Luca: 'Aoede',
+  Mei: 'Leda',
 };
 for (const [name, voice] of Object.entries(checks)) {
   const m = agents.match(new RegExp('export const ' + name + ': Agent = \\{([\\s\\S]*?)\\n\\};'));

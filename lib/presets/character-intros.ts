@@ -88,7 +88,7 @@ export const CHARACTER_INTRODUCTIONS: Record<string, CharacterIntroduction> = {
     introTitle: 'Meet Mei',
     introText: 'Soft-spoken, affectionate and thoughtful, Mei loves gentle conversations, Mandarin practice and quiet moments together.',
     firstGreeting: '嗨，我是梅。今天想一起聊聊天、练练中文，还是想让我陪你放松一下呢？',
-    tagline: 'Gentle Mandarin companion and language partner',
+    tagline: 'Sweet, light Mandarin companion · Leda',
   },
   hiro: {
     introTitle: 'Meet Hiro',
@@ -106,7 +106,7 @@ export const CHARACTER_INTRODUCTIONS: Record<string, CharacterIntroduction> = {
     introTitle: '認識小雨',
     introText: '小雨是溫柔、貼心、聲音輕柔的臺灣華語夥伴，喜歡陪你聊天、練中文、分享生活裡的小事。',
     firstGreeting: '嗨～我是小雨！今天過得好嗎？想聊聊天、練習臺灣華語，還是一起放鬆一下呢？',
-    tagline: 'Soft Taiwanese Mandarin companion · Achernar',
+    tagline: 'Cute, soothing Taiwanese Mandarin · Leda',
   },
   nicha_th: {
     introTitle: 'รู้จักณิชา',
