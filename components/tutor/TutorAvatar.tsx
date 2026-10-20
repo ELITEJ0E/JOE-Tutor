@@ -5,6 +5,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLiveAPIContext } from '../../contexts/LiveAPIContext';
 import { useAgent, useUI } from '../../lib/state';
+import { getCharacterIntroduction } from '../../lib/presets/character-intros';
 import { ChevronDown, ChevronUp, Sparkles, X } from 'lucide-react';
 import './docked-companion.css';
 
@@ -15,6 +16,7 @@ export default function TutorAvatar() {
   const [isTalking, setIsTalking] = useState(false);
   const [minimized, setMinimized] = useState(false);
   const [visibleText, setVisibleText] = useState<string | null>(null);
+  const [greetingPreview, setGreetingPreview] = useState<string | null>(null);
   const lastSpeaking = useRef(0);
 
   useEffect(() => {
@@ -43,15 +45,22 @@ export default function TutorAvatar() {
     return () => window.clearTimeout(id);
   }, [speechBubbleText, setSpeechBubbleText]);
 
-  const status = !connected ? 'Ready to study' : isTalking ? 'Speaking' : agentState === 'Thinking' ? 'Thinking' : 'Listening';
+  useEffect(() => {
+    setGreetingPreview(getCharacterIntroduction(current).firstGreeting);
+    const id = window.setTimeout(() => setGreetingPreview(null), 9000);
+    return () => window.clearTimeout(id);
+  }, [current]);
+
+  const status = !connected ? 'Ready to chat' : isTalking ? 'Speaking' : agentState === 'Thinking' ? 'Thinking' : 'Listening';
   const name = current.name.split(' (')[0];
+  const bubbleText = visibleText || greetingPreview;
   return (
     <aside className={'chloe-dock' + (minimized ? ' chloe-dock--minimized' : '') + (isTalking ? ' chloe-dock--speaking' : '')} aria-label={name + ' companion'}>
-      {visibleText && !minimized && (
+      {bubbleText && !minimized && (
         <div className="chloe-dock-bubble">
-          <button aria-label="Dismiss speech bubble" onClick={() => { setVisibleText(null); setSpeechBubbleText(null); }}><X size={13}/></button>
+          <button aria-label="Dismiss speech bubble" onClick={() => { setVisibleText(null); setGreetingPreview(null); setSpeechBubbleText(null); }}><X size={13}/></button>
           <strong>{name} says</strong>
-          <p>{visibleText}</p>
+          <p>{bubbleText}</p>
         </div>
       )}
       {!minimized && <div className="chloe-dock-portrait" aria-hidden="true">
