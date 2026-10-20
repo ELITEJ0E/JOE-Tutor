@@ -884,7 +884,7 @@ export const Hiro: Agent = {
   name: 'Hiro (Japanese)',
   personality: HIRO_PERSONALITY,
   bodyColor: '#F2D2E8',
-  voice: 'Achernar', // documented soft female voice
+  voice: 'Charon', // gentle male counterpart to Haruka
 
 };
 
@@ -1004,6 +1004,10 @@ export const Luca: Agent = {
 /** Companion counterparts: same language and tools, independent character names and voice identities. */
 export const Ethan: Agent = {
   ...Sam,
+  introTitle: 'Meet Ethan',
+  introText: 'Easygoing English companion for learning, creativity and conversation.',
+  firstGreeting: "Hi, I'm Ethan. Fancy talking for a bit, or is there something you'd like to work on?",
+  tagline: 'Easygoing English companion',
   id: 'ethan_en',
   name: 'Ethan (English)',
   gender: 'male',
@@ -1014,6 +1018,10 @@ export const Ethan: Agent = {
 
 export const Joon: Agent = {
   ...Yuna,
+  introTitle: 'Meet Joon',
+  introText: 'Gentle Korean companion for learning, creativity and conversation.',
+  firstGreeting: "안녕, 난 준이야. 오늘 뭐 하고 싶어? 같이 공부해도 좋고 그냥 이야기해도 좋아.",
+  tagline: 'Gentle Korean companion',
   id: 'joon_ko',
   name: 'Joon (Korean)',
   gender: 'male',
@@ -1024,6 +1032,10 @@ export const Joon: Agent = {
 
 export const Haruka: Agent = {
   ...Hiro,
+  introTitle: 'Meet Haruka',
+  introText: 'Gentle Japanese companion for learning, creativity and conversation.',
+  firstGreeting: "こんにちは、遥です。今日は何を話そうか？ のんびり一緒に過ごそうね。",
+  tagline: 'Gentle Japanese companion',
   id: 'haruka_ja',
   name: 'Haruka (Japanese)',
   gender: 'female',
@@ -1034,6 +1046,10 @@ export const Haruka: Agent = {
 
 export const Hao: Agent = {
   ...Mei,
+  introTitle: 'Meet Hao',
+  introText: 'Thoughtful Mandarin companion for learning, creativity and conversation.',
+  firstGreeting: "嗨，我是浩。今天想聊什么？我们可以慢慢来。",
+  tagline: 'Thoughtful Mandarin companion',
   id: 'hao_zh',
   name: 'Hao (Chinese)',
   gender: 'male',
@@ -1044,6 +1060,10 @@ export const Hao: Agent = {
 
 export const YuChen: Agent = {
   ...XiaoYuTaiwan,
+  introTitle: 'Meet YuChen',
+  introText: 'Warm Taiwanese Mandarin companion for learning, creativity and conversation.',
+  firstGreeting: "嗨，我是宇辰。今天過得怎麼樣？想聊聊天還是練習一下臺灣華語？",
+  tagline: 'Warm Taiwanese Mandarin companion',
   id: 'yuchen_tw',
   name: 'YuChen (Taiwan Mandarin)',
   gender: 'male',
@@ -1054,6 +1074,10 @@ export const YuChen: Agent = {
 
 export const Niran: Agent = {
   ...Nicha,
+  introTitle: 'Meet Niran',
+  introText: 'Friendly Thai companion for learning, creativity and conversation.',
+  firstGreeting: "สวัสดีครับ ผมนิรันครับ วันนี้อยากคุยเรื่องอะไร หรือให้ผมช่วยอะไรดีครับ?",
+  tagline: 'Friendly Thai companion',
   id: 'niran_th',
   name: 'Niran (Thai)',
   gender: 'male',
@@ -1064,6 +1088,10 @@ export const Niran: Agent = {
 
 export const Anika: Agent = {
   ...Rahul,
+  introTitle: 'Meet Anika',
+  introText: 'Soft Hindi-English companion for learning, creativity and conversation.',
+  firstGreeting: "नमस्ते, मैं अनिका हूँ। आज क्या बात करना चाहोगे?",
+  tagline: 'Soft Hindi-English companion',
   id: 'anika_hi',
   name: 'Anika (Hindi)',
   gender: 'female',
@@ -1074,6 +1102,10 @@ export const Anika: Agent = {
 
 export const Sofia: Agent = {
   ...Ramon,
+  introTitle: 'Meet Sofia',
+  introText: 'Warm Spanish companion for learning, creativity and conversation.',
+  firstGreeting: "¡Hola! Soy Sofía. ¿Cómo te ha ido hoy? Me encantará charlar contigo.",
+  tagline: 'Warm Spanish companion',
   id: 'sofia_es',
   name: 'Sofia (Spanish)',
   gender: 'female',
@@ -1084,6 +1116,10 @@ export const Sofia: Agent = {
 
 export const Julien: Agent = {
   ...Amelie,
+  introTitle: 'Meet Julien',
+  introText: 'Relaxed French companion for learning, creativity and conversation.',
+  firstGreeting: "Salut, moi c'est Julien. Tu veux discuter un peu ou travailler sur quelque chose ?",
+  tagline: 'Relaxed French companion',
   id: 'julien_fr',
   name: 'Julien (French)',
   gender: 'male',
@@ -1094,6 +1130,10 @@ export const Julien: Agent = {
 
 export const Noa: Agent = {
   ...Ari,
+  introTitle: 'Meet Noa',
+  introText: 'Calm Hebrew companion for learning, creativity and conversation.',
+  firstGreeting: "היי, אני נועה. איך עבר עליך היום? בא לך לדבר קצת?",
+  tagline: 'Calm Hebrew companion',
   id: 'noa_he',
   name: 'Noa (Hebrew)',
   gender: 'female',
@@ -1104,6 +1144,10 @@ export const Noa: Agent = {
 
 export const Lena: Agent = {
   ...Hans,
+  introTitle: 'Meet Lena',
+  introText: 'Gentle German companion for learning, creativity and conversation.',
+  firstGreeting: "Hallo, ich bin Lena. Wie war dein Tag? Möchtest du reden oder gemeinsam etwas lernen?",
+  tagline: 'Gentle German companion',
   id: 'lena_de',
   name: 'Lena (German)',
   gender: 'female',
@@ -1114,6 +1158,10 @@ export const Lena: Agent = {
 
 export const Maxim: Agent = {
   ...Olga,
+  introTitle: 'Meet Maxim',
+  introText: 'Calm Russian companion for learning, creativity and conversation.',
+  firstGreeting: "Привет, я Максим. Как твой день? Можем просто поговорить или заняться чем-то вместе.",
+  tagline: 'Calm Russian companion',
   id: 'maxim_ru',
   name: 'Maxim (Russian)',
   gender: 'male',
@@ -1124,6 +1172,10 @@ export const Maxim: Agent = {
 
 export const Marco: Agent = {
   ...Luca,
+  introTitle: 'Meet Marco',
+  introText: 'Friendly Italian companion for learning, creativity and conversation.',
+  firstGreeting: "Ciao, sono Marco. Com'è andata oggi? Facciamo due chiacchiere?",
+  tagline: 'Friendly Italian companion',
   id: 'marco_it',
   name: 'Marco (Italian)',
   gender: 'male',
@@ -1134,6 +1186,10 @@ export const Marco: Agent = {
 
 export const Ada: Agent = {
   ...Newton,
+  introTitle: 'Meet Ada',
+  introText: 'Patient mathematics companion for learning, creativity and conversation.',
+  firstGreeting: "Hi, I'm Ada. Want to explore an interesting idea, solve something tricky, or simply talk?",
+  tagline: 'Patient mathematics companion',
   id: 'ada_math',
   name: 'Ada (Math)',
   gender: 'female',
