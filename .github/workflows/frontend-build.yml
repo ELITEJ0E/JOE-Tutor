@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   frontend:
@@ -19,18 +19,12 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-      - name: Repair dependency lockfile
-        run: npm install --package-lock-only --no-audit --no-fund
-      - name: Commit repaired lockfile
-        if: github.event_name == 'push' && github.ref_name == 'feat/integrated-free-webgl-avatar'
+      - name: Install dependencies
+        run: npm ci
+      - name: TypeScript check
+        run: npm run lint
+      - name: Validate bundled 3D avatar
         run: |
-          if ! git diff --quiet package-lock.json; then
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add package-lock.json
-            git commit -m 'chore: regenerate npm dependency lockfile'
-            git push origin HEAD:feat/integrated-free-webgl-avatar
-          fi
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run build
+          node -e 'const fs=require("fs");const b=fs.readFileSync("public/models/mei-mpfb-cc0.glb");if(b.toString("ascii",0,4)!=="glTF")process.exit(1);const j=JSON.parse(b.toString("utf8",20,20+b.readUInt32LE(12)));const n=(j.meshes||[]).reduce((v,m)=>v+(m.primitives||[]).filter(p=>p.targets&&p.targets.length).length,0);console.log("Avatar bytes:",b.length,"Morph target meshes:",n);if(n===0||b.length>10000000)process.exit(1)'
+      - name: Production build
+        run: npm run build
