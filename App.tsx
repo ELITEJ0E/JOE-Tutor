@@ -31,6 +31,7 @@ import { useAgent, useUI } from './lib/state';
 // Fix: Import React to resolve "Cannot find namespace 'React'" error.
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import MeiStudio from './components/mei/MeiStudio';
+import './components/mei/mei-studio.css';
 import { themes } from './lib/themes';
 import FloatingAvatar from './components/FloatingAvatar';
 import HelpModal from './components/HelpModal';
