@@ -33,7 +33,6 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { themes } from './lib/themes';
 import FloatingAvatar from './components/FloatingAvatar';
 import HelpModal from './components/HelpModal';
-import LegalDisclaimer from './components/LegalDisclaimer';
 
 const API_KEY =
   typeof process !== 'undefined' && process.env
@@ -75,7 +74,7 @@ function CompanionBackground() {
  * the draggable agent avatar, the primary app area (KeynoteCompanion), and the control tray.
  */
 function AppContent() {
-  const { showUserConfig, showAgentEdit, showDebugModal, showHelpModal, showDisclaimer } =
+  const { showUserConfig, showAgentEdit, showDebugModal, showHelpModal } =
     useUI();
 
   return (
@@ -91,7 +90,6 @@ function AppContent() {
       {showAgentEdit && <AgentEdit />}
       {showDebugModal && <DebugModal />}
       {showHelpModal && <HelpModal />}
-      {showDisclaimer && <LegalDisclaimer />}
       <div className="streaming-console">
         <main>
           <div className="main-app-area">
