@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 import Modal from './Modal';
+import './companion-settings.css';
 import { useAgent, useUI, useUser } from '../lib/state';
 import { Theme, themes } from '../lib/themes';
 import { FONT_OPTIONS, PLACEHOLDER_DOC } from '../lib/constants';
