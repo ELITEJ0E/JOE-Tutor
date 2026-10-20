@@ -1,0 +1,30 @@
+name: Build and typecheck
+
+on:
+  push:
+    branches: [main, feat/integrated-free-webgl-avatar]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: TypeScript check
+        run: npm run lint
+      - name: Validate bundled 3D avatar
+        run: |
+          node -e 'const fs=require("fs");const b=fs.readFileSync("public/models/mei-mpfb-cc0.glb");if(b.toString("ascii",0,4)!=="glTF")process.exit(1);const j=JSON.parse(b.toString("utf8",20,20+b.readUInt32LE(12)));const n=(j.meshes||[]).reduce((v,m)=>v+(m.primitives||[]).filter(p=>p.targets&&p.targets.length).length,0);console.log("Avatar bytes:",b.length,"Morph target meshes:",n);if(n===0||b.length>10000000)process.exit(1)'
+      - name: Production build
+        run: npm run build

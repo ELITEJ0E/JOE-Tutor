@@ -157,7 +157,13 @@ export const useAgent = create<{
  * Manages the state of the user interface, such as the visibility of modals,
  * the selected theme, and other UI-related flags.
  */
+export type TutorSection = 'home' | 'live-tutor' | 'materials' | 'notes' | 'study-tools' | 'history' | 'settings';
+
 export const useUI = create<{
+  activeSection: TutorSection;
+  setActiveSection: (section: TutorSection) => void;
+  selectedTutorModalAgent: Agent | null;
+  setSelectedTutorModalAgent: (agent: Agent | null) => void;
   showWelcomeScreen: boolean;
   setShowWelcomeScreen: (show: boolean) => void;
   showUserConfig: boolean;
@@ -199,6 +205,10 @@ export const useUI = create<{
   liveApiModel: string;
   setLiveApiModel: (model: string) => void;
 }>(set => ({
+  activeSection: 'home',
+  setActiveSection: (section: TutorSection) => set({ activeSection: section }),
+  selectedTutorModalAgent: null,
+  setSelectedTutorModalAgent: (agent: Agent | null) => set({ selectedTutorModalAgent: agent }),
   showWelcomeScreen: true,
   setShowWelcomeScreen: (show: boolean) => set({ showWelcomeScreen: show }),
   showUserConfig: false,
