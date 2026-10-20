@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'meshoptimizer';
 
 type Props = {
   levelRef: React.MutableRefObject<number>;
@@ -11,9 +12,9 @@ type Props = {
   rotate: boolean;
 };
 
-const SAMPLE_URL = 'https://raw.githubusercontent.com/met4citizen/TalkingHead/main/avatars/mpfb.glb';
-// CC0 avatar by MPFB, provided as an example in met4citizen/TalkingHead.
-// Its size is ~36.8 MB. Hosted outside Vercel to avoid oversized deployments.
+const SAMPLE_URL = '/models/mei-mpfb-cc0.glb';
+// Self-hosted optimized CC0 MPFB human avatar, sourced from met4citizen/TalkingHead.
+// Frames and facial blendshapes are rendered on the visitor's device.
 
 function makePreviewAvatar(): { root: THREE.Group; jaw: THREE.Object3D; eyes: THREE.Object3D[] } {
   const root = new THREE.Group();
@@ -132,6 +133,7 @@ export default function Integrated3DAvatar({ levelRef, talking, enabled, onReady
     resize();
 
     const loader = new GLTFLoader();
+    loader.setMeshoptDecoder(MeshoptDecoder);
     loader.load(modelUrl, gltf => {
       if (disposed) return;
       const obj = gltf.scene;
@@ -160,7 +162,9 @@ export default function Integrated3DAvatar({ levelRef, talking, enabled, onReady
       scene.remove(preview.root);
       setMessage('Live 3D avatar active');
       onReadyRef.current?.('Ready');
-    }, undefined, () => {
+    }, event => {
+      if (!disposed && event.total > 0) setMessage('Downloading 3D avatar ' + Math.round(event.loaded / event.total * 100) + '%');
+    }, () => {
       if (!disposed) {
         setMessage('3D preview mode — model download unavailable');
         onReadyRef.current?.('Preview mode');
