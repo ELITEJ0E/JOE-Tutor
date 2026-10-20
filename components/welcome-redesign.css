@@ -20,3 +20,9 @@
 @media(max-width:850px){.joe-homepage{justify-content:start}.joe-homepage-grid{grid-template-columns:1fr;gap:20px}.joe-home-visual{height:400px;min-height:400px;max-width:560px;width:100%;margin:0 auto}.joe-home-intro-pill{margin-top:28px}.joe-home-feature-line{margin-top:25px}.joe-home-toolbelt{grid-template-columns:1fr}.joe-home-copy h1{font-size:clamp(39px,9vw,64px)}}
 @media(max-width:520px){.joe-homepage{gap:18px}.joe-homepage-grid{gap:20px}.joe-home-visual{min-height:350px;height:350px}.joe-home-talk{top:58px;right:12px;font-size:10px;max-width:60%}.joe-home-copy h1{font-size:clamp(36px,9vw,48px)}.joe-home-brand-sub{display:none}.joe-home-feature-line{gap:8px 10px}.joe-home-primary{width:100%}.joe-home-tool{padding:14px}.joe-home-footer{flex-direction:column}}
 @media(prefers-reduced-motion:reduce){.joe-home-primary{transition:none}}
+
+/* Keep character face fully visible: place greeting toward lower side, never across eyes. */
+.joe-home-talk{top:auto!important;bottom:110px!important;right:18px!important;left:auto!important;max-width:min(245px,61%)!important;max-height:93px!important;font-size:11px!important;padding:10px 12px!important;line-height:1.4!important}
+.joe-home-character{inset:20px 0 83px!important}
+@media(max-width:850px){.joe-home-talk{bottom:85px!important;max-width:56%!important}}
+@media(max-width:520px){.joe-home-talk{bottom:88px!important;max-height:78px!important;font-size:10px!important;max-width:59%!important}}
