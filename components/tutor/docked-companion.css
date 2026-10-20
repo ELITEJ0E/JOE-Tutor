@@ -90,3 +90,23 @@
   .chloe-dock-portrait,.chloe-dock-level.active i{animation:none}
   .deck-chip-btn{transition:none}
 }
+
+/* Persona-specific first greeting in the existing notes welcome panel. */
+.welcome-companion-intro{
+  max-width:760px;
+  margin:15px auto 18px;
+  padding:12px 17px;
+  border-left:3px solid rgba(234,87,137,.5);
+  border-radius:9px;
+  background:linear-gradient(100deg,rgba(255,240,246,.9),rgba(255,255,255,0));
+  color:#855065;
+  font-size:clamp(12px,1vw,14px);
+  line-height:1.6;
+  text-align:left;
+}
+.welcome-companion-intro strong{color:#c04e77;font-weight:650}
+.welcome-avatar-placeholder{
+  height:100%;width:100%;display:grid;place-items:center;
+  background:linear-gradient(155deg,#ffeaf1,#faf2ff);color:#c85887;
+  border-radius:50%;
+}
