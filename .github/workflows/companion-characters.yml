@@ -1,7 +1,7 @@
 name: Companion character build
 on:
   push:
-    branches: [feat/character-cutouts-companion-introductions]
+    branches: [feat/softer-asian-voices-thai-taiwan]
   pull_request:
     branches: [main]
 permissions:
@@ -16,6 +16,8 @@ jobs:
           node-version: '22'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Verify companion voice roster
+        run: node scripts/check-voice-presets.mjs
       - name: TypeScript check
         run: npm run lint
       - name: Build frontend
