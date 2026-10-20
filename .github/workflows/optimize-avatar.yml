@@ -24,7 +24,7 @@ jobs:
           ls -lh /tmp/mei-mpfb-original.glb
       - name: Optimize textures and geometry
         run: |
-          npx --yes @gltf-transform/cli@4.4.2 optimize /tmp/mei-mpfb-original.glb public/models/mei-mpfb-cc0.glb --compress quantize --texture-compress webp --texture-size 1024
+          npx --yes @gltf-transform/cli@4.4.2 optimize /tmp/mei-mpfb-original.glb public/models/mei-mpfb-cc0.glb --compress meshopt --texture-compress webp --texture-size 1024
           ls -lh public/models/mei-mpfb-cc0.glb
           test "$(stat -c %s public/models/mei-mpfb-cc0.glb)" -lt 35000000
       - name: Save optimized avatar
