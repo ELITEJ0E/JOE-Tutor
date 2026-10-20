@@ -49,6 +49,9 @@ export type Agent = {
   voice: INTERLOCUTOR_VOICE;
   avatarUrl?: string;
   tagline?: string;
+  introTitle?: string;
+  introText?: string;
+  firstGreeting?: string;
   personalityConfig?: {
     emotionStyle?: EmotionStyleId;
     teachingStyle?: TeachingStyleId;
