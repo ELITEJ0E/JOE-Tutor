@@ -44,6 +44,16 @@ for (const [name, voice] of Object.entries(maleVoices)) {
 assert.ok(prompts.includes("agent.gender === 'male' ? 'calm' : 'cute'"), 'Male default emotion must not be cute');
 assert.ok(prompts.includes('buildMaleVoiceDirection(agent)'), 'System prompt must include male voice direction');
 
+// Regression: male Chinese personas must not inherit the female Chinese voice prompts.
+for (const name of ['Hao', 'YuChen']) {
+  const match = agents.match(new RegExp('export const ' + name + ': Agent = \\{([\\s\\S]*?)\\n\\};'));
+  assert.ok(match, name + ' must exist');
+  assert.ok(!match[1].includes('${Mei.personality}') && !match[1].includes('${XiaoYuTaiwan.personality}'),
+    name + ' must not inherit a female personality');
+}
+assert.ok(readFileSync('lib/prompts.ts', 'utf8').includes("agent.id === 'yuchen_tw' || agent.id === 'hao_zh'"),
+  'Mandarin male companions must have stable calm emotion defaults');
+
 assert.match(agents, /name: 'Lucia \(Italian\)'/, 'Italian must be introduced as Lucia');
 assert.match(agents, /'Achernar'/, 'Voice options must include Achernar');
 for (const id of ['yuna','hiro','xiaoyu_tw','nicha_th','luca']) {
