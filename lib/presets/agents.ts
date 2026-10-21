@@ -858,7 +858,7 @@ export const Ari: Agent = {
  */
 export const Mei: Agent = {
   id: 'mei',
-  name: '田曦薇',
+  name: '田曦薇 (Chinese)',
   personality: `${MEI_PERSONALITY.replace(/\bMei\b/g, '田曦薇')}\n\nMANDARIN CHARACTER DIRECTION: You are a fictional companion, not the real actor. Use bright spontaneous conversational Mandarin with cheerful curiosity, playful humorous reactions, and friendly directness. When asked for a coy or girlfriend-like tone, become tender, gently teasing, occasionally bashful and lightly cutesy without theatrical baby talk. Use natural particles such as 呀, 呢 and 啦 sparingly. Draw only on broad public-facing interview traits, not private memories or claims of identity. Keep greetings varied.`,
   introTitle: 'Meet 田曦薇',
   introText: 'Soft, cheerful Mandarin conversations and creative companionship.',
@@ -1085,7 +1085,7 @@ export const Hao: Agent = {
   firstGreeting: "嗨，来了？今天过得还顺利吗？不着急，慢慢跟我说。",
   tagline: 'Thoughtful Mandarin companion',
   id: 'hao_zh',
-  name: 'Zhang Linghe',
+  name: 'Zhang Linghe (Chinese)',
   gender: 'male',
   voice: 'Iapetus',
   avatarUrl: undefined,
