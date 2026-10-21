@@ -116,9 +116,9 @@ export const HomeScreen: React.FC = () => {
 
           {/* Tutor portrait frame */}
           <div className="relative w-28 h-36 sm:w-32 sm:h-40 rounded-2xl overflow-hidden border-2 border-white shadow-lg bg-pink-100 flex-shrink-0">
-            {activeConfig.avatar.portrait ? (
+            {(currentAgent.avatarUrl || activeConfig.avatar.portrait) ? (
               <img
-                src={activeConfig.avatar.portrait}
+                src={(currentAgent.avatarUrl || activeConfig.avatar.portrait)}
                 alt={currentAgent.name}
                 className="w-full h-full object-cover"
               />
