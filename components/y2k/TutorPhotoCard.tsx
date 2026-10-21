@@ -45,9 +45,9 @@ export const TutorPhotoCard: React.FC<TutorPhotoCardProps> = ({
 
       {/* Top Media / Portrait Section */}
       <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden bg-[#FFEAF1] border border-[#FFD9E4]">
-        {config.avatar.portrait ? (
+        {(agent.avatarUrl || config.avatar.portrait) ? (
           <img
-            src={config.avatar.portrait}
+            src={(agent.avatarUrl || config.avatar.portrait)}
             alt={agent.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
             loading="lazy"
