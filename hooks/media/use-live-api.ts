@@ -146,7 +146,11 @@ export function useLiveApi({
       const pcm = fishFallbackAudio.current;
       fishText.current = '';
       fishFallbackAudio.current = [];
-      if (!character || !text || isMuted) return;
+      if (!character || isMuted) return;
+      if (!text) {
+        pcm.forEach(chunk => audioStreamerRef.current?.addPCM16(new Uint8Array(chunk)));
+        return;
+      }
       const generation = ++fishGeneration.current;
       const controller = new AbortController();
       fishController.current = controller;
