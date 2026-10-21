@@ -8,6 +8,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import avatarAlice from '../../src/assets/images/avatars/Alice.webp';
+import avatarIrene from '../../src/assets/images/avatars/Irene.webp';
+import avatarAmelie from '../../src/assets/images/avatars/Amelie.webp';
+import avatarMei from '../../src/assets/images/avatars/Mei.webp';
+import avatarXiaoYu from '../../src/assets/images/avatars/XiaoYu.webp';
+import avatarNicha from '../../src/assets/images/avatars/Nicha.webp';
+import avatarYuna from '../../src/assets/images/avatars/Yuna.webp';
+import avatarOlga from '../../src/assets/images/avatars/Olga.webp';
+import avatarLucia from '../../src/assets/images/avatars/Lucia.webp';
+import avatarHaruka from '../../src/assets/images/avatars/Haruka.webp';
+import avatarAnika from '../../src/assets/images/avatars/Anika.webp';
+import avatarSofia from '../../src/assets/images/avatars/Sofia.webp';
 import chloeImg from '../../src/assets/images/Chloe.png';
 import liaImg from '../../src/assets/images/Lia.png';
 import rinaImg from '../../src/assets/images/Rina.png';
@@ -738,7 +750,7 @@ export const Alice: Agent = {
   personality: SCRIBE_PERSONALITY,
   bodyColor: '#25C1E0', // cyan
   voice: 'Leda',
-  avatarUrl: '/avatars/Alice.webp',
+  avatarUrl: avatarAlice,
 };
 
 /**
@@ -763,7 +775,7 @@ export const Irene: Agent = {
   personality: SCRIBE_PERSONALITY,
   bodyColor: '#f538a0', // pink
   voice: 'Zephyr',
-  avatarUrl: '/avatars/Irene.webp',
+  avatarUrl: avatarIrene,
 };
 
 /**
@@ -809,7 +821,7 @@ export const Ramon: Agent = {
 export const Amelie: Agent = {
   id: 'amelie',
   name: 'Amelie (French)',
-  avatarUrl: '/avatars/Amelie.webp',
+  avatarUrl: avatarAmelie,
   personality: AMELIE_PERSONALITY,
   bodyColor: '#9C27B0', // purple
   voice: 'Zephyr',
@@ -837,7 +849,7 @@ export const Mei: Agent = {
   personality: MEI_PERSONALITY,
   bodyColor: '#FFCDD2', // pale red/pink
   voice: 'Leda', // youthful, gentle feminine voice like Chloe/Alice
-  avatarUrl: '/avatars/Mei.webp',
+  avatarUrl: avatarMei,
 };
 
 const TAIWAN_COMPANION_PERSONALITY = `
@@ -863,7 +875,7 @@ export const XiaoYuTaiwan: Agent = {
   personality: TAIWAN_COMPANION_PERSONALITY,
   bodyColor: '#E8B4D6',
   voice: 'Leda', // youthful, light feminine voice close to Chloe/Alice
-  avatarUrl: '/avatars/XiaoYu.webp',
+  avatarUrl: avatarXiaoYu,
 };
 
 /** A gentle female Thai-language companion. */
@@ -873,7 +885,7 @@ export const Nicha: Agent = {
   personality: THAI_COMPANION_PERSONALITY,
   bodyColor: '#F5A6C8',
   voice: 'Leda', // youthful female voice
-  avatarUrl: '/avatars/Nicha.webp',
+  avatarUrl: avatarNicha,
 };
 
 /**
@@ -900,7 +912,7 @@ export const Yuna: Agent = {
   bodyColor: '#F3E5F5', // pale purple
   voice: 'Leda', // youthful, soft and feminine
 
-  avatarUrl: '/avatars/Yuna.webp',
+  avatarUrl: avatarYuna,
 };
 
 export const Jiwon: Agent = Yuna;
@@ -984,7 +996,7 @@ export const Ines: Agent = {
 export const Olga: Agent = {
   id: 'olga',
   name: 'Olga (Russian)',
-  avatarUrl: '/avatars/Olga.webp',
+  avatarUrl: avatarOlga,
   personality: OLGA_PERSONALITY,
   bodyColor: '#9C27B0', // purple (same as Amelie)
   voice: 'Zephyr',
@@ -997,7 +1009,7 @@ export const Olga: Agent = {
 export const Luca: Agent = {
   id: 'luca', // keep stable id for previously selected/saved personas
   name: 'Lucia (Italian)',
-  avatarUrl: '/avatars/Lucia.webp',
+  avatarUrl: avatarLucia,
   personality: LUCA_PERSONALITY,
   bodyColor: '#F4A4BF',
   voice: 'Aoede', // breezy female timbre
@@ -1043,7 +1055,7 @@ export const Haruka: Agent = {
   name: 'Haruka (Japanese)',
   gender: 'female',
   voice: 'Leda',
-  avatarUrl: '/avatars/Haruka.webp',
+  avatarUrl: avatarHaruka,
   personality: `You are Haruka, a Soft-spoken feminine Japanese companion. Speak naturally in Japanese. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Hiro. Use a gentle, personable female voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Hiro.personality}`,
 };
 
@@ -1099,7 +1111,7 @@ export const Anika: Agent = {
   name: 'Anika (Hindi)',
   gender: 'female',
   voice: 'Leda',
-  avatarUrl: '/avatars/Anika.webp',
+  avatarUrl: avatarAnika,
   personality: `You are Anika, a Friendly soft feminine Hindi-English companion. Speak naturally in Hindi. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Rahul. Use a gentle, personable female voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Rahul.personality}`,
 };
 
@@ -1113,7 +1125,7 @@ export const Sofia: Agent = {
   name: 'Sofia (Spanish)',
   gender: 'female',
   voice: 'Aoede',
-  avatarUrl: '/avatars/Sofia.webp',
+  avatarUrl: avatarSofia,
   personality: `You are Sofia, a Gentle Spanish-speaking female companion. Speak naturally in Spanish. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Ramon. Use a gentle, personable female voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Ramon.personality}`,
 };
 
