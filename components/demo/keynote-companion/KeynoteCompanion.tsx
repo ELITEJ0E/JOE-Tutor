@@ -59,7 +59,9 @@ type AudioLogEntry = {
   timestamp: Date;
 };
 
-const isInternalTranscriptText = (value: string) => /^\s*(?:\(?System message:|\[User manually |The user has changed the map dimensions|\[System|\[Tool)/i.test(value);\n\nconst API_KEY =
+const isInternalTranscriptText = (value: string) => /^\s*(?:\(?System message:|\[User manually |The user has changed the map dimensions|\[System|\[Tool)/i.test(value);
+
+const API_KEY =
   typeof process !== 'undefined' && process.env
     ? (process.env.API_KEY as string)
     : undefined;
