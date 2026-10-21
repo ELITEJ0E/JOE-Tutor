@@ -60,3 +60,11 @@ for (const id of ['yuna','hiro','xiaoyu_tw','nicha_th','luca']) {
   assert.ok(intros.includes('  ' + id + ': {'), 'Unique introduction missing for ' + id);
 }
 console.log('PASS: ' + roster.length + ' companions, 16 validated male voice styles, feminine presets and greetings');
+
+// Optional Fish integration must never embed API credentials in browser code.
+const fishProxy = readFileSync('api/fish-tts.ts', 'utf8');
+const liveHook = readFileSync('hooks/media/use-live-api.ts', 'utf8');
+assert.match(fishProxy, /process\.env\.FISH_AUDIO_API_KEY/, 'Fish API key must stay on server');
+assert.match(fishProxy, /s2\.1-pro-free/, 'Request free Fish Audio model explicitly');
+assert.match(liveHook, /fishMode\.current/, 'Live audio must support per-character Fish route');
+assert.match(liveHook, /fishFallbackAudio/, 'Live audio must retain Gemini playback fallback');
