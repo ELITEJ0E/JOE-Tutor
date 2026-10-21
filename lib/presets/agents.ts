@@ -738,7 +738,7 @@ export const Alice: Agent = {
   personality: SCRIBE_PERSONALITY,
   bodyColor: '#25C1E0', // cyan
   voice: 'Leda',
-  avatarUrl: liaImg,
+  avatarUrl: '/avatars/Alice.webp',
 };
 
 /**
@@ -763,7 +763,7 @@ export const Irene: Agent = {
   personality: SCRIBE_PERSONALITY,
   bodyColor: '#f538a0', // pink
   voice: 'Zephyr',
-  avatarUrl: rinaImg,
+  avatarUrl: '/avatars/Irene.webp',
 };
 
 /**
@@ -809,6 +809,7 @@ export const Ramon: Agent = {
 export const Amelie: Agent = {
   id: 'amelie',
   name: 'Amelie (French)',
+  avatarUrl: '/avatars/Amelie.webp',
   personality: AMELIE_PERSONALITY,
   bodyColor: '#9C27B0', // purple
   voice: 'Zephyr',
@@ -836,7 +837,7 @@ export const Mei: Agent = {
   personality: MEI_PERSONALITY,
   bodyColor: '#FFCDD2', // pale red/pink
   voice: 'Leda', // youthful, gentle feminine voice like Chloe/Alice
-  avatarUrl: yumiImg,
+  avatarUrl: '/avatars/Mei.webp',
 };
 
 const TAIWAN_COMPANION_PERSONALITY = `
@@ -862,7 +863,7 @@ export const XiaoYuTaiwan: Agent = {
   personality: TAIWAN_COMPANION_PERSONALITY,
   bodyColor: '#E8B4D6',
   voice: 'Leda', // youthful, light feminine voice close to Chloe/Alice
-  avatarUrl: yumiImg,
+  avatarUrl: '/avatars/XiaoYu.webp',
 };
 
 /** A gentle female Thai-language companion. */
@@ -872,7 +873,7 @@ export const Nicha: Agent = {
   personality: THAI_COMPANION_PERSONALITY,
   bodyColor: '#F5A6C8',
   voice: 'Leda', // youthful female voice
-  avatarUrl: rinaImg,
+  avatarUrl: '/avatars/Nicha.webp',
 };
 
 /**
@@ -899,7 +900,7 @@ export const Yuna: Agent = {
   bodyColor: '#F3E5F5', // pale purple
   voice: 'Leda', // youthful, soft and feminine
 
-  avatarUrl: yunaImg,
+  avatarUrl: '/avatars/Yuna.webp',
 };
 
 export const Jiwon: Agent = Yuna;
@@ -983,6 +984,7 @@ export const Ines: Agent = {
 export const Olga: Agent = {
   id: 'olga',
   name: 'Olga (Russian)',
+  avatarUrl: '/avatars/Olga.webp',
   personality: OLGA_PERSONALITY,
   bodyColor: '#9C27B0', // purple (same as Amelie)
   voice: 'Zephyr',
@@ -995,6 +997,7 @@ export const Olga: Agent = {
 export const Luca: Agent = {
   id: 'luca', // keep stable id for previously selected/saved personas
   name: 'Lucia (Italian)',
+  avatarUrl: '/avatars/Lucia.webp',
   personality: LUCA_PERSONALITY,
   bodyColor: '#F4A4BF',
   voice: 'Aoede', // breezy female timbre
@@ -1040,7 +1043,7 @@ export const Haruka: Agent = {
   name: 'Haruka (Japanese)',
   gender: 'female',
   voice: 'Leda',
-  avatarUrl: undefined,
+  avatarUrl: '/avatars/Haruka.webp',
   personality: `You are Haruka, a Soft-spoken feminine Japanese companion. Speak naturally in Japanese. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Hiro. Use a gentle, personable female voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Hiro.personality}`,
 };
 
@@ -1096,7 +1099,7 @@ export const Anika: Agent = {
   name: 'Anika (Hindi)',
   gender: 'female',
   voice: 'Leda',
-  avatarUrl: undefined,
+  avatarUrl: '/avatars/Anika.webp',
   personality: `You are Anika, a Friendly soft feminine Hindi-English companion. Speak naturally in Hindi. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Rahul. Use a gentle, personable female voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Rahul.personality}`,
 };
 
@@ -1110,7 +1113,7 @@ export const Sofia: Agent = {
   name: 'Sofia (Spanish)',
   gender: 'female',
   voice: 'Aoede',
-  avatarUrl: undefined,
+  avatarUrl: '/avatars/Sofia.webp',
   personality: `You are Sofia, a Gentle Spanish-speaking female companion. Speak naturally in Spanish. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Ramon. Use a gentle, personable female voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Ramon.personality}`,
 };
 
