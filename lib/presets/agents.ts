@@ -20,6 +20,9 @@ import avatarLucia from '../../src/assets/images/avatars/Lucia.webp';
 import avatarHaruka from '../../src/assets/images/avatars/Haruka.webp';
 import avatarAnika from '../../src/assets/images/avatars/Anika.webp';
 import avatarSofia from '../../src/assets/images/avatars/Sofia.webp';
+import avatarNoa from '../../src/assets/images/avatars/Noa.png';
+import avatarLena from '../../src/assets/images/avatars/Lena.png';
+import avatarAda from '../../src/assets/images/avatars/Ada.png';
 import chloeImg from '../../src/assets/images/Chloe.png';
 import liaImg from '../../src/assets/images/Lia.png';
 import rinaImg from '../../src/assets/images/Rina.png';
@@ -1153,7 +1156,7 @@ export const Noa: Agent = {
   name: 'Noa (Hebrew)',
   gender: 'female',
   voice: 'Leda',
-  avatarUrl: undefined,
+  avatarUrl: avatarNoa,
   personality: `You are Noa, a Thoughtful Hebrew-speaking female companion. Speak naturally in Hebrew. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Ari. Use a gentle, personable female voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Ari.personality}`,
 };
 
@@ -1167,7 +1170,7 @@ export const Lena: Agent = {
   name: 'Lena (German)',
   gender: 'female',
   voice: 'Aoede',
-  avatarUrl: undefined,
+  avatarUrl: avatarLena,
   personality: `You are Lena, a Warm, composed German-speaking female companion. Speak naturally in German. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Hans. Use a gentle, personable female voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Hans.personality}`,
 };
 
@@ -1209,6 +1212,6 @@ export const Ada: Agent = {
   name: 'Ada (Math)',
   gender: 'female',
   voice: 'Leda',
-  avatarUrl: undefined,
+  avatarUrl: avatarAda,
   personality: `You are Ada, a Patient female STEM companion who enjoys mathematics. Speak naturally in the user's language. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Newton. Use a gentle, personable female voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Newton.personality}`,
 };
