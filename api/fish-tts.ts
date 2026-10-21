@@ -50,10 +50,31 @@ export default async function handler(req: any, res: any) {
       console.error('Fish Audio synthesis failed:', upstream.status);
       return res.status(502).json({ error: 'Fish Audio synthesis unavailable' });
     }
-    const bytes = Buffer.from(await upstream.arrayBuffer());
-    if (!bytes.length || bytes.length > 8_000_000) return res.status(502).json({ error: 'Invalid audio response' });
+    // Forward Fish Audio as it arrives instead of waiting for the complete MP3
+    // in server memory. Clients using a streaming reader can start sooner.
+    if (!upstream.body) return res.status(502).json({ error: 'Empty audio response' });
     res.setHeader('Content-Type', 'audio/mpeg');
-    return res.status(200).send(bytes);
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.status(200);
+    const reader = upstream.body.getReader();
+    let totalBytes = 0;
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (!value) continue;
+        totalBytes += value.byteLength;
+        if (totalBytes > 8_000_000) {
+          await reader.cancel();
+          res.destroy();
+          return;
+        }
+        res.write(Buffer.from(value));
+      }
+      return res.end();
+    } finally {
+      reader.releaseLock();
+    }
   } catch (error) {
     console.error('Fish Audio proxy error:', error instanceof Error ? error.message : 'unknown');
     return res.status(502).json({ error: 'Fish Audio request failed' });
