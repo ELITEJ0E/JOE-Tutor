@@ -59,7 +59,7 @@ type AudioLogEntry = {
   timestamp: Date;
 };
 
-const API_KEY =
+const isInternalTranscriptText = (value: string) => /^\s*(?:\(?System message:|\[User manually |The user has changed the map dimensions|\[System|\[Tool)/i.test(value);\n\nconst API_KEY =
   typeof process !== 'undefined' && process.env
     ? (process.env.API_KEY as string)
     : undefined;
@@ -955,13 +955,7 @@ export default function KeynoteCompanion() {
     (id: string, newWidth: string, newHeight: string) => {
       const resizeMessage = `The user has changed the map dimensions of ${id} to width: ${newWidth}; height: ${newHeight}`;
 
-      setTranscript(prev => [
-        ...prev,
-        {
-          speaker: userRef.current.name || 'User',
-          text: resizeMessage,
-        },
-      ]);
+      // Map resize is an internal workspace action, not spoken dialogue.
 
       setDocumentContent(prevContent => {
         pushToHistory(prevContent);
@@ -1207,10 +1201,7 @@ export default function KeynoteCompanion() {
             transcriptText = '[User manually edited the document]';
           }
 
-          setTranscript(prev => [
-            ...prev,
-            { speaker: user.name || 'User', text: transcriptText }
-          ]);
+          // Internal manual edits are not dialogue and must not appear in the transcript.
 
           client.send([{ text: message }]);
           
@@ -1736,7 +1727,7 @@ ${recentTranscript}`;
       const agentFinal = currentModelText.current.trim();
       setTranscript(prev => {
         let nextTranscript = [...prev];
-        if (userFinal) {
+        if (userFinal && !isInternalTranscriptText(userFinal)) {
           nextTranscript.push({
             speaker: userRef.current.name || 'User',
             text: userFinal,
@@ -2451,6 +2442,14 @@ ${recentTranscript}`;
                       <span className="icon">picture_as_pdf</span>
                     </button>
                     <button
+                      className="pdf-button"
+                      onClick={() => setDocumentTab('editor')}
+                      title="Edit learning space"
+                      aria-label="Edit learning space"
+                    >
+                      <span className="icon">edit</span>
+                    </button>
+                    <button
                       className="copy-button"
                       onClick={() => handleCopyToClipboard(documentContent)}
                       title="Copy to clipboard"
@@ -2540,7 +2539,7 @@ ${recentTranscript}`;
                 </button>
               </div>
             ) : transcript.length > 0 ? (
-              transcript.map((entry, index) => (
+              transcript.filter(entry => !isInternalTranscriptText(entry.text)).map((entry, index) => (
                 <p key={index} className="transcript-entry">
                   <strong>{entry.speaker}:</strong> {entry.text}
                 </p>
