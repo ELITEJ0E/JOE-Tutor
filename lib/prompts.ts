@@ -62,7 +62,7 @@ ${user.pdfFiles.map(f => `--- START OF PDF: ${f.name} ---\n${f.text}\n--- END OF
     : '';
 
   const affectiveBlock = buildAffectivePrompt(
-    agent.personalityConfig?.emotionStyle || (agent.gender === 'male' ? 'calm' : 'cute'),
+    (agent.id === 'yuchen_tw' || agent.id === 'hao_zh') ? 'calm' : (agent.personalityConfig?.emotionStyle || (agent.gender === 'male' ? 'calm' : 'cute')),
     agent.personalityConfig?.teachingStyle || 'balanced',
     agent.personalityConfig?.explanationLevel || 'normal'
   );
