@@ -25,7 +25,7 @@ import { AudioStreamer } from '../../lib/audio-streamer';
 import { audioContext } from '../../lib/utils';
 import VolMeterWorket from '../../lib/worklets/vol-meter';
 import { DEFAULT_LIVE_API_MODEL } from '../../lib/constants';
-import { usePerfLogStore } from '../../lib/state';
+import { useAgent, usePerfLogStore } from '../../lib/state';
 
 /**
  * The shape of the object returned by the `useLiveApi` hook.
@@ -70,6 +70,25 @@ export function useLiveApi({
   );
 
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
+  const fishMode = useRef<'mei' | 'hao_zh' | null>(null);
+  const fishText = useRef('');
+  const fishFallbackAudio = useRef<ArrayBuffer[]>([]);
+  const fishController = useRef<AbortController | null>(null);
+  const fishPlayer = useRef<HTMLAudioElement | null>(null);
+  const fishAudioUrl = useRef<string | null>(null);
+  const fishGeneration = useRef(0);
+
+  const stopFish = useCallback(() => {
+    fishGeneration.current += 1;
+    fishController.current?.abort();
+    fishController.current = null;
+    fishPlayer.current?.pause();
+    fishPlayer.current = null;
+    if (fishAudioUrl.current) URL.revokeObjectURL(fishAudioUrl.current);
+    fishAudioUrl.current = null;
+    fishText.current = '';
+    fishFallbackAudio.current = [];
+  }, []);
 
   const volumeRef = useRef(0);
   const [connected, setConnected] = useState(false);
@@ -106,18 +125,71 @@ export function useLiveApi({
     const onClose = () => {
       setConnected(false);
       setIsConnecting(false);
+      stopFish();
+      fishMode.current = null;
     };
     const onSetupComplete = () => {
       addPerfLog({ turn: 0, event: 'Live API: Setup Complete' });
       setConnected(true);
     };
-    const stopAudioStreamer = () => audioStreamerRef.current?.stop();
+    const stopAudioStreamer = () => {
+      audioStreamerRef.current?.stop();
+      stopFish();
+    };
+
+    const onOutputTranscription = (text: string) => {
+      if (fishMode.current) fishText.current += text;
+    };
+    const onTurnComplete = async () => {
+      const character = fishMode.current;
+      const text = fishText.current.trim();
+      const pcm = fishFallbackAudio.current;
+      fishText.current = '';
+      fishFallbackAudio.current = [];
+      if (!character || isMuted) return;
+      if (!text) {
+        pcm.forEach(chunk => audioStreamerRef.current?.addPCM16(new Uint8Array(chunk)));
+        return;
+      }
+      const generation = ++fishGeneration.current;
+      const controller = new AbortController();
+      fishController.current = controller;
+      try {
+        const response = await fetch('/api/fish-tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ character, text: text.slice(0, 1200) }),
+          signal: controller.signal,
+        });
+        if (!response.ok) throw new Error('Fish Audio unavailable');
+        const audioBlob = await response.blob();
+        if (generation !== fishGeneration.current || !audioBlob.size) return;
+        const objectUrl = URL.createObjectURL(audioBlob);
+        fishAudioUrl.current = objectUrl;
+        const player = new Audio(objectUrl);
+        fishPlayer.current = player;
+        player.onended = () => {
+          if (fishAudioUrl.current === objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+            fishAudioUrl.current = null;
+            fishPlayer.current = null;
+          }
+        };
+        await player.play();
+      } catch (error) {
+        if (controller.signal.aborted || generation !== fishGeneration.current) return;
+        console.warn('Fish Audio failed; replaying the Gemini voice for this reply.');
+        pcm.forEach(chunk => audioStreamerRef.current?.addPCM16(new Uint8Array(chunk)));
+      } finally {
+        if (fishController.current === controller) fishController.current = null;
+      }
+    };
 
     // When the client receives audio data, it's passed to the AudioStreamer for playback.
     const onAudio = (data: ArrayBuffer) => {
-      if (!isMuted && !client.suppressPlayback) {
-        audioStreamerRef.current?.addPCM16(new Uint8Array(data));
-      }
+      if (isMuted || client.suppressPlayback) return;
+      if (fishMode.current) fishFallbackAudio.current.push(data);
+      else audioStreamerRef.current?.addPCM16(new Uint8Array(data));
     };
 
     // Bind event listeners.
@@ -126,6 +198,8 @@ export function useLiveApi({
     client.on('interrupted', stopAudioStreamer);
     client.on('audio', onAudio);
     client.on('setupcomplete', onSetupComplete);
+    client.on('outputTranscription', onOutputTranscription);
+    client.on('turncomplete', onTurnComplete);
 
     // Clean up event listeners on component unmount to prevent memory leaks.
     return () => {
@@ -134,9 +208,12 @@ export function useLiveApi({
       client.off('interrupted', stopAudioStreamer);
       client.off('audio', onAudio);
       client.off('setupcomplete', onSetupComplete);
+      client.off('outputTranscription', onOutputTranscription);
+      client.off('turncomplete', onTurnComplete);
+      stopFish();
       client.disconnect();
     };
-  }, [client, addPerfLog, isMuted]);
+  }, [client, addPerfLog, isMuted, stopFish]);
 
   /**
    * Initiates a connection to the Live API using the currently stored configuration.
@@ -146,6 +223,18 @@ export function useLiveApi({
       throw new Error('Live API configuration has not been set.');
     }
     setIsConnecting(true);
+    stopFish();
+    fishMode.current = null;
+    // Only enable Fish when the Vercel proxy confirms both API key and authorized voice ID.
+    const id = useAgent.getState().current.id;
+    if (id === 'mei' || id === 'hao_zh') {
+      try {
+        const response = await fetch(`/api/fish-tts?character=${id}`);
+        if (response.ok && (await response.json()).enabled) fishMode.current = id;
+      } catch {
+        // Local development and unconfigured deployments retain Gemini Live.
+      }
+    }
     addPerfLog({ turn: 0, event: 'Live API: Connecting...' });
     
     try {
@@ -156,7 +245,7 @@ export function useLiveApi({
     } finally {
       setIsConnecting(false);
     }
-  }, [client, config, addPerfLog]);
+  }, [client, config, addPerfLog, stopFish]);
 
   /**
    * Disconnects from the Live API and stops any ongoing audio playback.
@@ -166,7 +255,9 @@ export function useLiveApi({
     setConnected(false);
     setIsConnecting(false);
     audioStreamerRef.current?.stop();
-  }, [setConnected, setIsConnecting, client]);
+    stopFish();
+    fishMode.current = null;
+  }, [setConnected, setIsConnecting, client, stopFish]);
 
   /**
    * Immediately stops audio playback without disconnecting the session.
@@ -174,7 +265,8 @@ export function useLiveApi({
    */
   const stopAudio = useCallback(() => {
     audioStreamerRef.current?.stop();
-  }, []);
+    stopFish();
+  }, [stopFish]);
 
   return useMemo(() => ({
     client,
