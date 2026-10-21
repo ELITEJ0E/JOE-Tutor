@@ -43,6 +43,11 @@ export const CHLOE_AVATARS = {
 
 export const INTERLOCUTOR_VOICES = [
   'Achernar', // soft, soothing female timbre
+  'Achird', // friendly, suitable for easygoing young masculine companions
+  'Algieba', // smooth, warm conversational delivery
+  'Iapetus', // clear, articulate delivery
+  'Umbriel', // relaxed, easygoing delivery
+  'Zubenelgenubi', // casual, natural conversational delivery
   'Aoede',
   'Charon',
   'Fenrir',
@@ -763,9 +768,10 @@ export const Alice: Agent = {
 export const Sam: Agent = {
   id: 'sam',
   name: 'Sam (English)',
+  gender: 'male',
   personality: SCRIBE_PERSONALITY,
   bodyColor: '#fbbc04', // yellow
-  voice: 'Fenrir',
+  voice: 'Achird',
 };
 
 /**
@@ -788,9 +794,10 @@ export const Irene: Agent = {
 export const Tom: Agent = {
   id: 'tom',
   name: 'Tom (English)',
+  gender: 'male',
   personality: SCRIBE_PERSONALITY,
   bodyColor: '#fa7b17', // orange
-  voice: 'Charon',
+  voice: 'Umbriel',
 };
 
 /**
@@ -800,9 +807,10 @@ export const Tom: Agent = {
 export const Rahul: Agent = {
   id: 'rahul',
   name: 'Rahul (Hindi)',
+  gender: 'male',
   personality: RAHUL_PERSONALITY,
   bodyColor: '#34a853', // green
-  voice: 'Fenrir',
+  voice: 'Achird',
 };
 
 /**
@@ -812,9 +820,10 @@ export const Rahul: Agent = {
 export const Ramon: Agent = {
   id: 'ramon',
   name: 'Ramon (Spanish)',
+  gender: 'male',
   personality: RAMON_PERSONALITY,
   bodyColor: '#4285F4', // blue (same as Newton)
-  voice: 'Fenrir',
+  voice: 'Zubenelgenubi',
 };
 
 /**
@@ -837,9 +846,10 @@ export const Amelie: Agent = {
 export const Ari: Agent = {
   id: 'ari',
   name: 'Ari (Hebrew)',
+  gender: 'male',
   personality: ARI_PERSONALITY,
   bodyColor: '#FFF9C4', // pale yellow
-  voice: 'Charon',
+  voice: 'Umbriel',
 };
 
 /**
@@ -898,9 +908,10 @@ export const Nicha: Agent = {
 export const Hiro: Agent = {
   id: 'hiro',
   name: 'Hiro (Japanese)',
+  gender: 'male',
   personality: HIRO_PERSONALITY,
   bodyColor: '#F2D2E8',
-  voice: 'Charon', // gentle male counterpart to Haruka
+  voice: 'Iapetus', // gentle male counterpart to Haruka
 
 };
 
@@ -927,9 +938,10 @@ export const Jiwon: Agent = Yuna;
 export const Hans: Agent = {
   id: 'hans',
   name: 'Hans (German)',
+  gender: 'male',
   personality: HANS_PERSONALITY,
   bodyColor: '#FFEB3B', // yellow
-  voice: 'Orus',
+  voice: 'Iapetus',
 };
 
 /**
@@ -939,9 +951,10 @@ export const Hans: Agent = {
 export const Newton: Agent = {
   id: 'newton',
   name: 'Newton (Math)',
+  gender: 'male',
   personality: NEWTON_PERSONALITY,
   bodyColor: '#4285F4', // blue
-  voice: 'Orus',
+  voice: 'Charon',
 };
 
 /**
@@ -1043,7 +1056,7 @@ export const Joon: Agent = {
   id: 'joon_ko',
   name: 'Joon (Korean)',
   gender: 'male',
-  voice: 'Charon',
+  voice: 'Algieba',
   avatarUrl: undefined,
   personality: `You are Joon, a Gentle Korean-speaking male companion. Speak naturally in Korean. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Yuna. Use a gentle, personable male voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Yuna.personality}`,
 };
@@ -1071,7 +1084,7 @@ export const Hao: Agent = {
   id: 'hao_zh',
   name: 'Hao (Chinese)',
   gender: 'male',
-  voice: 'Charon',
+  voice: 'Iapetus',
   avatarUrl: undefined,
   personality: `You are Hao, a Warm, gentle Mandarin-speaking male companion. Speak naturally in Chinese. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Mei. Use a gentle, personable male voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Mei.personality}`,
 };
@@ -1085,7 +1098,7 @@ export const YuChen: Agent = {
   id: 'yuchen_tw',
   name: 'YuChen (Taiwan Mandarin)',
   gender: 'male',
-  voice: 'Orus',
+  voice: 'Algieba',
   avatarUrl: undefined,
   personality: `You are YuChen, a Soft-spoken Taiwanese Mandarin male companion; use Traditional Chinese and Taiwan vocabulary. Speak naturally in Taiwanese Mandarin. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be XiaoYuTaiwan. Use a gentle, personable male voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${XiaoYuTaiwan.personality}`,
 };
@@ -1099,7 +1112,7 @@ export const Niran: Agent = {
   id: 'niran_th',
   name: 'Niran (Thai)',
   gender: 'male',
-  voice: 'Charon',
+  voice: 'Achird',
   avatarUrl: undefined,
   personality: `You are Niran, a Kind Thai-speaking male companion using natural polite Thai. Speak naturally in Thai. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Nicha. Use a gentle, personable male voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Nicha.personality}`,
 };
@@ -1141,7 +1154,7 @@ export const Julien: Agent = {
   id: 'julien_fr',
   name: 'Julien (French)',
   gender: 'male',
-  voice: 'Charon',
+  voice: 'Algieba',
   avatarUrl: undefined,
   personality: `You are Julien, a Relaxed French-speaking male companion. Speak naturally in French. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Amelie. Use a gentle, personable male voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Amelie.personality}`,
 };
@@ -1183,7 +1196,7 @@ export const Maxim: Agent = {
   id: 'maxim_ru',
   name: 'Maxim (Russian)',
   gender: 'male',
-  voice: 'Orus',
+  voice: 'Umbriel',
   avatarUrl: undefined,
   personality: `You are Maxim, a Friendly calm Russian-speaking male companion. Speak naturally in Russian. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Olga. Use a gentle, personable male voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Olga.personality}`,
 };
@@ -1197,7 +1210,7 @@ export const Marco: Agent = {
   id: 'marco_it',
   name: 'Marco (Italian)',
   gender: 'male',
-  voice: 'Charon',
+  voice: 'Achird',
   avatarUrl: undefined,
   personality: `You are Marco, a Gentle Italian-speaking male companion. Speak naturally in Italian. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Luca. Use a gentle, personable male voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Luca.personality}`,
 };
