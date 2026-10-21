@@ -858,8 +858,11 @@ export const Ari: Agent = {
  */
 export const Mei: Agent = {
   id: 'mei',
-  name: 'Mei (Chinese)',
-  personality: MEI_PERSONALITY,
+  name: '田曦薇',
+  personality: MEI_PERSONALITY.replace(/\bMei\b/g, '田曦薇'),
+  introTitle: 'Meet 田曦薇',
+  introText: 'Soft, cheerful Mandarin conversations and creative companionship.',
+  firstGreeting: '嗨，我是田曦薇。今天怎么样呀？想聊什么，我们慢慢说。',
   bodyColor: '#FFCDD2', // pale red/pink
   voice: 'Leda', // youthful, gentle feminine voice like Chloe/Alice
   avatarUrl: avatarMei,
