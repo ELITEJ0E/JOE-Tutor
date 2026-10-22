@@ -125,7 +125,7 @@ export default function ControlDeck({
       // echo/barge-in while the introduction or TTS response is underway.
       const activeAgent = useAgent.getState().current.id;
       const state = useUI.getState().agentState;
-      if ((activeAgent === 'mei' || activeAgent === 'hao_zh') && (state === 'Thinking' || state === 'Speaking')) return;
+      if ((activeAgent === 'mei' || activeAgent === 'hao_zh') && (state === 'Thinking' || state === 'Generating voice' || state === 'Speaking')) return;
       if (connected && !isConnecting) {
         if (bufferedAudioRef.current.length > 0) {
           bufferedAudioRef.current.forEach((data) => {
@@ -450,7 +450,9 @@ export default function ControlDeck({
         {connected && (
           <div className="joe-voice-state" role="status" aria-live="polite" aria-label={agentState === 'Fish Audio unavailable' ? 'Fish Audio voice is unavailable' : agentState === 'Speaking' ? 'Companion speaking' : agentState === 'Thinking' ? 'Companion preparing a reply' : 'Listening'}>
             {agentState === 'Thinking' ? (
-              <><LoaderCircle size={16} className="joe-voice-spinner" /><span>Responding…</span></>
+              <><LoaderCircle size={16} className="joe-voice-spinner" /><span>Composing reply…</span></>
+            ) : agentState === 'Generating voice' ? (
+              <><LoaderCircle size={16} className="joe-voice-spinner" /><span>Preparing voice…</span></>
             ) : agentState === 'Speaking' ? (
               <><span className="joe-voice-bars" aria-hidden="true"><i /><i /><i /><i /><i /></span><span>Speaking</span></>
             ) : agentState === 'Fish Audio unavailable' ? (
