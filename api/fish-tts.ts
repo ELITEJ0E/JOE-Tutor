@@ -4,7 +4,7 @@
  * Never expose the Fish API key or allow callers to supply arbitrary voice IDs.
  */
 const voices: Record<string, string | undefined> = {
-  mei: process.env.FISH_VOICE_TIAN_XIWEI_ID,
+  tian_xi_wei: process.env.FISH_VOICE_TIAN_XIWEI_ID,
   hao_zh: process.env.FISH_VOICE_ZHANG_LINGHE_ID,
 };
 
