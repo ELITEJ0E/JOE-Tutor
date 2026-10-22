@@ -728,6 +728,7 @@ export default function KeynoteCompanion() {
   documentContentRef.current = documentContent;
   const currentUserText = useRef('');
   const currentModelText = useRef('');
+  const liveAgentCaptionIndexRef = useRef<number | null>(null);
   const currentUserAudioChunks = useRef<ArrayBuffer[]>([]);
   const currentAgentAudioChunks = useRef<ArrayBuffer[]>([]);
   const docContentBeforeEditRef = useRef(documentContent);
@@ -1798,7 +1799,22 @@ ${recentTranscript}`;
         setAgentState(null);
       }
       currentModelText.current += text;
-      // Transient avatar captions are helpful in audio-only sessions too.
+      // Show the partial agent response in Transcript as it arrives, rather
+      // than waiting for the final turnComplete event.
+      if (!isSuppressed && text.trim()) {
+        const liveText = currentModelText.current;
+        setTranscript(prev => {
+          const index = liveAgentCaptionIndexRef.current;
+          if (index !== null && index >= 0 && index < prev.length &&
+              prev[index].speaker === agentRef.current.name) {
+            const next = [...prev];
+            next[index] = { ...next[index], text: liveText };
+            return next;
+          }
+          liveAgentCaptionIndexRef.current = prev.length;
+          return [...prev, { speaker: agentRef.current.name, text: liveText }];
+        });
+      }
       if (!isSuppressed) {
         setSpeechBubbleText(currentModelText.current);
       }
@@ -1816,7 +1832,14 @@ ${recentTranscript}`;
       if (isGreetingTurn) greetingTranscriptPendingRef.current = false;
       else if (userFinal && !isInternalTranscriptText(userFinal)) greetingTranscriptPendingRef.current = false;
       setTranscript(prev => {
-        let nextTranscript = [...prev];
+        // Replace the streaming draft with the finalized turn to prevent duplicate
+        // agent entries. Put the user message before the finalized reply.
+        const draftIndex = liveAgentCaptionIndexRef.current;
+        let nextTranscript = draftIndex !== null &&
+          draftIndex >= 0 && draftIndex < prev.length &&
+          prev[draftIndex].speaker === agentRef.current.name
+          ? prev.filter((_, i) => i !== draftIndex)
+          : [...prev];
         if (userFinal && !isInternalTranscriptText(userFinal)) {
           nextTranscript.push({
             speaker: userRef.current.name || 'User',
@@ -1843,6 +1866,7 @@ ${recentTranscript}`;
         }
         return nextTranscript;
       });
+      liveAgentCaptionIndexRef.current = null;
 
       if (userFinal) {
         latestUserTurnIdRef.current++;
