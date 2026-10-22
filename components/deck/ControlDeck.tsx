@@ -114,6 +114,11 @@ export default function ControlDeck({
     client.on('error', handleError);
 
     const onData = (base64: string) => {
+      // Fish Mandarin replies are generated after Gemini transcription. Avoid microphone
+      // echo/barge-in while the introduction or TTS response is underway.
+      const activeAgent = useAgent.getState().current.id;
+      const state = useUI.getState().agentState;
+      if ((activeAgent === 'mei' || activeAgent === 'hao_zh') && (state === 'Thinking' || state === 'Speaking')) return;
       if (connected && !isConnecting) {
         if (bufferedAudioRef.current.length > 0) {
           bufferedAudioRef.current.forEach((data) => {
