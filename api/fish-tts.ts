@@ -40,9 +40,8 @@ export default async function handler(req: any, res: any) {
         text: input.trim(),
         reference_id: voiceId,
         format: 'mp3',
-        temperature: 0.35,
-        top_p: 0.65,
-        prosody: { speed: 1, volume: 0, normalize_loudness: true },
+        // Use the selected Fish Audio voice's own default expressiveness and
+        // prosody; don't impose app-side tuning that changes its intonation.
       }),
       signal: AbortSignal.timeout(25000),
     });
