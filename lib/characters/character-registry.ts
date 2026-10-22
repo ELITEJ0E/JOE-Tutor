@@ -7,7 +7,7 @@ import { EmotionStyleId, TeachingStyleId, ExplanationLevelId } from '../personal
 
 const jiwonImg = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80';
 const aliceImg = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&auto=format&fit=crop&q=80';
-const meiImg = 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&auto=format&fit=crop&q=80';
+import tianXiWeiImg from '../../src/assets/images/avatars/TianXiwei-avatar.png';
 const amelieImg = 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&auto=format&fit=crop&q=80';
 const ireneImg = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&auto=format&fit=crop&q=80';
 
@@ -140,17 +140,17 @@ export const CHARACTER_REGISTRY: Record<string, CharacterConfig> = {
     },
   },
 
-  'mei': {
-    id: 'mei',
-    name: 'Mei',
-    title: 'Mandarin Tutor',
+  'tian_xi_wei': {
+    id: 'tian_xi_wei',
+    name: '田曦薇',
+    title: 'Mandarin Companion',
     avatar: {
-      portrait: meiImg,
+      portrait: tianXiWeiImg,
     },
     appearance: {
       accentColor: '#4E93FF',
       secondaryColor: '#D8E7FF',
-      tagline: 'Gentle, curious & patient Mandarin guide',
+      tagline: 'Bubbly, bashful & cheerful Mandarin companion',
       badge: 'Trending',
       flag: '🇨🇳',
       language: 'Mandarin Chinese',
@@ -160,8 +160,8 @@ export const CHARACTER_REGISTRY: Record<string, CharacterConfig> = {
       samplePhrase: '你好呀! Don’t worry about the tones, we will practice together! ☁',
     },
     personalityDefaults: {
-      baseTraits: ['Gentle', 'Curious', 'Patient'],
-      emotionStyle: 'gentle',
+      baseTraits: ['Bubbly', 'Playful', 'Affectionate'],
+      emotionStyle: 'playful',
       teachingStyle: 'patient',
       explanationLevel: 'normal',
     },
