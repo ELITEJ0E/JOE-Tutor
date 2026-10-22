@@ -42,8 +42,9 @@ export const sanitizeMemoryTurns = (value: unknown): MemoryTurn[] => {
 
 export const loadConversation = async (agentId: string): Promise<SavedConversation | null> => {
   const db = await openDb();
+  let record: SavedConversation | null = null;
   try {
-    return await new Promise((resolve, reject) => {
+    record = await new Promise((resolve, reject) => {
       const tx = db.transaction(STORE, 'readonly');
       const req = tx.objectStore(STORE).get(agentId);
       req.onsuccess = () => {
@@ -55,6 +56,18 @@ export const loadConversation = async (agentId: string): Promise<SavedConversati
   } finally {
     db.close();
   }
+
+  // One-time migration from the old internal Mei identifier, preserving user
+  // history when the character became TianXiWei. Do not overwrite newer data.
+  if (!record && agentId === 'tian_xi_wei') {
+    const previous = await loadConversation('mei');
+    if (previous) {
+      await saveConversation(agentId, previous.turns);
+      await deleteConversation('mei');
+      return { ...previous, agentId };
+    }
+  }
+  return record;
 };
 
 export const saveConversation = async (agentId: string, turns: MemoryTurn[]): Promise<void> => {
