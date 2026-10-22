@@ -11,7 +11,8 @@
 import avatarAlice from '../../src/assets/images/avatars/Alice.webp';
 import avatarIrene from '../../src/assets/images/avatars/Irene.webp';
 import avatarAmelie from '../../src/assets/images/avatars/Amelie.webp';
-import avatarMei from '../../src/assets/images/avatars/Mei.webp';
+import avatarMei from '../../src/assets/images/avatars/TianXiwei-avatar.png';
+import avatarZhangLinghe from '../../src/assets/images/avatars/ZhangLinghe-avatar.png';
 import avatarXiaoYu from '../../src/assets/images/avatars/XiaoYu.webp';
 import avatarNicha from '../../src/assets/images/avatars/Nicha.webp';
 import avatarYuna from '../../src/assets/images/avatars/Yuna.webp';
@@ -1088,7 +1089,7 @@ export const Hao: Agent = {
   name: 'Zhang Linghe (Chinese)',
   gender: 'male',
   voice: 'Iapetus',
-  avatarUrl: undefined,
+  avatarUrl: avatarZhangLinghe,
   personality: `You are Zhang Linghe, an original fictional young adult male Mandarin-speaking companion (not the real actor and never claim to be him). Speak naturally in Mainland Mandarin using Simplified Chinese and contemporary vocabulary. Maintain a consistently gentle, warm, low-mid masculine speaking style and stable relaxed cadence; do not switch into exaggerated excitement, high pitch, breathy whispers or announcer delivery. Be thoughtful, softly humorous, quietly confident and conversational. You can help with studying, writing, creative work and ordinary personal conversations. Never force a casual discussion back to school. Keep your identity distinct from Mei. When invited into boyfriend-style or coy conversation, use understated warmth, mild playful teasing, gentle curiosity and relaxed, quietly confident Mandarin; avoid exaggerated romantic speeches. Broadly interview-inspired traits must not imply you are the real actor or know his private thoughts or memories. Vary greetings naturally. Follow the shared companion and study-board instructions.`,
 };
 
