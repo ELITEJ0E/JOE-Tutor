@@ -30,6 +30,7 @@ import {
   Check,
   LoaderCircle,
   AudioLines,
+  AlertCircle,
 } from 'lucide-react';
 
 export type ControlDeckProps = {
@@ -447,11 +448,13 @@ export default function ControlDeck({
 
         {/* Live response status: distinguish listening, generating and audible speech. */}
         {connected && (
-          <div className="joe-voice-state" role="status" aria-live="polite" aria-label={agentState === 'Speaking' ? 'Companion speaking' : agentState === 'Thinking' ? 'Companion preparing a reply' : 'Listening'}>
+          <div className="joe-voice-state" role="status" aria-live="polite" aria-label={agentState === 'Fish Audio unavailable' ? 'Fish Audio voice is unavailable' : agentState === 'Speaking' ? 'Companion speaking' : agentState === 'Thinking' ? 'Companion preparing a reply' : 'Listening'}>
             {agentState === 'Thinking' ? (
               <><LoaderCircle size={16} className="joe-voice-spinner" /><span>Responding…</span></>
             ) : agentState === 'Speaking' ? (
               <><span className="joe-voice-bars" aria-hidden="true"><i /><i /><i /><i /><i /></span><span>Speaking</span></>
+            ) : agentState === 'Fish Audio unavailable' ? (
+              <><AlertCircle size={16} /><span>Fish Audio unavailable</span></>
             ) : (
               <><AudioLines size={16} /><span>{agentState === 'Listening' ? 'Listening…' : 'Ready to listen'}</span></>
             )}
