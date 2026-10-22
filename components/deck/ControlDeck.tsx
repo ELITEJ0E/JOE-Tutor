@@ -130,11 +130,10 @@ export default function ControlDeck({
     client.on('error', handleError);
 
     const onData = (base64: string) => {
-      // Fish Mandarin replies are generated after Gemini transcription. Avoid microphone
-      // echo/barge-in while the introduction or TTS response is underway.
-      const activeAgent = useAgent.getState().current.id;
-      const state = useUI.getState().agentState;
-      if ((activeAgent === 'tian_xi_wei' || activeAgent === 'hao_zh') && (state === 'Thinking' || state === 'Generating voice' || state === 'Speaking')) return;
+      // Always deliver captured microphone PCM to Gemini Live when the mic is
+      // enabled. UI speech/loading states are not reliable mic mute signals:
+      // blocking them previously dropped real user speech (especially on mobile).
+      // Browser echoCancellation/noiseSuppression handle playback echo instead.
       if (connected && !isConnecting) {
         if (bufferedAudioRef.current.length > 0) {
           bufferedAudioRef.current.forEach((data) => {
@@ -168,15 +167,22 @@ export default function ControlDeck({
       }
     };
 
+    let cancelled = false;
     if (connected && !isConnecting && !muted && audioRecorder) {
       audioRecorder.on('data', onData);
-      audioRecorder.start().catch((err) => console.error('Mic start failed', err));
+      void audioRecorder.start().then(() => {
+        if (cancelled) void audioRecorder.stop();
+      }).catch((err) => {
+        console.error('Microphone start failed:', err);
+        useUI.getState().setAgentState('Microphone unavailable');
+      });
     } else {
-      audioRecorder.stop();
+      void audioRecorder.stop().catch(err => console.warn('Microphone stop failed:', err));
       bufferedAudioRef.current = [];
     }
 
     return () => {
+      cancelled = true;
       client.off('error', handleError);
       audioRecorder.off('data', onData);
     };
