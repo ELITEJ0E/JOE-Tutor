@@ -57,7 +57,11 @@ export default function ConversationMemorySettings() {
       const parsed: unknown = JSON.parse(await file.text());
       if (!parsed || typeof parsed !== 'object') throw new Error('Invalid backup.');
       const data = parsed as Record<string, unknown>;
-      if (data.agentId !== agent.id || !Array.isArray(data.turns)) throw new Error('Select a backup for ' + agent.name + '.');
+      const matchesCurrent = data.agentId === agent.id;
+      const legacyTianXiWeiBackup = agent.id === 'tian_xi_wei' && data.agentId === 'mei';
+      if ((!matchesCurrent && !legacyTianXiWeiBackup) || !Array.isArray(data.turns)) {
+        throw new Error('Select a backup for ' + agent.name + '.');
+      }
       const entries = sanitizeMemoryTurns(data.turns);
       if (!entries.length) throw new Error('This backup has no valid messages.');
       await saveConversation(agent.id, entries);
