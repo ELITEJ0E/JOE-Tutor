@@ -60,7 +60,7 @@ export default function TutorAvatar() {
     return () => window.clearTimeout(id);
   }, [connected, current.id]);
 
-  const status = !connected ? 'Ready to chat' : agentState === 'Fish Audio unavailable' ? 'Fish Audio unavailable' : (isTalking || agentState === 'Speaking') ? 'Speaking' : agentState === 'Thinking' ? 'Thinking' : 'Listening';
+  const status = !connected ? 'Ready to chat' : agentState === 'Fish Audio unavailable' ? 'Fish Audio unavailable' : (isTalking || agentState === 'Speaking') ? 'Speaking' : agentState === 'Generating voice' ? 'Preparing voice' : agentState === 'Thinking' ? 'Composing reply' : 'Listening';
   const name = current.name.split(' (')[0];
   const bubbleText = visibleText || greetingPreview;
   return (
