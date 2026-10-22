@@ -113,7 +113,7 @@ export function useLiveApi({
     fishAudioUrl.current = null;
     const controller = new AbortController();
     fishController.current = controller;
-    useUI.getState().setAgentState('Thinking');
+    useUI.getState().setAgentState('Generating voice');
     try {
       const response = await fetch('/api/fish-tts', {
         method: 'POST',
