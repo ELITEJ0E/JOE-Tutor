@@ -120,3 +120,24 @@
   background:linear-gradient(155deg,#ffeaf1,#faf2ff);color:#c85887;
   border-radius:50%;
 }
+
+/* Speech caption: bottom-aligned over the character's lower garment, not the top of the page. */
+.chloe-dock .chloe-dock-bubble {
+  position:absolute !important;
+  top:auto !important;
+  bottom:48px !important;
+  left:auto !important;
+  right:50% !important;
+  transform:translateX(50%) !important;
+  margin:0 !important;
+  max-height:132px;
+  z-index:20 !important;
+}
+@media(max-width:600px){
+  .chloe-dock .chloe-dock-bubble{
+    top:auto !important;
+    bottom:38px !important;
+    right:0 !important;
+    transform:none !important;
+  }
+}
