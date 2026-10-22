@@ -134,7 +134,7 @@ export default function ControlDeck({
       // echo/barge-in while the introduction or TTS response is underway.
       const activeAgent = useAgent.getState().current.id;
       const state = useUI.getState().agentState;
-      if ((activeAgent === 'mei' || activeAgent === 'hao_zh') && (state === 'Thinking' || state === 'Generating voice' || state === 'Speaking')) return;
+      if ((activeAgent === 'tian_xi_wei' || activeAgent === 'hao_zh') && (state === 'Thinking' || state === 'Generating voice' || state === 'Speaking')) return;
       if (connected && !isConnecting) {
         if (bufferedAudioRef.current.length > 0) {
           bufferedAudioRef.current.forEach((data) => {
