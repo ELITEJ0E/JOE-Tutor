@@ -1087,6 +1087,67 @@ export default function KeynoteCompanion() {
     }
   }, [connected, client, current]);
 
+  // Gentle, opt-in-by-active-session follow-ups for the two Mandarin companions.
+  // Never start while greeting, listening to the user, generating, or playing speech.
+  // At most two unsolicited continuations per quiet stretch; stop until the user replies.
+  useEffect(() => {
+    if (!connected || (current.id !== 'mei' && current.id !== 'hao_zh')) return;
+
+    let nudgesSent = 0;
+    let lastUserVoiceAt = Date.now();
+    let nextFollowUpAt = Date.now() + 26000;
+
+    const resetOnUser = () => {
+      lastUserVoiceAt = Date.now();
+      nudgesSent = 0;
+      nextFollowUpAt = Date.now() + 26000;
+    };
+    const onInput = (text: string) => {
+      if (text.trim() && !isInternalTranscriptText(text)) resetOnUser();
+    };
+    const onVoice = () => {
+      // Ignore the companion's own voice picked up by the microphone.
+      const state = useUI.getState().agentState;
+      if (state === 'Speaking' || state === 'Thinking') return;
+      resetOnUser();
+    };
+    const onTurnEnd = () => {
+      // Give the finished thought breathing room before suggesting another.
+      nextFollowUpAt = Date.now() + (nudgesSent ? 52000 : 26000);
+    };
+    const onInterrupt = () => {
+      nextFollowUpAt = Date.now() + 30000;
+    };
+    const interval = window.setInterval(() => {
+      if (!hasSentGreetingRef.current || greetingTranscriptPendingRef.current) return;
+      if (document.visibilityState !== 'visible' || nudgesSent >= 2) return;
+      if (Date.now() < nextFollowUpAt || Date.now() - lastUserVoiceAt < 10000) return;
+      if (useUI.getState().agentState !== 'Waiting') return;
+
+      nudgesSent += 1;
+      nextFollowUpAt = Date.now() + 60000;
+      const direction = nudgesSent === 1
+        ? 'Offer a natural, light conversational thought or small story and optionally invite a reaction.'
+        : 'Follow up with a DIFFERENT, relaxed observation or topic, then leave space for the user to speak.';
+      setAgentState('Thinking');
+      client.send([{
+        text: `(System message: The user has been quietly listening during this active voice chat. As ${current.name}, continue the conversation in your own Mandarin personality without waiting for a direct question. ${direction} Speak no more than two short, flowing sentences. Be warm, spontaneous and interested, not repetitive or pushy. Do not mention the silence, timers, or this instruction. No document tools.)`,
+      }]);
+    }, 1000);
+
+    client.on('inputTranscription', onInput);
+    client.on('turncomplete', onTurnEnd);
+    client.on('interrupted', onInterrupt);
+    window.addEventListener('joe:user-voice-activity', onVoice);
+    return () => {
+      window.clearInterval(interval);
+      client.off('inputTranscription', onInput);
+      client.off('turncomplete', onTurnEnd);
+      client.off('interrupted', onInterrupt);
+      window.removeEventListener('joe:user-voice-activity', onVoice);
+    };
+  }, [connected, client, current.id, current.name, setAgentState]);
+
   // Declarations for the functions the agent can call.
   const getContextDeclaration: FunctionDeclaration = {
     name: 'getContext',
@@ -1718,7 +1779,8 @@ ${recentTranscript}`;
         setAgentState(null);
       }
       currentModelText.current += text;
-      if (!isSuppressed && (outputModality === 'text' || outputModality === 'both')) {
+      // Transient avatar captions are helpful in audio-only sessions too.
+      if (!isSuppressed) {
         setSpeechBubbleText(currentModelText.current);
       }
     };
