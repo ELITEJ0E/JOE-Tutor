@@ -1706,6 +1706,9 @@ ${recentTranscript}`;
     };
 
     const handleInputTranscription = (text: string) => {
+      // Startup greetings and quiet-session nudges are internal control messages,
+      // not user speech. Keep the loading indicator and transcript consistent.
+      if (isInternalTranscriptText(text)) return;
       if (!currentUserTurnStartTimeRef.current) {
         currentUserTurnStartTimeRef.current = new Date();
       }
