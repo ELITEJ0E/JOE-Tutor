@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import './companion-voice-roster.css';
 import './gender-board-responsive.css';
 import cn from 'classnames';
@@ -55,10 +56,17 @@ export default function Header() {
 
   const outputMenuRef = useRef<HTMLDivElement>(null);
   const viewMenuRef = useRef<HTMLDivElement>(null);
+  const personaMenuRef = useRef<HTMLDivElement>(null);
+  const personaTriggerRef = useRef<HTMLButtonElement>(null);
+  const visiblePresets = useMemo(
+    () => availablePresets.filter(agent =>
+      (agent.gender || (['sam','tom','rahul','ramon','ari','hiro','hans','newton'].includes(agent.id) ? 'male' : 'female')) === genderFilter
+    ),
+    [availablePresets, genderFilter]
+  );
 
   useEffect(() => {
     const closeDropdowns = (e: MouseEvent) => {
-      setShowRoomList(false);
       if (outputMenuRef.current && !outputMenuRef.current.contains(e.target as Node)) {
         setShowOutputMenu(false);
       }
@@ -69,6 +77,28 @@ export default function Header() {
     window.addEventListener('click', closeDropdowns);
     return () => window.removeEventListener('click', closeDropdowns);
   }, []);
+
+  useEffect(() => {
+    if (!showRoomList) return;
+    const onOutside = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (!personaMenuRef.current?.contains(target) && !personaTriggerRef.current?.contains(target)) {
+        setShowRoomList(false);
+      }
+    };
+    const onEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setShowRoomList(false);
+        personaTriggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', onOutside);
+    document.addEventListener('keydown', onEscape);
+    return () => {
+      document.removeEventListener('pointerdown', onOutside);
+      document.removeEventListener('keydown', onEscape);
+    };
+  }, [showRoomList]);
 
   function changeAgent(agent: Agent | string) {
     disconnect();
@@ -113,6 +143,10 @@ export default function Header() {
             </div>
             <div className="brand-persona-selector">
               <button
+                ref={personaTriggerRef}
+                type="button"
+                aria-haspopup="listbox"
+                aria-controls="joe-persona-menu"
                 className="persona-dropdown-trigger"
                 aria-label={"Switch tutor, current: " + current.name}
                 aria-expanded={showRoomList}
@@ -133,8 +167,20 @@ export default function Header() {
         </div>
 
         {/* Persona Dropdown Menu */}
-        {showRoomList && (
-          <div className="persona-dropdown-menu" onClick={(e) => e.stopPropagation()}>
+        <AnimatePresence>
+          {showRoomList && (
+          <motion.div
+            ref={personaMenuRef}
+            id="joe-persona-menu"
+            role="group"
+            aria-label="Choose a companion"
+            className="persona-dropdown-menu"
+            initial={{ opacity: 0, y: -8, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.985 }}
+            transition={{ duration: 0.16, ease: 'easeOut' }}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="dropdown-section-title">
               <span>Choose your tutor or companion</span>
             </div>
@@ -143,7 +189,7 @@ export default function Header() {
               <button type="button" aria-pressed={genderFilter === 'male'} className={genderFilter === 'male' ? 'active' : ''} onClick={() => setGenderFilter('male')}>Male</button>
             </div>
             <ul className="persona-list">
-              {availablePresets.filter(agent => (agent.gender || (['sam','tom','rahul','ramon','ari','hiro','hans','newton'].includes(agent.id) ? 'male' : 'female')) === genderFilter).map((agent) => (
+              {visiblePresets.map((agent) => (
                 <li key={agent.id}>
                   <button
                     className={cn('persona-option-btn', { active: agent.id === current.id })}
@@ -197,8 +243,9 @@ export default function Header() {
                 </li>
               ))}
             </ul>
-          </div>
-        )}
+          </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Main Tab Navigation Bar */}
