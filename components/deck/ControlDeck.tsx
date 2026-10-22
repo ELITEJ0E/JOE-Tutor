@@ -185,8 +185,9 @@ export default function ControlDeck({
     if (text.trim() && connected) {
       client.send({ text });
       if (!promptToSend) {
+        // Keep the composer open for an uninterrupted text conversation.
         setTextInput('');
-        setShowTextInput(false);
+        inputRef.current?.focus();
       }
     }
   };
