@@ -1113,7 +1113,7 @@ export default function KeynoteCompanion() {
     if (connected && !hasSentGreetingRef.current) {
       const isWarmStart = documentContentRef.current !== PLACEHOLDER_DOC;
       const introduction = getCharacterIntroduction(current);
-      if (current.id === 'mei' || current.id === 'hao_zh') {
+      if (current.id === 'tian_xi_wei' || current.id === 'hao_zh') {
         // Gemini Live voice transcription can end mid-name on the first turn.
         // Speak the complete, predetermined introduction DIRECTLY via Fish Audio.
         // Never ask Gemini to generate a second, competing greeting.
