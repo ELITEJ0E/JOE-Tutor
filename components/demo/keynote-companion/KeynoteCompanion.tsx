@@ -671,7 +671,7 @@ const DocumentRenderer = memo(
  * for the document, transcript, minutes, and audio log.
  */
 export default function KeynoteCompanion() {
-  const { client, setConfig, stopAudio, connected, setMuted, audioStreamerRef } = useLiveAPIContext();
+  const { client, setConfig, stopAudio, connected, setMuted, audioStreamerRef, isFishVoiceActive, speakFishGreeting } = useLiveAPIContext();
   const user = useUser();
   const { current } = useAgent();
   const {
@@ -1063,6 +1063,22 @@ export default function KeynoteCompanion() {
     if (connected && !hasSentGreetingRef.current) {
       const isWarmStart = documentContentRef.current !== PLACEHOLDER_DOC;
       const introduction = getCharacterIntroduction(current);
+      if (current.id === 'mei' || current.id === 'hao_zh') {
+        // Gemini Live voice transcription can end mid-name on the first turn.
+        // Speak the complete, predetermined introduction DIRECTLY via Fish Audio.
+        // Never ask Gemini to generate a second, competing greeting.
+        hasSentGreetingRef.current = true;
+        greetingTranscriptPendingRef.current = false;
+        if (!isFishVoiceActive()) {
+          setAgentState('Fish Audio unavailable');
+          console.error('The selected Mandarin voice requires the deployed /api/fish-tts backend.');
+          return;
+        }
+        setAgentState('Thinking');
+        setSpeechBubbleText(introduction.firstGreeting);
+        void speakFishGreeting(introduction.firstGreeting);
+        return;
+      }
       const message = isWarmStart
         ? `(System message: Welcome the user back naturally as ${current.name}. Your persona's greeting style is: ${introduction.firstGreeting}. Ask whether they would like to chat, continue working or do something else. Do not update the document during a greeting.)`
         : `(System message: This is your first spoken turn. Introduce yourself naturally as ${current.name}, with this unique greeting as a guide: ${introduction.firstGreeting}. Speak ONE short complete sentence in your character's language, including your character name. Finish the sentence fully before stopping, and do not add a second topic or question. This is a social greeting, NOT a request to call document tools.)`;
@@ -1085,7 +1101,7 @@ export default function KeynoteCompanion() {
     } else if (!connected) {
       hasSentGreetingRef.current = false;
     }
-  }, [connected, client, current]);
+  }, [connected, client, current, isFishVoiceActive, speakFishGreeting, setAgentState, setSpeechBubbleText]);
 
   // Gentle, opt-in-by-active-session follow-ups for the two Mandarin companions.
   // Never start while greeting, listening to the user, generating, or playing speech.
