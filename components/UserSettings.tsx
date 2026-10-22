@@ -2,12 +2,14 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
 */
-import Modal from './Modal';
+import SettingsSheet from './SettingsSheet';
+import ConversationMemorySettings from './ConversationMemorySettings';
+import { AnimatePresence, motion } from 'motion/react';
 import './companion-settings.css';
 import { useAgent, useUI, useUser } from '../lib/state';
 import { Theme, themes } from '../lib/themes';
 import { FONT_OPTIONS, PLACEHOLDER_DOC } from '../lib/constants';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useId } from 'react';
 import * as pdfjs from 'pdfjs-dist';
 import { FileUp, X, FileText, Loader2, ChevronDown } from 'lucide-react';
 
@@ -21,64 +23,111 @@ const FORMAT_OPTIONS: FormatOption[] = ['Markdown', 'HTML'];
 /**
  * A custom dropdown component for settings.
  */
-function CustomDropdown({ 
-  value, 
-  options, 
-  onChange, 
-  placeholder 
-}: { 
-  value: string, 
-  options: string[], 
-  onChange: (val: string) => void,
-  placeholder?: string
+const CustomDropdown = React.memo(function CustomDropdown({
+  value, options, onChange, placeholder,
+}: {
+  value: string;
+  options: string[];
+  onChange: (val: string) => void;
+  placeholder?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const listId = useId();
 
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+  useEffect(() => {
+    if (!isOpen) return;
+    const dismiss = (event: PointerEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) setIsOpen(false);
+    };
+    const keyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.stopPropagation();
         setIsOpen(false);
+        triggerRef.current?.focus();
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    document.addEventListener('pointerdown', dismiss);
+    document.addEventListener('keydown', keyDown);
+    return () => {
+      document.removeEventListener('pointerdown', dismiss);
+      document.removeEventListener('keydown', keyDown);
+    };
+  }, [isOpen]);
+
+  const choose = (option: string) => {
+    onChange(option);
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  };
 
   return (
     <div className="custom-dropdown-container" ref={containerRef}>
-      <button 
+      <button
+        ref={triggerRef}
         type="button"
         className="custom-dropdown-trigger"
-        onClick={() => setIsOpen(!isOpen)}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-controls={listId}
+        onClick={() => setIsOpen(open => !open)}
+        onKeyDown={event => {
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            setIsOpen(true);
+            requestAnimationFrame(() => {
+              const selected = containerRef.current?.querySelector<HTMLElement>('[aria-selected="true"]');
+              (selected || containerRef.current?.querySelector<HTMLElement>('[role="option"]'))?.focus();
+            });
+          }
+        }}
       >
         <span>{value || placeholder}</span>
-        <ChevronDown size={16} style={{ 
-          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-          transition: 'transform 0.2s',
-          opacity: 0.5
-        }} />
+        <ChevronDown size={16} className={isOpen ? 'joe-dropdown-chevron-open' : ''} aria-hidden="true" />
       </button>
-      {isOpen && (
-        <div className="custom-dropdown-menu">
-          {options.map(option => (
-            <button
-              key={option}
-              type="button"
-              className={`custom-dropdown-item ${value === option ? 'active' : ''}`}
-              onClick={() => {
-                onChange(option);
-                setIsOpen(false);
-              }}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            id={listId}
+            role="listbox"
+            aria-label="Choose document font"
+            className="custom-dropdown-menu"
+            initial={{ opacity: 0, y: -7, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -5, scale: 0.985 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+          >
+            {options.map((option, index) => (
+              <button
+                key={option}
+                type="button"
+                role="option"
+                aria-selected={value === option}
+                tabIndex={value === option ? 0 : -1}
+                className={`custom-dropdown-item ${value === option ? 'active' : ''}`}
+                onClick={() => choose(option)}
+                onKeyDown={event => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    choose(option);
+                  } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    const next = (index + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
+                    const items = containerRef.current?.querySelectorAll<HTMLElement>('[role="option"]');
+                    items?.[next]?.focus();
+                  }
+                }}
+              >
+                {option}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
-}
+});
 
 /**
  * A modal for configuring user settings for the writing session.
@@ -142,10 +191,12 @@ export default function UserSettings() {
   };
 
   return (
-    <Modal onClose={() => setShowUserConfig(false)}>
+    <SettingsSheet onClose={() => setShowUserConfig(false)} title="Companion & Session">
+
       <div className="userSettings jazzy">
         <h2>Companion & Session Settings</h2>
         <p className="config-description">Personalize conversations, study sessions, document appearance, and your companion experience.</p>
+        <ConversationMemorySettings />
 
         <form
           onSubmit={e => {
@@ -294,6 +345,6 @@ export default function UserSettings() {
           <button className="button primary" style={{ marginTop: '20px' }}>Let’s go!</button>
         </form>
       </div>
-    </Modal>
+    </SettingsSheet>
   );
 }
