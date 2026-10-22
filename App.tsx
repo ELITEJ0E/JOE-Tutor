@@ -25,6 +25,7 @@ import ErrorScreen from './components/demo/ErrorScreen';
 import KeynoteCompanion from './components/demo/keynote-companion/KeynoteCompanion';
 import Header from './components/Header';
 import UserSettings from './components/UserSettings';
+import { AnimatePresence } from 'motion/react';
 import WelcomeScreen from './components/WelcomeScreen';
 import { LiveAPIProvider, useLiveAPIContext } from './contexts/LiveAPIContext';
 import { useAgent, useUI } from './lib/state';
@@ -85,7 +86,9 @@ function AppContent() {
       <Header />
 
       {/* Conditionally render modals based on UI state */}
-      {showUserConfig && <UserSettings />}
+      <AnimatePresence mode="sync">
+        {showUserConfig && <UserSettings key="joe-settings" />}
+      </AnimatePresence>
       {showAgentEdit && <AgentEdit />}
       {showDebugModal && <DebugModal />}
       {showHelpModal && <HelpModal />}
