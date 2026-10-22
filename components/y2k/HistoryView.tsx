@@ -68,7 +68,7 @@ const PAST_SESSIONS: SessionRecord[] = [
   },
   {
     id: 'sess-3',
-    tutorName: 'Mei (美玲)',
+    tutorName: '田曦薇 (Tian Xi Wei)',
     flag: '🇨🇳',
     avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=80',
     language: 'Mandarin',
