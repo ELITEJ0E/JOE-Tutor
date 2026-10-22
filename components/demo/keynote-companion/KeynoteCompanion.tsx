@@ -2135,10 +2135,10 @@ ${recentTranscript}`;
   ]);
 
   const handleClear = () => {
+    // Clearing notes should not erase a companion's separately saved dialogue.
     setDocumentContent(PLACEHOLDER_DOC);
     setDocumentHistory([]);
     setRedoHistory([]);
-    setTranscript([]);
     setCorrectedTranscript('');
     setAccurateTranscript('');
   };
