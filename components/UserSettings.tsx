@@ -73,6 +73,11 @@ const CustomDropdown = React.memo(function CustomDropdown({
         aria-controls={listId}
         onClick={() => setIsOpen(open => !open)}
         onKeyDown={event => {
+          if (event.key === 'Escape' && isOpen) {
+            event.stopPropagation();
+            setIsOpen(false);
+            return;
+          }
           if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
             event.preventDefault();
             setIsOpen(true);
@@ -93,6 +98,13 @@ const CustomDropdown = React.memo(function CustomDropdown({
             role="listbox"
             aria-label="Choose document font"
             className="custom-dropdown-menu"
+            onKeyDown={event => {
+              if (event.key === 'Escape') {
+                event.stopPropagation();
+                setIsOpen(false);
+                triggerRef.current?.focus();
+              }
+            }}
             initial={{ opacity: 0, y: -7, scale: 0.985 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -5, scale: 0.985 }}
