@@ -44,6 +44,8 @@ export type UseLiveApiResults = {
   volumeRef: MutableRefObject<number>;
   audioStreamerRef: MutableRefObject<AudioStreamer | null>;
   setMuted: (muted: boolean) => void;
+  isFishVoiceActive: () => boolean;
+  speakFishGreeting: (text: string) => Promise<boolean>;
 };
 
 /**
@@ -72,11 +74,11 @@ export function useLiveApi({
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
   const fishMode = useRef<'mei' | 'hao_zh' | null>(null);
   const fishText = useRef('');
-  const fishFallbackAudio = useRef<ArrayBuffer[]>([]);
   const fishController = useRef<AbortController | null>(null);
   const fishPlayer = useRef<HTMLAudioElement | null>(null);
   const fishAudioUrl = useRef<string | null>(null);
   const fishGeneration = useRef(0);
+  const isFishVoiceActive = useCallback(() => fishMode.current !== null, []);
 
   const stopFish = useCallback(() => {
     fishGeneration.current += 1;
@@ -88,7 +90,71 @@ export function useLiveApi({
     if (fishAudioUrl.current) URL.revokeObjectURL(fishAudioUrl.current);
     fishAudioUrl.current = null;
     fishText.current = '';
-    fishFallbackAudio.current = [];
+  }, []);
+
+
+  // Play exactly the supplied words, without Gemini speech transcription.
+  // One Fish request owns the whole utterance; the MP3 remains alive until onended.
+  const speakFishGreeting = useCallback(async (text: string): Promise<boolean> => {
+    const character = fishMode.current;
+    if (!character || !text.trim()) return false;
+    const spokenText = text.trim();
+    const generation = ++fishGeneration.current;
+    fishController.current?.abort();
+    fishController.current = null;
+    fishPlayer.current?.pause();
+    fishPlayer.current = null;
+    if (fishAudioUrl.current) URL.revokeObjectURL(fishAudioUrl.current);
+    fishAudioUrl.current = null;
+    const controller = new AbortController();
+    fishController.current = controller;
+    useUI.getState().setAgentState('Thinking');
+    try {
+      const response = await fetch('/api/fish-tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ character, text: spokenText }),
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error('Fish Audio request failed (' + response.status + ')');
+      const blob = await response.blob();
+      if (generation !== fishGeneration.current || !blob.size) return false;
+      const objectUrl = URL.createObjectURL(blob);
+      const player = new Audio(objectUrl);
+      fishAudioUrl.current = objectUrl;
+      fishPlayer.current = player;
+      player.onplaying = () => {
+        if (generation === fishGeneration.current) useUI.getState().setAgentState('Speaking');
+      };
+      player.onended = () => {
+        if (generation !== fishGeneration.current) return;
+        useUI.getState().setAgentState('Waiting');
+        if (fishAudioUrl.current === objectUrl) {
+          URL.revokeObjectURL(objectUrl);
+          fishAudioUrl.current = null;
+          fishPlayer.current = null;
+        }
+      };
+      player.onerror = () => {
+        if (generation !== fishGeneration.current) return;
+        useUI.getState().setAgentState('Fish Audio unavailable');
+        if (fishAudioUrl.current === objectUrl) {
+          URL.revokeObjectURL(objectUrl);
+          fishAudioUrl.current = null;
+          fishPlayer.current = null;
+        }
+      };
+      await player.play();
+      addPerfLog({ turn: 0, event: 'Fish Audio: Complete direct greeting submitted', details: { character, characters: spokenText.length } });
+      return true;
+    } catch (error) {
+      if (controller.signal.aborted || generation !== fishGeneration.current) return false;
+      console.error('Fish Audio voice playback failed:', error);
+      useUI.getState().setAgentState('Fish Audio unavailable');
+      return false;
+    } finally {
+      if (fishController.current === controller) fishController.current = null;
+    }
   }, []);
 
   const volumeRef = useRef(0);
@@ -134,6 +200,9 @@ export function useLiveApi({
       setConnected(true);
     };
     const stopAudioStreamer = () => {
+      // The voice output is already safely gated from microphone input while
+      // synthesizing or speaking. Ignore stray Live interruptions in that period.
+      if (fishMode.current && (fishController.current || (fishPlayer.current && !fishPlayer.current.paused))) return;
       audioStreamerRef.current?.stop();
       stopFish();
     };
@@ -144,58 +213,26 @@ export function useLiveApi({
     const onTurnComplete = async () => {
       const character = fishMode.current;
       const text = fishText.current.trim();
-      const pcm = fishFallbackAudio.current;
       fishText.current = '';
-      fishFallbackAudio.current = [];
       if (!character || isMuted) return;
+
+      // Don't silently replace a Mandarin character with Gemini's different voice.
       if (!text) {
-        useUI.getState().setAgentState('Waiting');
-        pcm.forEach(chunk => audioStreamerRef.current?.addPCM16(new Uint8Array(chunk)));
+        useUI.getState().setAgentState('Fish Audio unavailable');
+        console.warn('Fish Audio: no complete output transcription for this turn.');
         return;
       }
-      useUI.getState().setAgentState('Thinking');
-      const generation = ++fishGeneration.current;
-      const controller = new AbortController();
-      fishController.current = controller;
-      try {
-        const response = await fetch('/api/fish-tts', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ character, text: text.slice(0, 1200) }),
-          signal: controller.signal,
-        });
-        if (!response.ok) throw new Error('Fish Audio unavailable');
-        const audioBlob = await response.blob();
-        if (generation !== fishGeneration.current || !audioBlob.size) return;
-        const objectUrl = URL.createObjectURL(audioBlob);
-        fishAudioUrl.current = objectUrl;
-        const player = new Audio(objectUrl);
-        fishPlayer.current = player;
-        player.onplaying = () => useUI.getState().setAgentState('Speaking');
-        player.onended = () => {
-          useUI.getState().setAgentState('Waiting');
-          if (fishAudioUrl.current === objectUrl) {
-            URL.revokeObjectURL(objectUrl);
-            fishAudioUrl.current = null;
-            fishPlayer.current = null;
-          }
-        };
-        await player.play();
-      } catch (error) {
-        if (controller.signal.aborted || generation !== fishGeneration.current) return;
-        useUI.getState().setAgentState('Waiting');
-        console.warn('Fish Audio failed; replaying the Gemini voice for this reply.');
-        pcm.forEach(chunk => audioStreamerRef.current?.addPCM16(new Uint8Array(chunk)));
-      } finally {
-        if (fishController.current === controller) fishController.current = null;
-      }
+      await speakFishGreeting(text.slice(0, 1200));
     };
 
     // When the client receives audio data, it's passed to the AudioStreamer for playback.
     const onAudio = (data: ArrayBuffer) => {
       if (isMuted || client.suppressPlayback) return;
-      if (fishMode.current) fishFallbackAudio.current.push(data);
-      else audioStreamerRef.current?.addPCM16(new Uint8Array(data));
+      // Never play Gemini's voice for Mandarin Fish characters, even when
+      // the endpoint is unavailable. Report the configuration error instead.
+      const activeId = useAgent.getState().current.id;
+      if (activeId === 'mei' || activeId === 'hao_zh') return;
+      audioStreamerRef.current?.addPCM16(new Uint8Array(data));
     };
 
     // Bind event listeners.
@@ -219,7 +256,7 @@ export function useLiveApi({
       stopFish();
       client.disconnect();
     };
-  }, [client, addPerfLog, isMuted, stopFish]);
+  }, [client, addPerfLog, isMuted, stopFish, speakFishGreeting]);
 
   /**
    * Initiates a connection to the Live API using the currently stored configuration.
@@ -237,8 +274,13 @@ export function useLiveApi({
       try {
         const response = await fetch(`/api/fish-tts?character=${id}`);
         if (response.ok && (await response.json()).enabled) fishMode.current = id;
+        else {
+          console.error('Fish Audio is not configured for ' + id + ' in this deployment.');
+          useUI.getState().setAgentState('Fish Audio unavailable');
+        }
       } catch {
-        // Local development and unconfigured deployments retain Gemini Live.
+        console.error('Fish Audio backend is missing or unreachable. Check /api/fish-tts in the deployed app.');
+        useUI.getState().setAgentState('Fish Audio unavailable');
       }
     }
     addPerfLog({ turn: 0, event: 'Live API: Connecting...' });
@@ -286,5 +328,7 @@ export function useLiveApi({
     audioStreamerRef,
     stopAudio,
     setMuted: setIsMuted,
-  }), [client, config, setConfig, connect, connected, isConnecting, disconnect, volumeRef, audioStreamerRef, stopAudio, setIsMuted]);
+    isFishVoiceActive,
+    speakFishGreeting,
+  }), [client, config, setConfig, connect, connected, isConnecting, disconnect, volumeRef, audioStreamerRef, stopAudio, setIsMuted, isFishVoiceActive, speakFishGreeting]);
 }
