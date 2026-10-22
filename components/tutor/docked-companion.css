@@ -55,14 +55,22 @@
 .chloe-dock-level.active i:nth-child(2){animation-delay:.15s}
 .chloe-dock-level.active i:nth-child(3){animation-delay:.3s}
 .chloe-dock-bubble{
-  pointer-events:auto;position:absolute;bottom:calc(100% + 18px);right:0;
-  width:min(290px,75vw);padding:14px 16px;border-radius:16px;
+  /* Overlay the lower portrait, not the area above the avatar or under app headers. */
+  pointer-events:auto;position:absolute;z-index:8;
+  bottom:48px;right:50%;transform:translateX(50%);
+  width:min(260px,calc(100vw - 24px));box-sizing:border-box;
+  padding:12px 15px;border-radius:16px;
   border:1px solid #f0d4df;background:rgba(255,255,255,.97);
-  box-shadow:0 14px 40px rgba(89,46,63,.14);
+  box-shadow:0 14px 40px rgba(89,46,63,.18);
   color:#563246;line-height:1.45;
+  animation:chloe-bubble-enter .2s ease-out both;
+}
+@keyframes chloe-bubble-enter{
+  from{opacity:0;translate:0 8px}
+  to{opacity:1;translate:0 0}
 }
 .chloe-dock-bubble strong{font-size:11px;color:#be4c79}
-.chloe-dock-bubble p{margin:6px 0 0;font-size:12px;max-height:120px;overflow:auto}
+.chloe-dock-bubble p{margin:6px 0 0;font-size:12px;max-height:100px;overflow:auto;overflow-wrap:anywhere}
 .chloe-dock-bubble button{position:absolute;top:7px;right:7px;border:0;background:transparent;color:#a66b83;cursor:pointer}
 .chloe-dock--minimized{width:155px}
 .chloe-dock--minimized .chloe-dock-base{width:100%}
@@ -85,9 +93,11 @@
   .chloe-dock-level{display:none}
   .chloe-dock-base button{height:22px;width:22px}
   .chloe-dock--minimized{width:110px}
+  .chloe-dock-bubble{right:0;transform:none;bottom:40px;width:min(235px,calc(100vw - 12px));padding:10px 12px}
+  .chloe-dock-bubble p{font-size:11px;max-height:76px}
 }
 @media(prefers-reduced-motion:reduce){
-  .chloe-dock-portrait,.chloe-dock-level.active i{animation:none}
+  .chloe-dock-portrait,.chloe-dock-level.active i,.chloe-dock-bubble{animation:none}
   .deck-chip-btn{transition:none}
 }
 
