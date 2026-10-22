@@ -73,7 +73,7 @@ export function useLiveApi({
   );
 
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
-  const fishMode = useRef<'mei' | 'hao_zh' | null>(null);
+  const fishMode = useRef<'tian_xi_wei' | 'hao_zh' | null>(null);
   const fishText = useRef('');
   const fishController = useRef<AbortController | null>(null);
   const fishPlayer = useRef<HTMLAudioElement | null>(null);
@@ -130,7 +130,7 @@ export function useLiveApi({
       // Tian Xiwei's reference voice is quieter than the other companions.
       // Apply modest playback amplification only for her, with peak limiting.
       // This does not alter Fish Audio synthesis parameters or intonation.
-      if (character === 'mei') {
+      if (character === 'tian_xi_wei') {
         try {
           if (!fishGainContext.current || fishGainContext.current.state === 'closed') {
             fishGainContext.current = new AudioContext();
@@ -248,7 +248,7 @@ export function useLiveApi({
       fishText.current = '';
       if (!character || isMuted) {
         const activeId = useAgent.getState().current.id;
-        if (!character && (activeId === 'mei' || activeId === 'hao_zh') && !isMuted) {
+        if (!character && (activeId === 'tian_xi_wei' || activeId === 'hao_zh') && !isMuted) {
           useUI.getState().setAgentState('Fish Audio unavailable');
         }
         return;
@@ -269,7 +269,7 @@ export function useLiveApi({
       // Never play Gemini's voice for Mandarin Fish characters, even when
       // the endpoint is unavailable. Report the configuration error instead.
       const activeId = useAgent.getState().current.id;
-      if (activeId === 'mei' || activeId === 'hao_zh') return;
+      if (activeId === 'tian_xi_wei' || activeId === 'hao_zh') return;
       audioStreamerRef.current?.addPCM16(new Uint8Array(data));
     };
 
@@ -308,7 +308,7 @@ export function useLiveApi({
     fishMode.current = null;
     // Only enable Fish when the Vercel proxy confirms both API key and authorized voice ID.
     const id = useAgent.getState().current.id;
-    if (id === 'mei' || id === 'hao_zh') {
+    if (id === 'tian_xi_wei' || id === 'hao_zh') {
       try {
         const response = await fetch(`/api/fish-tts?character=${id}`);
         if (response.ok && (await response.json()).enabled) fishMode.current = id;
