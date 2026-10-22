@@ -28,6 +28,8 @@ import {
   Redo2,
   Copy,
   Check,
+  LoaderCircle,
+  AudioLines,
 } from 'lucide-react';
 
 export type ControlDeckProps = {
@@ -68,6 +70,7 @@ export default function ControlDeck({
     documentContent,
     outputModality,
     setOutputModality,
+    agentState,
   } = useUI();
   const { topic, setTopic } = useUser();
   const { current } = useAgent();
@@ -430,6 +433,19 @@ export default function ControlDeck({
             {connected && <div className="hero-pulse-ring" />}
           </button>
         </div>
+
+        {/* Live response status: distinguish listening, generating and audible speech. */}
+        {connected && (
+          <div className="joe-voice-state" role="status" aria-live="polite" aria-label={agentState === 'Speaking' ? 'Companion speaking' : agentState === 'Thinking' ? 'Companion preparing a reply' : 'Listening'}>
+            {agentState === 'Thinking' ? (
+              <><LoaderCircle size={16} className="joe-voice-spinner" /><span>Responding…</span></>
+            ) : agentState === 'Speaking' ? (
+              <><span className="joe-voice-bars" aria-hidden="true"><i /><i /><i /><i /><i /></span><span>Speaking</span></>
+            ) : (
+              <><AudioLines size={16} /><span>{agentState === 'Listening' ? 'Listening…' : 'Ready to listen'}</span></>
+            )}
+          </div>
+        )}
 
         {/* Right Side: Mic & Modality */}
         <div className="deck-group right">
