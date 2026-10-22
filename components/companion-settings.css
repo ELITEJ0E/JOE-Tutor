@@ -13,3 +13,108 @@
 }
 .companion-settings-display strong{font-size:13px;font-weight:700}
 .companion-settings-display span{font-size:11px;color:#9a7b8b;line-height:1.45}
+
+/* Right-side SettingsSheet: a real mobile-friendly panel, not a centered modal. */
+.joe-settings-sheet-root {
+  position:fixed;inset:0;z-index:6500;
+  display:flex;justify-content:flex-end;align-items:stretch;
+  isolation:isolate;
+  font-family:var(--font-body,system-ui,sans-serif);
+  -webkit-user-select:none;user-select:none;
+}
+.joe-settings-sheet-backdrop {
+  position:absolute;inset:0;
+  background:rgba(27,16,32,.36);
+  backdrop-filter:blur(3px);
+}
+.joe-settings-sheet-panel {
+  position:relative;z-index:1;display:flex;flex-direction:column;
+  width:min(570px,100vw);height:100%;height:100dvh;
+  min-width:0;overflow:hidden;
+  background:#fffafd;color:#37283a;
+  box-shadow:-20px 0 65px rgba(37,18,37,.16);
+  border-left:1px solid #f3dae6;
+}
+.joe-settings-sheet-header {
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex:0 0 auto;padding:22px 26px 18px;
+  border-bottom:1px solid #f1e4ed;
+  background:rgba(255,255,255,.95);
+}
+.joe-settings-sheet-header h2{font-size:clamp(22px,1.5vw,27px);font-weight:750;line-height:1.18;margin:5px 0 0;color:#35273c;}
+.joe-settings-sheet-eyebrow{color:#b8507f;letter-spacing:.12em;font-size:10px;font-weight:850;}
+.joe-settings-sheet-close{
+  display:grid;place-items:center;flex:0 0 auto;width:42px;height:42px;
+  border:1px solid #f2e0e9;border-radius:13px;background:#fff2f8;color:#995b7c;
+  cursor:pointer;transition:background .16s,transform .16s;
+}
+.joe-settings-sheet-close:hover{background:#fce1ed;transform:scale(1.04)}
+.joe-settings-sheet-close:focus-visible{outline:3px solid #d4799f;outline-offset:2px}
+.joe-settings-sheet-scroll{
+  flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;
+  scrollbar-width:thin;scrollbar-color:#d5a5b9 transparent;
+}
+.joe-settings-sheet-panel .userSettings.jazzy{
+  min-width:0;max-width:none;width:100%;padding:22px 26px 38px;
+  box-sizing:border-box;
+}
+.joe-settings-sheet-panel .userSettings h2{font-size:20px;margin:0 0 7px;font-weight:750;}
+.joe-settings-sheet-panel .userSettings .config-description{font-size:14px;line-height:1.6;color:#8b6c80;opacity:1;margin:0 0 15px;}
+.joe-settings-sheet-panel .settings-grid{gap:14px}
+.joe-settings-sheet-panel .userSettings form{margin-top:24px;gap:14px}
+.joe-settings-sheet-panel .userSettings form p{font-size:13px;font-weight:650;color:#624858;opacity:1}
+.joe-settings-sheet-panel .userSettings input[type="text"],
+.joe-settings-sheet-panel .userSettings textarea,
+.joe-settings-sheet-panel .custom-dropdown-trigger {
+  min-height:46px;padding:12px 14px;border-radius:12px;
+  background:#fff;border:1px solid #ead8e4;color:#3b3040;font-size:15px;
+}
+.joe-settings-sheet-panel input,
+.joe-settings-sheet-panel textarea { -webkit-user-select:text;user-select:text; }
+.joe-settings-sheet-panel .custom-dropdown-menu{
+  z-index:30;max-height:min(310px,42dvh);border-radius:13px;
+  box-shadow:0 18px 45px rgba(65,29,52,.13);
+}
+.joe-settings-sheet-panel .custom-dropdown-item{padding:11px 12px;font-size:14px;}
+.joe-dropdown-chevron-open{transform:rotate(180deg)}
+.joe-settings-sheet-panel .custom-dropdown-trigger svg{transition:transform .17s ease;opacity:.62}
+.joe-sheet-memory{
+  margin:17px 0 4px;padding:18px;
+  background:linear-gradient(120deg,#fff3f8,#fff);
+  border:1px solid #efdbe6;border-radius:17px;
+}
+.joe-sheet-section-heading{
+  display:flex;align-items:flex-start;gap:12px;
+  justify-content:space-between;margin-bottom:15px;
+}
+.joe-sheet-section-heading h3{font-size:17px;font-weight:750;margin:0 0 5px;color:#442e42;}
+.joe-sheet-section-heading p{font-size:12px;line-height:1.5;margin:0;color:#836a7c;opacity:1;}
+.joe-memory-counter{
+  font-size:11px;font-weight:700;white-space:nowrap;
+  padding:6px 9px;border-radius:100px;background:white;
+  border:1px solid #efdbe6;color:#aa6a8a;
+}
+.joe-sheet-memory-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+.joe-sheet-memory-grid button{
+  min-width:0;min-height:43px;border:1px solid #e6cedb;border-radius:11px;
+  background:white;color:#7c4262;display:flex;align-items:center;justify-content:center;
+  gap:8px;padding:10px;font-size:13px;font-weight:650;cursor:pointer;
+  transition:background .16s,border-color .16s,transform .16s;
+}
+.joe-sheet-memory-grid button:hover:not(:disabled){background:#fff4f9;border-color:#d5a2be;transform:translateY(-1px)}
+.joe-sheet-memory-grid button:disabled{opacity:.42;cursor:not-allowed}
+.joe-sheet-memory-grid button.danger{color:#af526b;}
+.joe-sheet-memory-hint{font-size:12px!important;line-height:1.55;color:#856f7f!important;opacity:1!important;margin:13px 0 0!important;}
+.joe-sheet-memory-status{font-size:12px!important;font-weight:600;color:#a54a77!important;opacity:1!important;margin:9px 0 0!important;}
+@media(max-width:630px){
+ .joe-settings-sheet-panel{width:100vw;border-left:0}
+ .joe-settings-sheet-header{padding:17px 18px 15px}
+ .joe-settings-sheet-panel .userSettings.jazzy{padding:18px 16px 34px}
+ .joe-settings-sheet-panel .settings-grid{grid-template-columns:minmax(0,1fr)}
+ .joe-sheet-memory{padding:14px}
+ .joe-sheet-section-heading{flex-wrap:wrap}
+}
+@media(max-width:350px){.joe-sheet-memory-grid{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){
+ .joe-settings-sheet-close,.joe-sheet-memory-grid button,.joe-settings-sheet-panel .custom-dropdown-trigger svg{transition:none}
+}
