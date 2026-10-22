@@ -90,11 +90,20 @@ export default function ControlDeck({
   // This prevents companions from speaking over someone who's still talking.
   useEffect(() => {
     let lastVoiceEvent = 0;
+    let voiceStartedAt = 0;
     const onVolume = (vol: number) => {
       setUserMicLevel(vol);
-      if (vol > 0.035 && !muted && connected && Date.now() - lastVoiceEvent > 650) {
-        lastVoiceEvent = Date.now();
-        window.dispatchEvent(new Event('joe:user-voice-activity'));
+      const now = Date.now();
+      if (!muted && connected && vol > 0.048) {
+        if (!voiceStartedAt) voiceStartedAt = now;
+        // A short sustained signal is more reliable than random mic noise
+        // for postponing quiet-time companion prompts.
+        if (now - voiceStartedAt >= 300 && now - lastVoiceEvent > 950) {
+          lastVoiceEvent = now;
+          window.dispatchEvent(new Event('joe:user-voice-activity'));
+        }
+      } else {
+        voiceStartedAt = 0;
       }
     };
 
@@ -183,6 +192,7 @@ export default function ControlDeck({
   const handleSendText = (promptToSend?: string) => {
     const text = promptToSend || textInput;
     if (text.trim() && connected) {
+      window.dispatchEvent(new Event('joe:user-text-sent'));
       client.send({ text });
       if (!promptToSend) {
         // Keep the composer open for an uninterrupted text conversation.
