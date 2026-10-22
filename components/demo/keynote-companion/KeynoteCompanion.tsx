@@ -1153,64 +1153,100 @@ export default function KeynoteCompanion() {
     }
   }, [connected, client, current, isFishVoiceActive, speakFishGreeting, setAgentState, setSpeechBubbleText]);
 
-  // Gentle, opt-in-by-active-session follow-ups for the two Mandarin companions.
-  // Never start while greeting, listening to the user, generating, or playing speech.
-  // At most two unsolicited continuations per quiet stretch; stop until the user replies.
+  // Natural conversation continuations for EVERY companion.
+  // Only nudge after a genuinely quiet period and never while audio plays or
+  // Fish Audio is generating. The timer is reset by actual user input.
   useEffect(() => {
-    if (!connected || (current.id !== 'mei' && current.id !== 'hao_zh')) return;
+    if (!connected) return;
 
     let nudgesSent = 0;
-    let lastUserVoiceAt = Date.now();
-    let nextFollowUpAt = Date.now() + 18000;
+    let lastUserActivityAt = Date.now();
+    let nextFollowUpAt = Date.now() + 24000;
+    let awaitingFollowUp = false;
+    let followUpSentAt = 0;
+    let lastAgentState = useUI.getState().agentState;
 
     const resetOnUser = () => {
-      lastUserVoiceAt = Date.now();
+      lastUserActivityAt = Date.now();
       nudgesSent = 0;
-      nextFollowUpAt = Date.now() + 18000;
+      awaitingFollowUp = false;
+      nextFollowUpAt = Date.now() + 21000;
     };
-    const onInput = (text: string) => {
-      if (text.trim() && !isInternalTranscriptText(text)) resetOnUser();
+
+    const onInput = (value: string) => {
+      if (value.trim() && !isInternalTranscriptText(value)) resetOnUser();
     };
     const onVoice = () => {
-      // Ignore the companion's own voice picked up by the microphone.
       const state = useUI.getState().agentState;
-      if (state === 'Speaking' || state === 'Thinking') return;
-      resetOnUser();
+      // Mic echo must not cause endless inactivity resets during replies.
+      if (state !== 'Speaking' && state !== 'Thinking' && state !== 'Generating voice') {
+        resetOnUser();
+      }
     };
     const onTurnEnd = () => {
-      // Give the finished thought breathing room before suggesting another.
-      nextFollowUpAt = Date.now() + (nudgesSent ? 40000 : 18000);
+      awaitingFollowUp = false;
+      // Fish Audio starts after Gemini turn completion, so the busy-state
+      // guard also protects the interval while TTS is still synthesizing.
+      nextFollowUpAt = Date.now() + (nudgesSent > 0 ? 31000 : 21000);
     };
     const onInterrupt = () => {
-      nextFollowUpAt = Date.now() + 30000;
+      awaitingFollowUp = false;
+      nextFollowUpAt = Date.now() + 28000;
     };
+    const onUserMessage = () => resetOnUser();
+    const unsubscribe = useUI.subscribe(state => {
+      const nextState = state.agentState;
+      if (nextState === lastAgentState) return;
+      if ((lastAgentState === 'Speaking' || lastAgentState === 'Generating voice') &&
+          (nextState === 'Waiting' || nextState === null)) {
+        // Count silence from completed playback, not from the start of TTS.
+        nextFollowUpAt = Math.max(nextFollowUpAt, Date.now() + (nudgesSent > 0 ? 28000 : 17000));
+      }
+      lastAgentState = nextState;
+    });
+
     const interval = window.setInterval(() => {
       if (!hasSentGreetingRef.current || greetingTranscriptPendingRef.current) return;
-      if (document.visibilityState !== 'visible' || nudgesSent >= 2) return;
-      if (Date.now() < nextFollowUpAt || Date.now() - lastUserVoiceAt < 10000) return;
-      if (useUI.getState().agentState !== 'Waiting') return;
-
+      if (document.visibilityState !== 'visible' || nudgesSent >= 3) return;
+      const now = Date.now();
+      if (now < nextFollowUpAt || now - lastUserActivityAt < 14000) return;
+      const status = useUI.getState().agentState;
+      if (status === 'Speaking' || status === 'Thinking' ||
+          status === 'Generating voice' || status === 'Fish Audio unavailable') return;
+      // "Listening" means the microphone is armed, not necessarily that the
+      // user is talking; actual voice activity is tracked separately above.
+      if (awaitingFollowUp) {
+        if (now - followUpSentAt < 45000) return;
+        awaitingFollowUp = false; // Recover from a lost Gemini completion.
+      }
       nudgesSent += 1;
-      nextFollowUpAt = Date.now() + 60000;
+      awaitingFollowUp = true;
+      followUpSentAt = now;
+      nextFollowUpAt = now + 60000;
       const direction = nudgesSent === 1
-        ? 'Offer ONE fresh conversational thought connected to the latest topic, without restating your previous sentence.'
-        : 'Bring up a DIFFERENT related observation and leave space for a reply; NEVER repeat earlier wording.';
+        ? 'Continue the most recent topic with a fresh, friendly observation or short anecdote.'
+        : nudgesSent === 2
+          ? 'Offer another original thought connected to the conversation without repeating anything already said.'
+          : 'Gently introduce a new, light topic or story and give the user room to respond.';
       setAgentState('Thinking');
       client.send([{
-        text: `(System message: The user has been quietly listening during this active voice chat. As ${current.name}, continue the conversation in your own Mandarin personality without waiting for a direct question. ${direction} Speak one or two original, flowing sentences. Do not repeat the previous assistant response or duplicate any sentence. Be warm, spontaneous and interested, not pushy. Do not mention the silence, timers, or this instruction. No document tools.)`,
+        text: `(System message: In this active conversation, the user has been quiet for a while. You are ${current.name}. Continue naturally in your established language, style and character personality without waiting for a direct question. ${direction} Keep it to one or two brief, warm sentences. Don't repeat the last line, force a question, mention silence or timers, invent user speech, or call document tools. Afterward leave space for a reply.)`,
       }]);
-    }, 1000);
+    }, 1100);
 
     client.on('inputTranscription', onInput);
     client.on('turncomplete', onTurnEnd);
     client.on('interrupted', onInterrupt);
     window.addEventListener('joe:user-voice-activity', onVoice);
+    window.addEventListener('joe:user-text-sent', onUserMessage);
     return () => {
       window.clearInterval(interval);
+      unsubscribe();
       client.off('inputTranscription', onInput);
       client.off('turncomplete', onTurnEnd);
       client.off('interrupted', onInterrupt);
       window.removeEventListener('joe:user-voice-activity', onVoice);
+      window.removeEventListener('joe:user-text-sent', onUserMessage);
     };
   }, [connected, client, current.id, current.name, setAgentState]);
 
