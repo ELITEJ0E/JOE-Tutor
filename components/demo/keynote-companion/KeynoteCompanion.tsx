@@ -1598,9 +1598,11 @@ ${recentTranscript}`;
     if (audioStreamerRef.current) {
       audioStreamerRef.current.onStart = () => {
         agentAudioPlaybackStartTimeRef.current = new Date();
+        setAgentState('Speaking');
       };
       audioStreamerRef.current.onComplete = () => {
         agentAudioPlaybackEndTimeRef.current = new Date();
+        setAgentState('Waiting');
       };
     }
 
@@ -1806,7 +1808,9 @@ ${recentTranscript}`;
       if (agentFinal || isSuppressingAgentOutputRef.current) {
         processedAgentTurnIdRef.current++;
         updateSuppressionState();
-        setAgentState('Waiting');
+        // Turn-complete marks generation finished, not audible playback finished.
+        // Keep the speaking indicator until AudioStreamer.onComplete.
+        if (!agentAudioPlaybackStartTimeRef.current) setAgentState('Waiting');
         addPerfLog({
           turn: turnCounterRef.current,
           event: 'Agent Turn: End Detected',
