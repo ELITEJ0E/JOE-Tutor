@@ -26,6 +26,7 @@ import { audioContext } from '../../lib/utils';
 import VolMeterWorket from '../../lib/worklets/vol-meter';
 import { DEFAULT_LIVE_API_MODEL } from '../../lib/constants';
 import { useAgent, usePerfLogStore, useUI } from '../../lib/state';
+import { loadConversation, formatConversationContext } from '../../lib/conversation-memory';
 
 /**
  * The shape of the object returned by the `useLiveApi` hook.
@@ -320,13 +321,27 @@ export function useLiveApi({
         useUI.getState().setAgentState('Fish Audio unavailable');
       }
     }
+    // Load the character's own recent history before connecting, so its new
+    // Gemini Live session has real conversational continuity.
+    let configForSession = config;
+    try {
+      const memory = formatConversationContext(await loadConversation(id));
+      if (memory && typeof config.systemInstruction === 'string') {
+        configForSession = {
+          ...config,
+          systemInstruction: config.systemInstruction + '\n\n' + memory,
+        };
+      }
+    } catch (error) {
+      console.warn('Saved conversation could not be loaded; starting a fresh session.', error);
+    }
     addPerfLog({ turn: 0, event: 'Live API: Connecting...' });
     
     try {
       // GenAILiveClient.connect catches errors and returns a boolean indicating success.
       // We await the full connection process (which implies the session object is assigned)
       // before we update the state to stop 'connecting'.
-      await client.connect(config);
+      await client.connect(configForSession);
     } finally {
       setIsConnecting(false);
     }
