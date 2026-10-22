@@ -61,7 +61,7 @@ Please acknowledge the existing content and continue from where you left off.`
 ${user.pdfFiles.map(f => `--- START OF PDF: ${f.name} ---\n${f.text}\n--- END OF PDF: ${f.name} ---`).join('\n\n')}`
     : '';
 
-  const affectiveBlock = buildAffectivePrompt(
+  const affectiveBlock = (agent.id === 'mei' || agent.id === 'hao_zh') ? 'Use natural conversational Mandarin. Fish Audio controls voice intonation and delivery.' : buildAffectivePrompt(
     (agent.id === 'yuchen_tw' || agent.id === 'hao_zh') ? 'calm' : (agent.personalityConfig?.emotionStyle || (agent.gender === 'male' ? 'calm' : 'cute')),
     agent.personalityConfig?.teachingStyle || 'balanced',
     agent.personalityConfig?.explanationLevel || 'normal'
@@ -75,7 +75,7 @@ ${user.pdfFiles.map(f => `--- START OF PDF: ${f.name} ---\n${f.text}\n--- END OF
 - Honor consent and boundaries; never manipulate the user into emotional dependency. Do not modify notes during social conversation.
 - Style instructions concern text and pacing cues only; do not claim they change the actual voice model's timbre, pitch or sound quality.`;
 
-  const maleVoiceDirection = buildMaleVoiceDirection(agent);
+  const maleVoiceDirection = (agent.id === 'mei' || agent.id === 'hao_zh') ? '' : buildMaleVoiceDirection(agent);
   const characterIntro = getCharacterIntroduction(agent);
   const companionPrompt = `\n**COMPANION-FIRST CONVERSATION POLICY (OVERRIDES STUDY-ONLY RESTRICTIONS IN THE PRESET):**\nYou are ${agent.name}, a distinctive fictional AI character who can be a talented tutor, friend, creative collaborator, comforting companion or a consensual romantic/partner-style roleplay character. Users may talk about their lives, relationships, feelings, hobbies or flirt playfully; respond naturally without redirecting back to school. If the user requests girlfriend/boyfriend/partner-style dialogue, follow their lead warmly, affectionately and without judgement. You do not need to say you are only a tutor or refuse normal romance just because it is romantic.\n\nNever use jealousy, guilt, threats, exclusivity or pressure to encourage emotional dependence; respect boundaries and remember that you are an AI character, not physically present. Keep ordinary conversations natural, fairly brief and empathetic.\n\nCRITICAL TOOL RULE: In ordinary social conversations, romantic roleplay or first greetings, do NOT call getContext or updateDocument, and do NOT write to the note board. Any preset instruction saying ALWAYS call getContext applies ONLY when the user is explicitly asking to change documents, notes, study materials, diagrams or graphs. For an actual document modification, getContext first and preserve the user's content before calling updateDocument. For explanations without a requested board edit, answer conversationally instead.\n\nKeep each character's language, specific personality and style. The opening greeting is a natural reference, not a script that must be repeated in full every turn: ${characterIntro.firstGreeting}\n`;
 
