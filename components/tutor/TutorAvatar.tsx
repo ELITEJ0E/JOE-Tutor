@@ -64,7 +64,7 @@ export default function TutorAvatar() {
   const name = current.name.split(' (')[0];
   const bubbleText = visibleText || greetingPreview;
   return (
-    <aside className={'chloe-dock' + (minimized ? ' chloe-dock--minimized' : '') + (isTalking ? ' chloe-dock--speaking' : '')} aria-label={name + ' companion'}>
+    <aside className={'chloe-dock' + (minimized ? ' chloe-dock--minimized' : '') + ((isTalking || agentState === 'Speaking') ? ' chloe-dock--speaking' : '')} aria-label={name + ' companion'}>
       {bubbleText && !minimized && (
         <div className="chloe-dock-bubble">
           <button aria-label="Dismiss speech bubble" onClick={() => { setVisibleText(null); setGreetingPreview(null); setSpeechBubbleText(null); }}><X size={13}/></button>
