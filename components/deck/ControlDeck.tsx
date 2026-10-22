@@ -170,9 +170,8 @@ export default function ControlDeck({
     let cancelled = false;
     if (connected && !isConnecting && !muted && audioRecorder) {
       audioRecorder.on('data', onData);
-      void audioRecorder.start().then(() => {
-        if (cancelled) void audioRecorder.stop();
-      }).catch((err) => {
+      void audioRecorder.start().catch((err) => {
+        if (cancelled) return;
         console.error('Microphone start failed:', err);
         useUI.getState().setAgentState('Microphone unavailable');
       });
