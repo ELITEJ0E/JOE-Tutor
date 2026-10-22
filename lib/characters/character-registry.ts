@@ -4,10 +4,10 @@
  */
 
 import { EmotionStyleId, TeachingStyleId, ExplanationLevelId } from '../personalities/personality-system';
+import tianXiWeiImg from '../../src/assets/images/avatars/TianXiwei-avatar.png';
 
 const jiwonImg = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80';
 const aliceImg = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&auto=format&fit=crop&q=80';
-import tianXiWeiImg from '../../src/assets/images/avatars/TianXiwei-avatar.png';
 const amelieImg = 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&auto=format&fit=crop&q=80';
 const ireneImg = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=600&auto=format&fit=crop&q=80';
 
