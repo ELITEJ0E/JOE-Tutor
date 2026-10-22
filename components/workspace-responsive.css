@@ -285,13 +285,17 @@
     min-height:0;height:100%;max-height:100%;
     overflow:hidden;justify-content:flex-end;
   }
+  /* The dock stays bottom-anchored even when the portrait is minimized.
+     Expanding it grows the portrait UP, never over the navbar. */
   .tutor-companion-column .chloe-dock {
     height:100%;min-height:0;max-height:100%;
-    display:flex;flex-direction:column;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    align-items:stretch;overflow:visible;
   }
   .tutor-companion-column .chloe-dock-portrait {
-    flex:1 1 auto;min-height:0;max-height:none;
-    height:auto;width:100%;overflow:hidden;margin-bottom:-3px;
+    flex:0 1 auto;min-height:0;max-height:calc(100% - 54px);
+    height:clamp(150px,42dvh,440px);width:100%;
+    overflow:hidden;margin-bottom:-3px;
   }
   .tutor-companion-column .chloe-dock-portrait img {
     display:block;width:100%;max-width:100%;height:100%;
@@ -358,4 +362,24 @@
 .joe-settings-sheet-root input,
 .joe-settings-sheet-root textarea {
   -webkit-user-select:text;user-select:text;
+}
+
+/* Restore native text highlighting/selection in the study whiteboard AND the
+   conversation transcript, while retaining select-none for app chrome.
+   Override WebKit's inherited user-select:none behavior on inner parents. */
+.App .tutor-workspace-shell .main-app-area .document-view-container,
+.App .tutor-workspace-shell .main-app-area .document-editor-container,
+.App .tutor-workspace-shell .main-app-area .document-content,
+.App .tutor-workspace-shell .main-app-area .document-content *,
+.App .tutor-workspace-shell .main-app-area .document-textarea,
+.App .tutor-workspace-shell .main-app-area .transcript-content,
+.App .tutor-workspace-shell .main-app-area .transcript-content *,
+.App .tutor-workspace-shell .main-app-area .accurate-transcript-view,
+.App .tutor-workspace-shell .main-app-area .accurate-transcript-view * {
+  -webkit-user-select:text !important;
+  user-select:text !important;
+}
+.App .tutor-workspace-shell .main-app-area ::selection {
+  background:rgba(219,104,151,.27);
+  color:inherit;
 }
