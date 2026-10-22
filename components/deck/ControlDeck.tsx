@@ -85,17 +85,23 @@ export default function ControlDeck({
     }
   }, [connected, isConnecting]);
 
-  // Monitor user mic input volume
+  // Monitor mic level and report meaningful voice activity for idle follow-ups.
+  // This prevents companions from speaking over someone who's still talking.
   useEffect(() => {
+    let lastVoiceEvent = 0;
     const onVolume = (vol: number) => {
       setUserMicLevel(vol);
+      if (vol > 0.035 && !muted && connected && Date.now() - lastVoiceEvent > 650) {
+        lastVoiceEvent = Date.now();
+        window.dispatchEvent(new Event('joe:user-voice-activity'));
+      }
     };
 
     audioRecorder.on('volume', onVolume);
     return () => {
       audioRecorder.off('volume', onVolume);
     };
-  }, [audioRecorder]);
+  }, [audioRecorder, connected, muted]);
 
   // Disconnect if settings open
   useEffect(() => {
