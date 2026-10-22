@@ -736,7 +736,8 @@ export default function KeynoteCompanion() {
   const lastTurnCompleteTimestampRef = useRef(0);
   const selfInterruptionDetectedRef = useRef(false);
   const lastSpeakerRef = useRef<'user' | 'agent' | null>(null);
-  const hasSentGreetingRef = useRef(false);\n  const greetingTranscriptPendingRef = useRef(false);
+  const hasSentGreetingRef = useRef(false);
+  const greetingTranscriptPendingRef = useRef(false);
   const turnCounterRef = useRef(0);
   const hasLoggedFirstUserTextThisTurnRef = useRef(false);
   const hasLoggedFirstAgentTextThisTurnRef = useRef(false);
@@ -1066,7 +1067,9 @@ export default function KeynoteCompanion() {
         ? `(System message: Welcome the user back naturally as ${current.name}. Your persona's greeting style is: ${introduction.firstGreeting}. Ask whether they would like to chat, continue working or do something else. Do not update the document during a greeting.)`
         : `(System message: This is your first spoken turn. Introduce yourself naturally as ${current.name}, with this unique greeting as a guide: ${introduction.firstGreeting}. Speak one or two friendly sentences in your character's language. This is a social greeting, NOT a request to call document tools.)`;
       
-      greetingTranscriptPendingRef.current = true;\n      setAgentState('Thinking');\n      client.send([{ text: message }]);
+      greetingTranscriptPendingRef.current = true;
+      setAgentState('Thinking');
+      client.send([{ text: message }]);
       
       useLogStore.getState().addLog({
         api: 'System Message',
@@ -1725,7 +1728,11 @@ ${recentTranscript}`;
       }
       lastTurnCompleteTimestampRef.current = now;
       const userFinal = currentUserText.current.trim();
-      const agentFinal = currentModelText.current.trim();\n      const isGreetingTurn = greetingTranscriptPendingRef.current && (!userFinal || isInternalTranscriptText(userFinal));\n      if (isGreetingTurn) greetingTranscriptPendingRef.current = false;\n      else if (userFinal && !isInternalTranscriptText(userFinal)) greetingTranscriptPendingRef.current = false;\n      setTranscript(prev => {
+      const agentFinal = currentModelText.current.trim();
+      const isGreetingTurn = greetingTranscriptPendingRef.current && (!userFinal || isInternalTranscriptText(userFinal));
+      if (isGreetingTurn) greetingTranscriptPendingRef.current = false;
+      else if (userFinal && !isInternalTranscriptText(userFinal)) greetingTranscriptPendingRef.current = false;
+      setTranscript(prev => {
         let nextTranscript = [...prev];
         if (userFinal && !isInternalTranscriptText(userFinal)) {
           nextTranscript.push({
