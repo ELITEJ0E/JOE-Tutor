@@ -25,7 +25,7 @@ import { AudioStreamer } from '../../lib/audio-streamer';
 import { audioContext } from '../../lib/utils';
 import VolMeterWorket from '../../lib/worklets/vol-meter';
 import { DEFAULT_LIVE_API_MODEL } from '../../lib/constants';
-import { useAgent, usePerfLogStore } from '../../lib/state';
+import { useAgent, usePerfLogStore, useUI } from '../../lib/state';
 
 /**
  * The shape of the object returned by the `useLiveApi` hook.
@@ -83,6 +83,7 @@ export function useLiveApi({
     fishController.current?.abort();
     fishController.current = null;
     fishPlayer.current?.pause();
+    useUI.getState().setAgentState(null);
     fishPlayer.current = null;
     if (fishAudioUrl.current) URL.revokeObjectURL(fishAudioUrl.current);
     fishAudioUrl.current = null;
@@ -148,9 +149,11 @@ export function useLiveApi({
       fishFallbackAudio.current = [];
       if (!character || isMuted) return;
       if (!text) {
+        useUI.getState().setAgentState('Waiting');
         pcm.forEach(chunk => audioStreamerRef.current?.addPCM16(new Uint8Array(chunk)));
         return;
       }
+      useUI.getState().setAgentState('Thinking');
       const generation = ++fishGeneration.current;
       const controller = new AbortController();
       fishController.current = controller;
@@ -168,7 +171,9 @@ export function useLiveApi({
         fishAudioUrl.current = objectUrl;
         const player = new Audio(objectUrl);
         fishPlayer.current = player;
+        player.onplaying = () => useUI.getState().setAgentState('Speaking');
         player.onended = () => {
+          useUI.getState().setAgentState('Waiting');
           if (fishAudioUrl.current === objectUrl) {
             URL.revokeObjectURL(objectUrl);
             fishAudioUrl.current = null;
@@ -178,6 +183,7 @@ export function useLiveApi({
         await player.play();
       } catch (error) {
         if (controller.signal.aborted || generation !== fishGeneration.current) return;
+        useUI.getState().setAgentState('Waiting');
         console.warn('Fish Audio failed; replaying the Gemini voice for this reply.');
         pcm.forEach(chunk => audioStreamerRef.current?.addPCM16(new Uint8Array(chunk)));
       } finally {
