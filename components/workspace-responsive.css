@@ -258,3 +258,26 @@
 @keyframes joe-voice-wave{from{height:4px;opacity:.65}to{height:18px;opacity:1}}
 @media(max-width:640px){.joe-voice-state{min-width:0;font-size:11px;padding:4px;gap:5px}}
 @media(prefers-reduced-motion:reduce){.joe-voice-spinner,.joe-voice-bars i{animation:none}}
+
+/* Per-character conversation memory: lightweight controls within Transcript. */
+.joe-memory-actions {
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px;
+  padding:10px 12px; margin-bottom:12px;
+  border:1px solid rgba(186,137,162,.24);border-radius:12px;
+  background:rgba(255,248,252,.8);
+}
+.joe-memory-description {flex:1 1 260px;line-height:1.45;font-size:11px;color:#7e6270;}
+.joe-memory-buttons {display:flex;gap:6px;flex-wrap:wrap;}
+.joe-memory-buttons button {
+  padding:6px 9px;border:1px solid rgba(189,123,158,.35);
+  border-radius:8px;background:white;color:#92506e;font-size:11px;
+  cursor:pointer;white-space:nowrap;
+}
+.joe-memory-buttons button:hover:not(:disabled){background:#fff0f6;}
+.joe-memory-buttons button:disabled{opacity:.4;cursor:not-allowed;}
+.joe-memory-notice{width:100%;font-size:11px;color:#865470;margin:2px 0 0;}
+@media(max-width:600px){
+  .joe-memory-actions{padding:8px;gap:6px;}
+  .joe-memory-description{flex-basis:100%;}
+  .joe-memory-buttons button{font-size:10px;padding:6px 7px;}
+}
