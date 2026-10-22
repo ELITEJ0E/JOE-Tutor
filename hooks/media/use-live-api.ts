@@ -145,7 +145,7 @@ export function useLiveApi({
         }
       };
       await player.play();
-      addPerfLog({ turn: 0, event: 'Fish Audio: Complete direct greeting submitted', details: { character, characters: spokenText.length } });
+      console.info('Fish Audio playback started:', character, 'text length:', spokenText.length);
       return true;
     } catch (error) {
       if (controller.signal.aborted || generation !== fishGeneration.current) return false;
@@ -214,7 +214,13 @@ export function useLiveApi({
       const character = fishMode.current;
       const text = fishText.current.trim();
       fishText.current = '';
-      if (!character || isMuted) return;
+      if (!character || isMuted) {
+        const activeId = useAgent.getState().current.id;
+        if (!character && (activeId === 'mei' || activeId === 'hao_zh') && !isMuted) {
+          useUI.getState().setAgentState('Fish Audio unavailable');
+        }
+        return;
+      }
 
       // Don't silently replace a Mandarin character with Gemini's different voice.
       if (!text) {
