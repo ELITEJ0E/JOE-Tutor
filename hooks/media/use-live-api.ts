@@ -78,6 +78,11 @@ export function useLiveApi({
   const fishPlayer = useRef<HTMLAudioElement | null>(null);
   const fishAudioUrl = useRef<string | null>(null);
   const fishGeneration = useRef(0);
+  // Playback-only gain. Keep the Fish synthesis voice/prosody unchanged.
+  const fishGainContext = useRef<AudioContext | null>(null);
+  const fishGainSource = useRef<MediaElementAudioSourceNode | null>(null);
+  const fishGainNode = useRef<GainNode | null>(null);
+
   const isFishVoiceActive = useCallback(() => fishMode.current !== null, []);
 
   const stopFish = useCallback(() => {
@@ -121,6 +126,32 @@ export function useLiveApi({
       if (generation !== fishGeneration.current || !blob.size) return false;
       const objectUrl = URL.createObjectURL(blob);
       const player = new Audio(objectUrl);
+      // Tian Xiwei's reference voice is quieter than the other companions.
+      // Apply modest playback amplification only for her, with peak limiting.
+      // This does not alter Fish Audio synthesis parameters or intonation.
+      if (character === 'mei') {
+        try {
+          if (!fishGainContext.current || fishGainContext.current.state === 'closed') {
+            fishGainContext.current = new AudioContext();
+          }
+          const ctx = fishGainContext.current;
+          const source = ctx.createMediaElementSource(player);
+          const gain = ctx.createGain();
+          const limiter = ctx.createDynamicsCompressor();
+          gain.gain.value = 1.45;
+          limiter.threshold.value = -8;
+          limiter.knee.value = 6;
+          limiter.ratio.value = 12;
+          limiter.attack.value = 0.003;
+          limiter.release.value = 0.15;
+          source.connect(gain).connect(limiter).connect(ctx.destination);
+          fishGainSource.current = source;
+          fishGainNode.current = gain;
+          void ctx.resume();
+        } catch (error) {
+          console.warn('Tian Xiwei volume boost unavailable; using normal playback.', error);
+        }
+      }
       fishAudioUrl.current = objectUrl;
       fishPlayer.current = player;
       player.onplaying = () => {
