@@ -40,7 +40,7 @@ import {
   Insert,
 } from '../../../lib/state';
 import { pcmToWav, combineArrayBuffers } from '../../../lib/utils';
-import { loadConversation, saveConversation, deleteConversation, sanitizeMemoryTurns } from '../../../lib/conversation-memory';
+import { loadConversation, saveConversation, deleteConversation, type MemoryTurn } from '../../../lib/conversation-memory';
 import Modal from '../../Modal';
 import FunctionPlotter from './FunctionPlotter';
 import { MinutesLoadingAnimation } from '../../MinutesLoadingAnimation';
@@ -703,8 +703,6 @@ export default function KeynoteCompanion() {
   const [redoHistory, setRedoHistory] = useState<string[]>([]);
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
   const [memoryReadyId, setMemoryReadyId] = useState<string | null>(null);
-  const [memoryNotice, setMemoryNotice] = useState('');
-  const memoryImportInputRef = useRef<HTMLInputElement>(null);
   const [audioLog, setAudioLog] = useState<AudioLogEntry[]>([]);
   const [correctedTranscript, setCorrectedTranscript] = useState('');
   const [accurateTranscript, setAccurateTranscript] = useState('');
@@ -772,7 +770,6 @@ export default function KeynoteCompanion() {
   useEffect(() => {
     let cancelled = false;
     setMemoryReadyId(null);
-    setMemoryNotice('');
     setTranscript([]);
     liveAgentCaptionIndexRef.current = null;
     loadConversation(current.id).then(record => {
@@ -782,7 +779,6 @@ export default function KeynoteCompanion() {
     }).catch(error => {
       if (cancelled) return;
       console.warn('Cannot read locally saved conversation:', error);
-      setMemoryNotice('Browser storage is unavailable. You can still export this conversation.');
       setMemoryReadyId(current.id);
     });
     return () => { cancelled = true; };
@@ -797,65 +793,24 @@ export default function KeynoteCompanion() {
       const action = transcript.length ? saveConversation(agentId, transcript) : deleteConversation(agentId);
       void action.catch(error => {
         console.warn('Could not store conversation:', error);
-        setMemoryNotice('This browser could not save the conversation. Use Export JSON for a backup.');
       });
     }, 800);
     return () => window.clearTimeout(timer);
   }, [memoryReadyId, current.id, transcript]);
 
-  const downloadConversation = (kind: 'json' | 'txt') => {
-    const turns = sanitizeMemoryTurns(transcript);
-    const exportDate = new Date().toISOString();
-    const json = JSON.stringify({
-      version: 1, agentId: current.id, agentName: current.name, exportedAt: exportDate, turns,
-    }, null, 2);
-    const txt = turns.map(turn => turn.speaker + ': ' + turn.text).join('\n\n');
-    const url = URL.createObjectURL(new Blob([kind === 'json' ? json : txt], {
-      type: kind === 'json' ? 'application/json;charset=utf-8' : 'text/plain;charset=utf-8',
-    }));
-    const download = document.createElement('a');
-    download.href = url;
-    download.download = 'joe-tutor-' + current.id.replace(/[^a-z0-9_-]/gi, '-') +
-      '-' + exportDate.slice(0, 10) + '.' + kind;
-    document.body.appendChild(download);
-    download.click();
-    download.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 2000);
-    setMemoryNotice('Conversation exported as ' + kind.toUpperCase() + '.');
-  };
-
-  const importConversation = async (file: File) => {
-    try {
-      if (file.size > 5_000_000) throw new Error('JSON file is too large (max 5 MB).');
-      const data = JSON.parse(await file.text()) as Record<string, unknown>;
-      if (!data || data.agentId !== current.id || !Array.isArray(data.turns)) {
-        throw new Error('Choose a JOE Tutor JSON backup for this same companion.');
-      }
-      const turns = sanitizeMemoryTurns(data.turns);
-      if (!turns.length) throw new Error('No valid messages were found in that backup.');
-      await saveConversation(current.id, turns);
+  // Settings owns import/export controls. Keep the live transcript synchronized
+  // when that sheet restores or clears this companion's saved memory.
+  useEffect(() => {
+    const onMemoryChanged = (event: Event) => {
+      const { agentId, turns } = (event as CustomEvent<{ agentId: string; turns: MemoryTurn[] }>).detail;
+      if (agentId !== current.id) return;
+      liveAgentCaptionIndexRef.current = null;
       setTranscript(turns);
       setAccurateTranscript('');
-      setMemoryNotice('Imported ' + turns.length + ' messages. Start a new voice session to apply the history.');
-    } catch (error) {
-      setMemoryNotice(error instanceof Error ? error.message : 'Could not import the backup.');
-    } finally {
-      if (memoryImportInputRef.current) memoryImportInputRef.current.value = '';
-    }
-  };
-
-  const clearConversationMemory = async () => {
-    if (!window.confirm('Delete the saved transcript for ' + current.name + ' from this browser?')) return;
-    try {
-      await deleteConversation(current.id);
-      setTranscript([]);
-      setAccurateTranscript('');
-      setMemoryNotice('Saved messages cleared for this companion.');
-    } catch (error) {
-      setMemoryNotice('Could not clear browser memory. Please check storage permissions.');
-    }
-  };
-
+    };
+    window.addEventListener('joe:conversation-memory-changed', onMemoryChanged);
+    return () => window.removeEventListener('joe:conversation-memory-changed', onMemoryChanged);
+  }, [current.id]);
 
   // This effect ensures all map containers and illustration/graph tags have a unique ID, 
   // which is necessary for tracking and persisting their resized dimensions.
@@ -2710,20 +2665,6 @@ ${recentTranscript}`;
 
         {mainTab === 'transcript' && (
           <div className="transcript-content">
-            <div className="joe-memory-actions exclude-from-pdf" aria-label="Conversation memory">
-              <span className="joe-memory-description">Saved in this browser per companion (IndexedDB). Recent messages are included as context when a new voice session starts.</span>
-              <div className="joe-memory-buttons">
-                <button type="button" onClick={() => downloadConversation('json')} disabled={memoryReadyId !== current.id} title="Download a restorable copy">Export JSON</button>
-                <button type="button" onClick={() => downloadConversation('txt')} disabled={memoryReadyId !== current.id} title="Download readable transcript">Export TXT</button>
-                <button type="button" onClick={() => memoryImportInputRef.current?.click()} disabled={memoryReadyId !== current.id} title="Restore a JSON conversation backup">Import JSON</button>
-                <button type="button" onClick={() => void clearConversationMemory()} disabled={memoryReadyId !== current.id || !transcript.length} title="Erase this companion's saved messages">Clear history</button>
-              </div>
-              <input ref={memoryImportInputRef} type="file" accept="application/json,.json" style={{display:'none'}} onChange={e => {
-                const file = e.target.files?.[0];
-                if (file) void importConversation(file);
-              }} />
-              {memoryNotice && <p className="joe-memory-notice" role="status">{memoryNotice}</p>}
-            </div>
             <div className="document-actions exclude-from-pdf mb-4">
               <button 
                 className="pdf-button flex items-center gap-2"
