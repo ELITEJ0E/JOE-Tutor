@@ -18,7 +18,7 @@ import {
   XiaoYuTaiwan,
   Nicha,
   Luca,
-  Mei,
+  TianXiWei,
   Newton,
   Olga,
   Rahul,
@@ -107,7 +107,7 @@ export const useAgent = create<{
     // English
     ChloeTutor, Alice, Irene, Sam, Tom, Ethan,
     // Korean, Japanese, Taiwanese Mandarin, Thai and Mandarin
-    Yuna, Joon, Haruka, Hiro, XiaoYuTaiwan, YuChen, Nicha, Niran, Mei, Hao,
+    Yuna, Joon, Haruka, Hiro, XiaoYuTaiwan, YuChen, Nicha, Niran, TianXiWei, Hao,
     // Additional languages
     Rahul, Anika, Ramon, Sofia, Amelie, Julien, Ari, Noa,
     Hans, Lena, Newton, Ada, Olga, Maxim, Luca, Marco,
