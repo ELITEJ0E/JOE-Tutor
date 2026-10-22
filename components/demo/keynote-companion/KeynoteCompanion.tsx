@@ -1112,12 +1112,12 @@ export default function KeynoteCompanion() {
 
     let nudgesSent = 0;
     let lastUserVoiceAt = Date.now();
-    let nextFollowUpAt = Date.now() + 26000;
+    let nextFollowUpAt = Date.now() + 18000;
 
     const resetOnUser = () => {
       lastUserVoiceAt = Date.now();
       nudgesSent = 0;
-      nextFollowUpAt = Date.now() + 26000;
+      nextFollowUpAt = Date.now() + 18000;
     };
     const onInput = (text: string) => {
       if (text.trim() && !isInternalTranscriptText(text)) resetOnUser();
@@ -1130,7 +1130,7 @@ export default function KeynoteCompanion() {
     };
     const onTurnEnd = () => {
       // Give the finished thought breathing room before suggesting another.
-      nextFollowUpAt = Date.now() + (nudgesSent ? 52000 : 26000);
+      nextFollowUpAt = Date.now() + (nudgesSent ? 40000 : 18000);
     };
     const onInterrupt = () => {
       nextFollowUpAt = Date.now() + 30000;
@@ -1144,11 +1144,11 @@ export default function KeynoteCompanion() {
       nudgesSent += 1;
       nextFollowUpAt = Date.now() + 60000;
       const direction = nudgesSent === 1
-        ? 'Offer a natural, light conversational thought or small story and optionally invite a reaction.'
-        : 'Follow up with a DIFFERENT, relaxed observation or topic, then leave space for the user to speak.';
+        ? 'Offer ONE fresh conversational thought connected to the latest topic, without restating your previous sentence.'
+        : 'Bring up a DIFFERENT related observation and leave space for a reply; NEVER repeat earlier wording.';
       setAgentState('Thinking');
       client.send([{
-        text: `(System message: The user has been quietly listening during this active voice chat. As ${current.name}, continue the conversation in your own Mandarin personality without waiting for a direct question. ${direction} Speak no more than two short, flowing sentences. Be warm, spontaneous and interested, not repetitive or pushy. Do not mention the silence, timers, or this instruction. No document tools.)`,
+        text: `(System message: The user has been quietly listening during this active voice chat. As ${current.name}, continue the conversation in your own Mandarin personality without waiting for a direct question. ${direction} Speak one or two original, flowing sentences. Do not repeat the previous assistant response or duplicate any sentence. Be warm, spontaneous and interested, not pushy. Do not mention the silence, timers, or this instruction. No document tools.)`,
       }]);
     }, 1000);
 
@@ -1796,7 +1796,8 @@ ${recentTranscript}`;
 
       if (!isAgentSpeakingRef.current) {
         isAgentSpeakingRef.current = true;
-        setAgentState(null);
+        // Stay in a visible loading state until Fish playback starts.
+        if (useUI.getState().agentState !== 'Speaking') setAgentState('Thinking');
       }
       currentModelText.current += text;
       // Show the partial agent response in Transcript as it arrives, rather
@@ -1847,6 +1848,11 @@ ${recentTranscript}`;
           });
         }
         if (agentFinal && !isGreetingTurn && !isSuppressingAgentOutputRef.current) {
+          // Deduplicate the same complete sentence arriving twice in one turn.
+          const doubled = agentFinal.trim();
+          const half = Math.floor(doubled.length / 2);
+          const cleanFinal = doubled.length % 2 === 0 && doubled.slice(0, half).trim() === doubled.slice(half).trim()
+            ? doubled.slice(0, half).trim() : doubled;
           const lastEntry = nextTranscript[nextTranscript.length - 1];
           if (
             lastEntry &&
@@ -1855,12 +1861,12 @@ ${recentTranscript}`;
           ) {
             nextTranscript[nextTranscript.length - 1] = {
               ...lastEntry,
-              text: lastEntry.text + ' ' + agentFinal,
+              text: lastEntry.text.trim() === cleanFinal ? cleanFinal : lastEntry.text + ' ' + cleanFinal,
             };
           } else {
             nextTranscript.push({
               speaker: agentRef.current.name,
-              text: agentFinal,
+              text: cleanFinal,
             });
           }
         }
