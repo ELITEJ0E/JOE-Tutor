@@ -1065,7 +1065,7 @@ export default function KeynoteCompanion() {
       const introduction = getCharacterIntroduction(current);
       const message = isWarmStart
         ? `(System message: Welcome the user back naturally as ${current.name}. Your persona's greeting style is: ${introduction.firstGreeting}. Ask whether they would like to chat, continue working or do something else. Do not update the document during a greeting.)`
-        : `(System message: This is your first spoken turn. Introduce yourself naturally as ${current.name}, with this unique greeting as a guide: ${introduction.firstGreeting}. Speak one or two friendly sentences in your character's language. This is a social greeting, NOT a request to call document tools.)`;
+        : `(System message: This is your first spoken turn. Introduce yourself naturally as ${current.name}, with this unique greeting as a guide: ${introduction.firstGreeting}. Speak ONE short complete sentence in your character's language, including your character name. Finish the sentence fully before stopping, and do not add a second topic or question. This is a social greeting, NOT a request to call document tools.)`;
       
       greetingTranscriptPendingRef.current = true;
       setAgentState('Thinking');
