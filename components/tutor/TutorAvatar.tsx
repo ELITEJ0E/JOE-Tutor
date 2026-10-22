@@ -38,20 +38,29 @@ export default function TutorAvatar() {
   useEffect(() => {
     setVisibleText(speechBubbleText);
     if (!speechBubbleText) return;
+    // Keep words on screen while the companion is composing or speaking, then
+    // dismiss shortly after the reply finishes instead of lingering for 9s.
+    const delay = agentState === 'Thinking' || agentState === 'Speaking' ? 10000 : 4200;
     const id = window.setTimeout(() => {
       setVisibleText(null);
       setSpeechBubbleText(null);
-    }, 8500);
+    }, delay);
     return () => window.clearTimeout(id);
-  }, [speechBubbleText, setSpeechBubbleText]);
+  }, [speechBubbleText, setSpeechBubbleText, agentState]);
 
   useEffect(() => {
+    if (!connected) {
+      setGreetingPreview(null);
+      return;
+    }
+    // A brief preview appears only when a live session actually connects.
+    // Once the live transcript arrives it takes precedence over this preview.
     setGreetingPreview(getCharacterIntroduction(current).firstGreeting);
-    const id = window.setTimeout(() => setGreetingPreview(null), 9000);
+    const id = window.setTimeout(() => setGreetingPreview(null), 3600);
     return () => window.clearTimeout(id);
-  }, [current]);
+  }, [connected, current.id]);
 
-  const status = !connected ? 'Ready to chat' : isTalking ? 'Speaking' : agentState === 'Thinking' ? 'Thinking' : 'Listening';
+  const status = !connected ? 'Ready to chat' : (isTalking || agentState === 'Speaking') ? 'Speaking' : agentState === 'Thinking' ? 'Thinking' : 'Listening';
   const name = current.name.split(' (')[0];
   const bubbleText = visibleText || greetingPreview;
   return (
