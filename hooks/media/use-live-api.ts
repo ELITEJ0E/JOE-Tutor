@@ -113,6 +113,7 @@ export function useLiveApi({
     if (fishAudioUrl.current) URL.revokeObjectURL(fishAudioUrl.current);
     fishAudioUrl.current = null;
     const controller = new AbortController();
+    let streamingActive = false;
     fishController.current = controller;
     useUI.getState().setAgentState('Generating voice');
     try {
@@ -133,6 +134,7 @@ export function useLiveApi({
       let player: HTMLAudioElement;
       let mediaSource: MediaSource | null = null;
       if (canStreamMp3) {
+        streamingActive = true;
         mediaSource = new MediaSource();
         objectUrl = URL.createObjectURL(mediaSource);
         player = new Audio(objectUrl);
@@ -257,6 +259,8 @@ export function useLiveApi({
           if (generation !== fishGeneration.current || controller.signal.aborted) return;
           console.error('Fish Audio MP3 stream interrupted:', error);
           useUI.getState().setAgentState('Fish Audio unavailable');
+        }).finally(() => {
+          if (fishController.current === controller) fishController.current = null;
         });
       } else {
         await player.play();
@@ -269,7 +273,7 @@ export function useLiveApi({
       useUI.getState().setAgentState('Fish Audio unavailable');
       return false;
     } finally {
-      if (fishController.current === controller) fishController.current = null;
+      if (!streamingActive && fishController.current === controller) fishController.current = null;
     }
   }, []);
 
