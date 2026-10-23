@@ -27,6 +27,7 @@ import VolMeterWorket from '../../lib/worklets/vol-meter';
 import { DEFAULT_LIVE_API_MODEL } from '../../lib/constants';
 import { useAgent, usePerfLogStore, useUI } from '../../lib/state';
 import { loadConversation, formatConversationContext } from '../../lib/conversation-memory';
+import { FishPhraseQueue, FishVoiceId } from '../../lib/fish-phrase-queue';
 
 /**
  * The shape of the object returned by the `useLiveApi` hook.
@@ -74,7 +75,7 @@ export function useLiveApi({
 
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
   const fishMode = useRef<'tian_xi_wei' | 'hao_zh' | null>(null);
-  const fishText = useRef('');
+  const fishPhraseQueue = useRef<FishPhraseQueue | null>(null);
   const fishController = useRef<AbortController | null>(null);
   const fishPlayer = useRef<HTMLAudioElement | null>(null);
   const fishAudioUrl = useRef<string | null>(null);
@@ -87,6 +88,7 @@ export function useLiveApi({
   const isFishVoiceActive = useCallback(() => fishMode.current !== null, []);
 
   const stopFish = useCallback(() => {
+    fishPhraseQueue.current?.cancel();
     fishGeneration.current += 1;
     fishController.current?.abort();
     fishController.current = null;
@@ -95,7 +97,6 @@ export function useLiveApi({
     fishPlayer.current = null;
     if (fishAudioUrl.current) URL.revokeObjectURL(fishAudioUrl.current);
     fishAudioUrl.current = null;
-    fishText.current = '';
   }, []);
 
 
@@ -104,6 +105,7 @@ export function useLiveApi({
   const speakFishGreeting = useCallback(async (text: string): Promise<boolean> => {
     const character = fishMode.current;
     if (!character || !text.trim()) return false;
+    fishPhraseQueue.current?.cancel();
     const spokenText = text.trim();
     const generation = ++fishGeneration.current;
     fishController.current?.abort();
@@ -280,6 +282,110 @@ export function useLiveApi({
     }
   }, []);
 
+  // Streaming Gemini transcript is split into natural phrases by FishPhraseQueue.
+  // Fish can synthesize the next phrase while the previous one plays; at most
+  // two requests are prepared to avoid unnecessarily burning free API quota.
+  const playFishPhrase = useCallback((voice: FishVoiceId, blob: Blob, signal: AbortSignal): Promise<void> => {
+    return new Promise<void>((resolve, reject) => {
+      if (signal.aborted) { reject(new Error('Fish phrase cancelled')); return; }
+      const objectUrl = URL.createObjectURL(blob);
+      const player = new Audio(objectUrl);
+      fishPlayer.current = player;
+      fishAudioUrl.current = objectUrl;
+
+      if (voice === 'tian_xi_wei') {
+        try {
+          if (!fishGainContext.current || fishGainContext.current.state === 'closed') {
+            fishGainContext.current = new AudioContext();
+          }
+          const ctx = fishGainContext.current;
+          const source = ctx.createMediaElementSource(player);
+          const gain = ctx.createGain();
+          const limiter = ctx.createDynamicsCompressor();
+          gain.gain.value = 1.45;
+          limiter.threshold.value = -8;
+          limiter.knee.value = 6;
+          limiter.ratio.value = 12;
+          limiter.attack.value = 0.003;
+          limiter.release.value = 0.15;
+          source.connect(gain).connect(limiter).connect(ctx.destination);
+          fishGainSource.current = source;
+          fishGainNode.current = gain;
+          void ctx.resume();
+        } catch (error) {
+          console.warn('Fish playback amplification unavailable:', error);
+        }
+      }
+      let finished = false;
+      const cleanup = () => {
+        player.onplaying = null;
+        player.onended = null;
+        player.onerror = null;
+        signal.removeEventListener('abort', onAbort);
+        if (fishPlayer.current === player) fishPlayer.current = null;
+        if (fishAudioUrl.current === objectUrl) {
+          URL.revokeObjectURL(objectUrl);
+          fishAudioUrl.current = null;
+        }
+      };
+      const onAbort = () => {
+        if (finished) return;
+        finished = true;
+        player.pause();
+        cleanup();
+        reject(new Error('Fish phrase cancelled'));
+      };
+      signal.addEventListener('abort', onAbort, { once: true });
+      player.onplaying = () => {
+        if (!signal.aborted) useUI.getState().setAgentState('Speaking');
+      };
+      player.onended = () => {
+        if (finished) return;
+        finished = true;
+        cleanup();
+        resolve();
+      };
+      player.onerror = () => {
+        if (finished) return;
+        finished = true;
+        cleanup();
+        reject(new Error('Fish phrase audio playback failed'));
+      };
+      void player.play().catch(error => {
+        if (finished) return;
+        finished = true;
+        cleanup();
+        reject(error);
+      });
+    });
+  }, []);
+
+  if (!fishPhraseQueue.current) {
+    fishPhraseQueue.current = new FishPhraseQueue({
+      getVoice: () => fishMode.current,
+      fetchAudio: async (voice, text, signal) => {
+        const response = await fetch('/api/fish-tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ character: voice, text }),
+          signal,
+        });
+        if (!response.ok) throw new Error('Fish TTS failed (' + response.status + ')');
+        const blob = await response.blob();
+        if (!blob.size) throw new Error('Fish TTS returned empty audio');
+        return blob;
+      },
+      playAudio: playFishPhrase,
+      stopPlayback: () => {
+        fishPlayer.current?.pause();
+        fishPlayer.current = null;
+        if (fishAudioUrl.current) URL.revokeObjectURL(fishAudioUrl.current);
+        fishAudioUrl.current = null;
+      },
+      setStatus: (status: string) => useUI.getState().setAgentState(status),
+    });
+  }
+
   const volumeRef = useRef(0);
   const [connected, setConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -325,18 +431,18 @@ export function useLiveApi({
     const stopAudioStreamer = () => {
       // The voice output is already safely gated from microphone input while
       // synthesizing or speaking. Ignore stray Live interruptions in that period.
-      if (fishMode.current && (fishController.current || (fishPlayer.current && !fishPlayer.current.paused))) return;
+      if (fishMode.current && (fishPhraseQueue.current?.isBusy || fishController.current || (fishPlayer.current && !fishPlayer.current.paused))) return;
       audioStreamerRef.current?.stop();
       stopFish();
     };
 
     const onOutputTranscription = (text: string) => {
-      if (fishMode.current) fishText.current += text;
+      // Gemini Live emits transcription fragments during voice generation.
+      // Start Fish synthesis on the FIRST completed phrase, not turnComplete.
+      if (fishMode.current && !isMuted) fishPhraseQueue.current?.pushTranscript(text);
     };
-    const onTurnComplete = async () => {
+    const onTurnComplete = () => {
       const character = fishMode.current;
-      const text = fishText.current.trim();
-      fishText.current = '';
       if (!character || isMuted) {
         const activeId = useAgent.getState().current.id;
         if (!character && (activeId === 'tian_xi_wei' || activeId === 'hao_zh') && !isMuted) {
@@ -344,14 +450,9 @@ export function useLiveApi({
         }
         return;
       }
-
-      // Don't silently replace a Mandarin character with Gemini's different voice.
-      if (!text) {
-        useUI.getState().setAgentState('Fish Audio unavailable');
-        console.warn('Fish Audio: no complete output transcription for this turn.');
-        return;
-      }
-      await speakFishGreeting(text.slice(0, 1200));
+      // Flush the last short phrase without interrupting any phrase already
+      // playing. Empty/tool-only turns must not trigger a fake TTS error.
+      fishPhraseQueue.current?.completeTurn();
     };
 
     // When the client receives audio data, it's passed to the AudioStreamer for playback.
