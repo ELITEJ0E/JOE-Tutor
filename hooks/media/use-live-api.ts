@@ -411,7 +411,14 @@ export function useLiveApi({
     let output: ReturnType<typeof ensureFishOutput> | null = null;
     try {
       output = ensureFishOutput();
-      if (output.ctx.state === 'suspended') await output.ctx.resume();
+      if (output.ctx.state === 'suspended') {
+        // iOS can defer resume until the next gesture. Avoid hanging the
+        // speaking queue; use native MP3 when Web Audio stays suspended.
+        await Promise.race([
+          output.ctx.resume(),
+          new Promise<void>(resolve => setTimeout(resolve, 350)),
+        ]);
+      }
       if (output.ctx.state === 'running' && !decoded) {
         // Fallback decoding if this segment was not prefetched yet.
         decoded = await output.ctx.decodeAudioData(await blob.arrayBuffer());
