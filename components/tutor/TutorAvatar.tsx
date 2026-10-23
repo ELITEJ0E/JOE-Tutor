@@ -7,17 +7,23 @@ import { useLiveAPIContext } from '../../contexts/LiveAPIContext';
 import { useAgent, useUI } from '../../lib/state';
 import { getCharacterIntroduction } from '../../lib/presets/character-intros';
 import { ChevronDown, ChevronUp, Sparkles, X } from 'lucide-react';
+import VoiceVisualizer from './VoiceVisualizer';
 import './docked-companion.css';
 
-export default function TutorAvatar() {
-  const { current } = useAgent();
-  const { agentState, speechBubbleText, setSpeechBubbleText } = useUI();
+function TutorAvatar() {
+  // Narrow Zustand selectors avoid rerendering the portrait for unrelated
+  // settings, input status and transcript updates.
+  const current = useAgent(state => state.current);
+  const agentState = useUI(state => state.agentState);
+  const speechBubbleText = useUI(state => state.speechBubbleText);
+  const setSpeechBubbleText = useUI(state => state.setSpeechBubbleText);
   const { connected, volumeRef } = useLiveAPIContext();
   const [isTalking, setIsTalking] = useState(false);
   const [minimized, setMinimized] = useState(false);
   const [visibleText, setVisibleText] = useState<string | null>(null);
   const [greetingPreview, setGreetingPreview] = useState<string | null>(null);
   const lastSpeaking = useRef(0);
+  const dockRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     let frame = 0;
@@ -25,15 +31,19 @@ export default function TutorAvatar() {
     const tick = (now: number) => {
       if (now - lastChecked > 70) {
         lastChecked = now;
-        if (connected && volumeRef.current > .045) lastSpeaking.current = now;
-        const next = connected && now - lastSpeaking.current < 450;
+        const measured = connected ? Math.min(1, volumeRef.current * 3) : 0;
+        const voicePlaying = connected && agentState === 'Speaking';
+        if (measured > .08) lastSpeaking.current = now;
+        const next = connected && (voicePlaying || now - lastSpeaking.current < 400);
+        // Directly update a CSS variable without a React render per frame.
+        dockRef.current?.style.setProperty('--joe-voice-level', String(voicePlaying ? Math.max(.12, measured) : 0));
         setIsTalking(prev => prev === next ? prev : next);
       }
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [connected, volumeRef]);
+  }, [connected, volumeRef, agentState]);
 
   useEffect(() => {
     setVisibleText(speechBubbleText);
@@ -64,7 +74,7 @@ export default function TutorAvatar() {
   const name = current.name.split(' (')[0];
   const bubbleText = visibleText || greetingPreview;
   return (
-    <aside className={'chloe-dock' + (minimized ? ' chloe-dock--minimized' : '') + ((isTalking || agentState === 'Speaking') ? ' chloe-dock--speaking' : '')} aria-label={name + ' companion'}>
+    <aside ref={dockRef} className={'chloe-dock' + (minimized ? ' chloe-dock--minimized' : '') + ((isTalking || agentState === 'Speaking') ? ' chloe-dock--speaking' : '')} aria-label={name + ' companion'}>
       {bubbleText && !minimized && (
         <div className="chloe-dock-bubble">
           <button aria-label="Dismiss speech bubble" onClick={() => { setVisibleText(null); setGreetingPreview(null); setSpeechBubbleText(null); }}><X size={13}/></button>
@@ -73,12 +83,12 @@ export default function TutorAvatar() {
         </div>
       )}
       {!minimized && <div className="chloe-dock-portrait" aria-hidden="true">
-        {current.avatarUrl ? <img src={current.avatarUrl} alt="" draggable={false}/> : <div className="chloe-dock-monogram"><Sparkles size={52}/></div>}
+        {current.avatarUrl ? <img src={current.avatarUrl} alt="" draggable={false} decoding="async"/> : <div className="chloe-dock-monogram"><Sparkles size={52}/></div>}
       </div>}
       <div className="chloe-dock-base">
         <span className="chloe-dock-signal"><span className={'chloe-dock-dot'+ (connected ? ' connected':'')}/></span>
         <span className="chloe-dock-meta"><strong>{name}</strong><small>{status}</small></span>
-        <span className={'chloe-dock-level' + (isTalking ? ' active' : '')}><i/><i/><i/><i/></span>
+        <VoiceVisualizer active={connected && (isTalking || agentState === 'Speaking')} className="chloe-dock-level"/>
         <button type="button" onClick={() => setMinimized(v=>!v)} title={minimized ? 'Show assistant' : 'Hide assistant'} aria-label={minimized ? 'Show assistant' : 'Hide assistant'}>
           {minimized ? <ChevronUp size={17}/> : <ChevronDown size={17}/>}
         </button>
@@ -86,3 +96,5 @@ export default function TutorAvatar() {
     </aside>
   );
 }
+
+export default React.memo(TutorAvatar);
