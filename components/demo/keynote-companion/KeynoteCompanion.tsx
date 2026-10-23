@@ -2006,7 +2006,9 @@ ${recentTranscript}`;
         updateSuppressionState();
         // Turn-complete marks generation finished, not audible playback finished.
         // Keep the speaking indicator until AudioStreamer.onComplete.
-        if (!agentAudioPlaybackStartTimeRef.current) setAgentState('Waiting');
+        // Fish TTS can still be synthesizing or playing queued phrases after
+        // Gemini's turnComplete; the Fish queue owns the Waiting transition.
+        if (!isFishVoiceActive() && !agentAudioPlaybackStartTimeRef.current) setAgentState('Waiting');
         addPerfLog({
           turn: turnCounterRef.current,
           event: 'Agent Turn: End Detected',
@@ -2114,6 +2116,7 @@ ${recentTranscript}`;
   }, [
     client,
     stopAudio,
+    isFishVoiceActive,
     user.name,
     current.name,
     incrementChangeCount,
