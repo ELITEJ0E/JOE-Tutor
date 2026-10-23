@@ -60,6 +60,10 @@ export class FishPhraseQueue {
     return this.receivedText;
   }
 
+  get isBusy(): boolean {
+    return this.draining || this.segments.length > 0;
+  }
+
   pushTranscript(delta: string): void {
     const voice = this.options.getVoice();
     if (!voice || !delta) return;
