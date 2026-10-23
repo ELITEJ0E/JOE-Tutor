@@ -46,6 +46,9 @@ export class AudioStreamer {
   // Core Web Audio API nodes.
   public gainNode: GainNode;
   public source: AudioBufferSourceNode;
+  private readonly compressor: DynamicsCompressorNode;
+  private readonly outputGain = 1.55;
+  private stopGeneration = 0;
   // A reference to the last scheduled audio source to detect when the queue has finished playing.
   private endOfQueueAudioSource: AudioBufferSourceNode | null = null;
 
@@ -53,10 +56,23 @@ export class AudioStreamer {
   public onStart = () => {};
 
   constructor(public context: AudioContext) {
-    this.gainNode = this.context.createGain();
+    this.compressor = this.context.createDynamicsCompressor();
+    this.compressor.threshold.value = -14;
+    this.compressor.knee.value = 12;
+    this.compressor.ratio.value = 9;
+    this.compressor.attack.value = 0.003;
+    this.compressor.release.value = 0.17;
+    this.compressor.connect(this.context.destination);
+    this.gainNode = this.createOutputGain();
     this.source = this.context.createBufferSource();
-    this.gainNode.connect(this.context.destination);
     this.addPCM16 = this.addPCM16.bind(this);
+  }
+
+  private createOutputGain(): GainNode {
+    const node = this.context.createGain();
+    node.gain.value = this.outputGain;
+    node.connect(this.compressor);
+    return node;
   }
 
   /**
@@ -251,14 +267,19 @@ export class AudioStreamer {
       this.checkInterval = null;
     }
 
-    // Fade out the volume smoothly before disconnecting nodes to avoid clicks.
-    this.gainNode.gain.linearRampToValueAtTime(0, this.context.currentTime + 0.1);
-
+    // Recreate the amplified output only if no newer playback started.
+    // The old timer reset gain to 1 and could disconnect a new voice turn,
+    // leading to unexpectedly quiet replies.
+    const generation = ++this.stopGeneration;
+    const priorGain = this.gainNode;
+    priorGain.gain.cancelScheduledValues(this.context.currentTime);
+    priorGain.gain.setValueAtTime(priorGain.gain.value, this.context.currentTime);
+    priorGain.gain.linearRampToValueAtTime(0, this.context.currentTime + 0.04);
+    this.gainNode = this.createOutputGain();
     setTimeout(() => {
-      this.gainNode.disconnect();
-      this.gainNode = this.context.createGain(); // Recreate the gain node for the next playback session.
-      this.gainNode.connect(this.context.destination);
-    }, 200);
+      priorGain.disconnect();
+      if (this.stopGeneration !== generation) return;
+    }, 70);
   }
 
   /**
@@ -271,7 +292,8 @@ export class AudioStreamer {
     }
     this.isStreamComplete = false;
     this.scheduledTime = this.context.currentTime + this.initialBufferTime;
-    this.gainNode.gain.setValueAtTime(1, this.context.currentTime);
+    this.gainNode.gain.cancelScheduledValues(this.context.currentTime);
+    this.gainNode.gain.setValueAtTime(this.outputGain, this.context.currentTime);
   }
 
   /**
