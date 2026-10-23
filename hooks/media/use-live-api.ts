@@ -84,10 +84,73 @@ export function useLiveApi({
   const fishGainContext = useRef<AudioContext | null>(null);
   const fishGainSource = useRef<MediaElementAudioSourceNode | null>(null);
   const fishGainNode = useRef<GainNode | null>(null);
+  const volumeRef = useRef(0);
+  const fishMeterFrame = useRef<number | null>(null);
+  const fishMeterCleanup = useRef<(() => void) | null>(null);
 
   const isFishVoiceActive = useCallback(() => fishMode.current !== null, []);
 
+  // Fish MP3s bypass the Gemini PCM audio streamer, so the old output
+  // volume meter never saw these voices. Read the actual Web Audio waveform
+  // where supported, but leave iOS on native playback to avoid WebKit
+  // autoplay/AudioContext restrictions after an asynchronous TTS request.
+  const detachFishMeter = useCallback(() => {
+    if (fishMeterFrame.current !== null) cancelAnimationFrame(fishMeterFrame.current);
+    fishMeterFrame.current = null;
+    fishMeterCleanup.current?.();
+    fishMeterCleanup.current = null;
+    volumeRef.current = 0;
+  }, []);
+
+  const attachFishMeter = useCallback((player: HTMLAudioElement, voice: 'tian_xi_wei' | 'hao_zh') => {
+    detachFishMeter();
+    if (/iPad|iPhone|iPod/i.test(navigator.userAgent)) return;
+    try {
+      const ctx = fishGainContext.current && fishGainContext.current.state !== 'closed'
+        ? fishGainContext.current : new AudioContext();
+      fishGainContext.current = ctx;
+      const source = ctx.createMediaElementSource(player);
+      const gain = ctx.createGain();
+      const limiter = ctx.createDynamicsCompressor();
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = .7;
+      gain.gain.value = voice === 'tian_xi_wei' ? 1.45 : 1;
+      limiter.threshold.value = -8;
+      limiter.knee.value = 6;
+      limiter.ratio.value = 12;
+      limiter.attack.value = .003;
+      limiter.release.value = .15;
+      source.connect(gain).connect(limiter).connect(analyser).connect(ctx.destination);
+      fishGainSource.current = source;
+      fishGainNode.current = gain;
+      fishMeterCleanup.current = () => {
+        try { source.disconnect(); gain.disconnect(); limiter.disconnect(); analyser.disconnect(); }
+        catch { /* Already disconnected. */ }
+      };
+      const samples = new Uint8Array(analyser.fftSize);
+      const measure = () => {
+        analyser.getByteTimeDomainData(samples);
+        let sum = 0;
+        for (let i = 0; i < samples.length; i++) {
+          const value = (samples[i] - 128) / 128;
+          sum += value * value;
+        }
+        volumeRef.current = Math.min(1, Math.sqrt(sum / samples.length) * 3.5);
+        fishMeterFrame.current = requestAnimationFrame(measure);
+      };
+      // Resume may need a user gesture on some platforms; the native audio
+      // fallback above avoids altering the iOS audio path.
+      void ctx.resume().then(measure).catch(error => {
+        console.warn('Fish audio meter could not resume:', error);
+      });
+    } catch (error) {
+      console.warn('Fish audio visualizer unavailable:', error);
+    }
+  }, [detachFishMeter]);
+
   const stopFish = useCallback(() => {
+    detachFishMeter();
     fishPhraseQueue.current?.cancel();
     fishGeneration.current += 1;
     fishController.current?.abort();
@@ -97,7 +160,7 @@ export function useLiveApi({
     fishPlayer.current = null;
     if (fishAudioUrl.current) URL.revokeObjectURL(fishAudioUrl.current);
     fishAudioUrl.current = null;
-  }, []);
+  }, [detachFishMeter]);
 
 
   // Play exactly the supplied words, without Gemini speech transcription.
@@ -147,32 +210,9 @@ export function useLiveApi({
         objectUrl = URL.createObjectURL(blob);
         player = new Audio(objectUrl);
       }
-      // Tian Xiwei's reference voice is quieter than the other companions.
-      // Apply modest playback amplification only for her, with peak limiting.
-      // This does not alter Fish Audio synthesis parameters or intonation.
-      if (character === 'tian_xi_wei') {
-        try {
-          if (!fishGainContext.current || fishGainContext.current.state === 'closed') {
-            fishGainContext.current = new AudioContext();
-          }
-          const ctx = fishGainContext.current;
-          const source = ctx.createMediaElementSource(player);
-          const gain = ctx.createGain();
-          const limiter = ctx.createDynamicsCompressor();
-          gain.gain.value = 1.45;
-          limiter.threshold.value = -8;
-          limiter.knee.value = 6;
-          limiter.ratio.value = 12;
-          limiter.attack.value = 0.003;
-          limiter.release.value = 0.15;
-          source.connect(gain).connect(limiter).connect(ctx.destination);
-          fishGainSource.current = source;
-          fishGainNode.current = gain;
-          void ctx.resume();
-        } catch (error) {
-          console.warn('Tian Xiwei volume boost unavailable; using normal playback.', error);
-        }
-      }
+      // Attach the output level meter (and Tian Xiwei's existing boost) without
+      // modifying Fish Audio synthesis or its reference voice.
+      attachFishMeter(player, character);
       fishAudioUrl.current = objectUrl;
       fishPlayer.current = player;
       player.onplaying = () => {
@@ -180,6 +220,7 @@ export function useLiveApi({
       };
       player.onended = () => {
         if (generation !== fishGeneration.current) return;
+        detachFishMeter();
         useUI.getState().setAgentState('Waiting');
         if (fishAudioUrl.current === objectUrl) {
           URL.revokeObjectURL(objectUrl);
@@ -189,6 +230,7 @@ export function useLiveApi({
       };
       player.onerror = () => {
         if (generation !== fishGeneration.current) return;
+        detachFishMeter();
         useUI.getState().setAgentState('Fish Audio unavailable');
         if (fishAudioUrl.current === objectUrl) {
           URL.revokeObjectURL(objectUrl);
@@ -280,7 +322,7 @@ export function useLiveApi({
     } finally {
       if (!streamingActive && fishController.current === controller) fishController.current = null;
     }
-  }, []);
+  }, [attachFishMeter, detachFishMeter]);
 
   // Streaming Gemini transcript is split into natural phrases by FishPhraseQueue.
   // Fish can synthesize the next phrase while the previous one plays; at most
@@ -293,31 +335,10 @@ export function useLiveApi({
       fishPlayer.current = player;
       fishAudioUrl.current = objectUrl;
 
-      if (voice === 'tian_xi_wei') {
-        try {
-          if (!fishGainContext.current || fishGainContext.current.state === 'closed') {
-            fishGainContext.current = new AudioContext();
-          }
-          const ctx = fishGainContext.current;
-          const source = ctx.createMediaElementSource(player);
-          const gain = ctx.createGain();
-          const limiter = ctx.createDynamicsCompressor();
-          gain.gain.value = 1.45;
-          limiter.threshold.value = -8;
-          limiter.knee.value = 6;
-          limiter.ratio.value = 12;
-          limiter.attack.value = 0.003;
-          limiter.release.value = 0.15;
-          source.connect(gain).connect(limiter).connect(ctx.destination);
-          fishGainSource.current = source;
-          fishGainNode.current = gain;
-          void ctx.resume();
-        } catch (error) {
-          console.warn('Fish playback amplification unavailable:', error);
-        }
-      }
+      attachFishMeter(player, voice);
       let finished = false;
       const cleanup = () => {
+        detachFishMeter();
         player.onplaying = null;
         player.onended = null;
         player.onerror = null;
@@ -358,7 +379,7 @@ export function useLiveApi({
         reject(error);
       });
     });
-  }, []);
+  }, [attachFishMeter, detachFishMeter]);
 
   if (!fishPhraseQueue.current) {
     fishPhraseQueue.current = new FishPhraseQueue({
@@ -386,7 +407,6 @@ export function useLiveApi({
     });
   }
 
-  const volumeRef = useRef(0);
   const [connected, setConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
