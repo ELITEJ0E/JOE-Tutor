@@ -123,10 +123,26 @@ export function useLiveApi({
         signal: controller.signal,
       });
       if (!response.ok) throw new Error('Fish Audio request failed (' + response.status + ')');
-      const blob = await response.blob();
-      if (generation !== fishGeneration.current || !blob.size) return false;
-      const objectUrl = URL.createObjectURL(blob);
-      const player = new Audio(objectUrl);
+      // Start playback from the streaming MP3 response as soon as there is
+      // buffered audio. The old response.blob() blocked until the entire
+      // Fish Audio utterance had finished downloading.
+      const canStreamMp3 = typeof MediaSource !== 'undefined'
+        && MediaSource.isTypeSupported('audio/mpeg')
+        && Boolean(response.body);
+      let objectUrl: string;
+      let player: HTMLAudioElement;
+      let mediaSource: MediaSource | null = null;
+      if (canStreamMp3) {
+        mediaSource = new MediaSource();
+        objectUrl = URL.createObjectURL(mediaSource);
+        player = new Audio(objectUrl);
+      } else {
+        // Safari/iOS and browsers without MP3 MSE keep the established path.
+        const blob = await response.blob();
+        if (generation !== fishGeneration.current || !blob.size) return false;
+        objectUrl = URL.createObjectURL(blob);
+        player = new Audio(objectUrl);
+      }
       // Tian Xiwei's reference voice is quieter than the other companions.
       // Apply modest playback amplification only for her, with peak limiting.
       // This does not alter Fish Audio synthesis parameters or intonation.
@@ -176,8 +192,76 @@ export function useLiveApi({
           fishPlayer.current = null;
         }
       };
-      await player.play();
-      console.info('Fish Audio playback started:', character, 'text length:', spokenText.length);
+      if (mediaSource && response.body) {
+        const activeSource = mediaSource;
+        const reader = response.body.getReader();
+        void new Promise<void>((resolve, reject) => {
+          let sourceBuffer: SourceBuffer;
+          let hasStarted = false;
+          let receivedBytes = 0;
+          const queue: Uint8Array[] = [];
+          let finished = false;
+          let failed = false;
+
+          const fail = (error: unknown) => {
+            if (failed) return;
+            failed = true;
+            void reader.cancel().catch(() => {});
+            reject(error);
+          };
+          const push = () => {
+            if (failed || generation !== fishGeneration.current || controller.signal.aborted) return;
+            if (sourceBuffer.updating) return;
+            if (queue.length) {
+              try {
+                const chunk = queue.shift()!;
+                sourceBuffer.appendBuffer(chunk.buffer.slice(chunk.byteOffset, chunk.byteOffset + chunk.byteLength) as ArrayBuffer);
+                if (!hasStarted) {
+                  hasStarted = true;
+                  void player.play().catch(fail);
+                }
+              } catch (err) { fail(err); }
+            } else if (finished && activeSource.readyState === 'open') {
+              try { activeSource.endOfStream(); resolve(); } catch (err) { fail(err); }
+            }
+          };
+          const onSourceOpen = () => {
+            if (generation !== fishGeneration.current || controller.signal.aborted) {
+              fail(new Error('Fish playback was cancelled'));
+              return;
+            }
+            try {
+              sourceBuffer = activeSource.addSourceBuffer('audio/mpeg');
+              sourceBuffer.mode = 'sequence';
+              sourceBuffer.addEventListener('updateend', push);
+              sourceBuffer.addEventListener('error', () => fail(new Error('MP3 stream buffer error')));
+              void (async () => {
+                try {
+                  while (generation === fishGeneration.current && !controller.signal.aborted) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    if (!value?.byteLength) continue;
+                    receivedBytes += value.byteLength;
+                    if (receivedBytes > 8_000_000) throw new Error('Fish MP3 exceeded the playback limit');
+                    queue.push(value);
+                    push();
+                  }
+                  finished = true;
+                  push();
+                } catch (err) { fail(err); }
+              })();
+            } catch (err) { fail(err); }
+          };
+          activeSource.addEventListener('sourceopen', onSourceOpen, { once: true });
+        }).catch(error => {
+          if (generation !== fishGeneration.current || controller.signal.aborted) return;
+          console.error('Fish Audio MP3 stream interrupted:', error);
+          useUI.getState().setAgentState('Fish Audio unavailable');
+        });
+      } else {
+        await player.play();
+      }
+      console.info('Fish Audio playback initiated:', character, 'text length:', spokenText.length, 'streaming:', Boolean(mediaSource));
       return true;
     } catch (error) {
       if (controller.signal.aborted || generation !== fishGeneration.current) return false;
