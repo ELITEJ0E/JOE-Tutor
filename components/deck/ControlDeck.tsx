@@ -6,6 +6,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 import { useLiveAPIContext } from '../../contexts/LiveAPIContext';
+import VoiceVisualizer from '../tutor/VoiceVisualizer';
 import { usePerfLogStore, useUI, useUser, useAgent } from '../../lib/state';
 import { AudioRecorder } from '../../lib/audio-recorder';
 import { QUICK_TOPICS } from '../../lib/constants';
@@ -470,7 +471,7 @@ export default function ControlDeck({
             ) : agentState === 'Generating voice' ? (
               <><LoaderCircle size={16} className="joe-voice-spinner" /><span>Preparing voice…</span></>
             ) : agentState === 'Speaking' ? (
-              <><span className="joe-voice-bars" aria-hidden="true"><i /><i /><i /><i /><i /></span><span>Speaking</span></>
+              <><VoiceVisualizer active={true} className="joe-voice-bars"/><span>Speaking</span></>
             ) : agentState === 'Fish Audio unavailable' ? (
               <><AlertCircle size={16} /><span>Fish Audio unavailable</span></>
             ) : agentState === 'Microphone unavailable' ? (
