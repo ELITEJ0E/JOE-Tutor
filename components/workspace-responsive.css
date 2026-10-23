@@ -383,3 +383,100 @@
   background:rgba(219,104,151,.27);
   color:inherit;
 }
+
+
+/* Companion portrait: fill the available rail under the navbar without
+   covering the header, controls or the notes panel. */
+@media (min-width:1021px) {
+  .tutor-workspace-shell {
+    grid-template-columns:minmax(0,1fr) clamp(248px,21vw,360px);
+  }
+  .tutor-companion-column {
+    min-height:0;
+    isolation:isolate;
+  }
+  .tutor-companion-column .chloe-dock {
+    height:100%;
+    overflow:hidden;
+  }
+  .tutor-companion-column .chloe-dock-portrait {
+    flex:1 1 auto;
+    height:auto;
+    min-height:0;
+    max-height:calc(100% - 49px);
+    overflow:hidden;
+    margin-bottom:-2px;
+  }
+  .tutor-companion-column .chloe-dock-portrait img {
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    object-position:center bottom;
+    transform:scale(1.12);
+    transform-origin:center bottom;
+    transition:transform .16s ease-out;
+  }
+  .tutor-companion-column .chloe-dock--speaking .chloe-dock-portrait img {
+    transform:translateY(-2px) scale(1.14);
+  }
+}
+@media (min-width:1021px) and (max-height:680px) {
+  .tutor-workspace-shell {
+    grid-template-columns:minmax(0,1fr) clamp(230px,19vw,325px);
+  }
+}
+@media (max-width:1020px) {
+  .tutor-companion-column {height:clamp(96px,15dvh,132px);}
+  .tutor-companion-column .chloe-dock {
+    height:100%;max-height:100%;overflow:hidden;
+  }
+  .tutor-companion-column .chloe-dock-portrait {
+    flex:0 0 clamp(98px,15vw,126px);
+    width:clamp(98px,15vw,126px);
+    height:100%;max-height:100%;
+    overflow:hidden;margin:0 -4px 0 0;
+  }
+  .tutor-companion-column .chloe-dock-portrait img {
+    width:100%;height:100%;object-fit:contain;object-position:center bottom;
+    transform:scale(1.07);transform-origin:center bottom;
+  }
+  .tutor-companion-column .chloe-dock-base {
+    max-width:calc(100% - 98px);
+  }
+}
+@media (max-width:620px) {
+  .tutor-companion-column {height:clamp(88px,12dvh,110px);}
+  .tutor-companion-column .chloe-dock-portrait {
+    flex-basis:clamp(90px,26vw,112px);
+    width:clamp(90px,26vw,112px);
+    height:100%;max-height:100%;
+  }
+  .tutor-companion-column .chloe-dock-base {max-width:calc(100% - 90px);}
+}
+@media (max-width:1020px) and (max-height:590px) {
+  .tutor-companion-column {height:60px;}
+  .tutor-companion-column .chloe-dock-portrait {height:60px;max-height:60px;width:66px;flex-basis:66px;}
+  .tutor-companion-column .chloe-dock-base {max-width:calc(100% - 66px);}
+}
+/* Composited waveform bars driven by the real output level. Avoid per-frame
+   React state updates and expensive keyframe-driven height/layout changes. */
+.joe-voice-eq,
+.chloe-dock-level.joe-voice-eq,
+.joe-voice-bars.joe-voice-eq {
+  display:inline-flex;flex:none;align-items:center;justify-content:center;
+  gap:3px;height:20px;min-width:22px;
+}
+.joe-voice-eq i,
+.chloe-dock-level.joe-voice-eq i,
+.joe-voice-bars.joe-voice-eq i {
+  display:block;width:3px;height:16px;min-height:0;
+  background:#e38daf;border-radius:5px;
+  opacity:.75;transform:scaleY(.22);transform-origin:center;
+  transition:transform .08s linear,background-color .15s ease;
+  animation:none!important;
+}
+.joe-voice-eq.active i {background:#d93679;opacity:1;}
+@media (prefers-reduced-motion: reduce) {
+  .joe-voice-eq i {transition:none!important;transform:scaleY(.35)!important;}
+  .tutor-companion-column .chloe-dock-portrait img {transition:none!important;transform:scale(1.08)!important;}
+}
