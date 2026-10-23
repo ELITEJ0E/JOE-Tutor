@@ -87,6 +87,9 @@ export function useLiveApi({
   const fishGainNode = useRef<GainNode | null>(null);
   const fishMasterCompressor = useRef<DynamicsCompressorNode | null>(null);
   const fishMasterAnalyser = useRef<AnalyserNode | null>(null);
+  // Predecode the next MP3 while the previous phrase is speaking to reduce
+  // audible gaps at phrase boundaries. Weak keys release finished clips.
+  const predecodedFishAudio = useRef<WeakMap<Blob, AudioBuffer>>(new WeakMap());
   const volumeRef = useRef(0);
   const fishMeterFrame = useRef<number | null>(null);
   const fishMeterCleanup = useRef<(() => void) | null>(null);
@@ -404,13 +407,13 @@ export function useLiveApi({
       });
     });
 
-    let decoded: AudioBuffer | null = null;
+    let decoded: AudioBuffer | null = predecodedFishAudio.current.get(blob) || null;
     let output: ReturnType<typeof ensureFishOutput> | null = null;
     try {
       output = ensureFishOutput();
       if (output.ctx.state === 'suspended') await output.ctx.resume();
-      if (output.ctx.state === 'running') {
-        // decodeAudioData accepts MP3 blobs and preserves pitch and voice ID.
+      if (output.ctx.state === 'running' && !decoded) {
+        // Fallback decoding if this segment was not prefetched yet.
         decoded = await output.ctx.decodeAudioData(await blob.arrayBuffer());
       }
     } catch (error) {
@@ -489,6 +492,16 @@ export function useLiveApi({
         if (!response.ok) throw new Error('Fish TTS failed (' + response.status + ')');
         const blob = await response.blob();
         if (!blob.size) throw new Error('Fish TTS returned empty audio');
+        try {
+          const ctx = fishGainContext.current;
+          if (ctx?.state === 'running' && !signal.aborted) {
+            const decoded = await ctx.decodeAudioData(await blob.arrayBuffer());
+            if (!signal.aborted) predecodedFishAudio.current.set(blob, decoded);
+          }
+        } catch (error) {
+          // Keep the native MP3 fallback if this browser cannot decode early.
+          console.debug('Fish audio predecode unavailable:', error);
+        }
         return blob;
       },
       playAudio: playFishPhrase,
