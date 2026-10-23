@@ -28,6 +28,7 @@ import { DEFAULT_LIVE_API_MODEL } from '../../lib/constants';
 import { useAgent, usePerfLogStore, useUI } from '../../lib/state';
 import { loadConversation, formatConversationContext } from '../../lib/conversation-memory';
 import { FishPhraseQueue, FishVoiceId } from '../../lib/fish-phrase-queue';
+import { estimateSpeechPlaybackGain } from '../../lib/audio-loudness';
 
 /**
  * The shape of the object returned by the `useLiveApi` hook.
@@ -84,16 +85,42 @@ export function useLiveApi({
   const fishGainContext = useRef<AudioContext | null>(null);
   const fishGainSource = useRef<MediaElementAudioSourceNode | null>(null);
   const fishGainNode = useRef<GainNode | null>(null);
+  const fishMasterCompressor = useRef<DynamicsCompressorNode | null>(null);
+  const fishMasterAnalyser = useRef<AnalyserNode | null>(null);
   const volumeRef = useRef(0);
   const fishMeterFrame = useRef<number | null>(null);
   const fishMeterCleanup = useRef<(() => void) | null>(null);
 
   const isFishVoiceActive = useCallback(() => fishMode.current !== null, []);
 
-  // Fish MP3s bypass the Gemini PCM audio streamer, so the old output
-  // volume meter never saw these voices. Read the actual Web Audio waveform
-  // where supported, but leave iOS on native playback to avoid WebKit
-  // autoplay/AudioContext restrictions after an asynchronous TTS request.
+  // A single master output chain retains the SAME dynamics compression
+  // between Gemini transcription chunks instead of resetting per phrase.
+  const ensureFishOutput = useCallback(() => {
+    let ctx = fishGainContext.current;
+    if (!ctx || ctx.state === 'closed') {
+      ctx = new AudioContext();
+      fishGainContext.current = ctx;
+      fishMasterCompressor.current = null;
+      fishMasterAnalyser.current = null;
+    }
+    if (!fishMasterCompressor.current || !fishMasterAnalyser.current) {
+      const compressor = ctx.createDynamicsCompressor();
+      compressor.threshold.value = -15;
+      compressor.knee.value = 12;
+      compressor.ratio.value = 8;
+      compressor.attack.value = .003;
+      compressor.release.value = .18;
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = .7;
+      compressor.connect(analyser);
+      analyser.connect(ctx.destination);
+      fishMasterCompressor.current = compressor;
+      fishMasterAnalyser.current = analyser;
+    }
+    return { ctx, master: fishMasterCompressor.current! };
+  }, []);
+
   const detachFishMeter = useCallback(() => {
     if (fishMeterFrame.current !== null) cancelAnimationFrame(fishMeterFrame.current);
     fishMeterFrame.current = null;
@@ -102,52 +129,45 @@ export function useLiveApi({
     volumeRef.current = 0;
   }, []);
 
+  const startFishMeter = useCallback(() => {
+    const analyser = fishMasterAnalyser.current;
+    if (!analyser) return;
+    const samples = new Uint8Array(analyser.fftSize);
+    const measure = () => {
+      analyser.getByteTimeDomainData(samples);
+      let power = 0;
+      for (let i = 0; i < samples.length; i++) {
+        const sample = (samples[i] - 128) / 128;
+        power += sample * sample;
+      }
+      volumeRef.current = Math.min(1, Math.sqrt(power / samples.length) * 3.5);
+      fishMeterFrame.current = requestAnimationFrame(measure);
+    };
+    fishMeterFrame.current = requestAnimationFrame(measure);
+  }, []);
+
+  // Welcome speech still uses progressive MP3 playback, but now the same
+  // limiter as the chunked replies. Do not route a media element through a
+  // suspended Web Audio context: that can make the whole clip silent on iOS.
   const attachFishMeter = useCallback((player: HTMLAudioElement, voice: 'tian_xi_wei' | 'hao_zh') => {
     detachFishMeter();
-    if (/iPad|iPhone|iPod/i.test(navigator.userAgent)) return;
     try {
-      const ctx = fishGainContext.current && fishGainContext.current.state !== 'closed'
-        ? fishGainContext.current : new AudioContext();
-      fishGainContext.current = ctx;
+      const { ctx, master } = ensureFishOutput();
+      if (ctx.state !== 'running') return;
       const source = ctx.createMediaElementSource(player);
       const gain = ctx.createGain();
-      const limiter = ctx.createDynamicsCompressor();
-      const analyser = ctx.createAnalyser();
-      analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = .7;
-      gain.gain.value = voice === 'tian_xi_wei' ? 1.45 : 1;
-      limiter.threshold.value = -8;
-      limiter.knee.value = 6;
-      limiter.ratio.value = 12;
-      limiter.attack.value = .003;
-      limiter.release.value = .15;
-      source.connect(gain).connect(limiter).connect(analyser).connect(ctx.destination);
+      gain.gain.value = voice === 'tian_xi_wei' ? 1.55 : 1.6;
+      source.connect(gain).connect(master);
       fishGainSource.current = source;
       fishGainNode.current = gain;
       fishMeterCleanup.current = () => {
-        try { source.disconnect(); gain.disconnect(); limiter.disconnect(); analyser.disconnect(); }
-        catch { /* Already disconnected. */ }
+        try { source.disconnect(); gain.disconnect(); } catch { /* already disconnected */ }
       };
-      const samples = new Uint8Array(analyser.fftSize);
-      const measure = () => {
-        analyser.getByteTimeDomainData(samples);
-        let sum = 0;
-        for (let i = 0; i < samples.length; i++) {
-          const value = (samples[i] - 128) / 128;
-          sum += value * value;
-        }
-        volumeRef.current = Math.min(1, Math.sqrt(sum / samples.length) * 3.5);
-        fishMeterFrame.current = requestAnimationFrame(measure);
-      };
-      // Resume may need a user gesture on some platforms; the native audio
-      // fallback above avoids altering the iOS audio path.
-      void ctx.resume().then(measure).catch(error => {
-        console.warn('Fish audio meter could not resume:', error);
-      });
+      startFishMeter();
     } catch (error) {
-      console.warn('Fish audio visualizer unavailable:', error);
+      console.warn('Using native Fish Audio output on this device:', error);
     }
-  }, [detachFishMeter]);
+  }, [detachFishMeter, ensureFishOutput, startFishMeter]);
 
   const stopFish = useCallback(() => {
     detachFishMeter();
@@ -327,16 +347,20 @@ export function useLiveApi({
   // Streaming Gemini transcript is split into natural phrases by FishPhraseQueue.
   // Fish can synthesize the next phrase while the previous one plays; at most
   // two requests are prepared to avoid unnecessarily burning free API quota.
-  const playFishPhrase = useCallback((voice: FishVoiceId, blob: Blob, signal: AbortSignal): Promise<void> => {
-    return new Promise<void>((resolve, reject) => {
+  // A single Web Audio graph plays ALL Fish phrases with a shared limiter.
+  // Decoding prefetched MP3s also lets us match their actual speech RMS, so
+  // separately generated phrases do not jump between loud and quiet.
+  const playFishPhrase = useCallback(async (voice: FishVoiceId, blob: Blob, signal: AbortSignal): Promise<void> => {
+    if (signal.aborted) throw new Error('Fish phrase cancelled');
+
+    const playNativeFallback = (): Promise<void> => new Promise((resolve, reject) => {
       if (signal.aborted) { reject(new Error('Fish phrase cancelled')); return; }
       const objectUrl = URL.createObjectURL(blob);
       const player = new Audio(objectUrl);
       fishPlayer.current = player;
       fishAudioUrl.current = objectUrl;
-
       attachFishMeter(player, voice);
-      let finished = false;
+      let settled = false;
       const cleanup = () => {
         detachFishMeter();
         player.onplaying = null;
@@ -350,8 +374,8 @@ export function useLiveApi({
         }
       };
       const onAbort = () => {
-        if (finished) return;
-        finished = true;
+        if (settled) return;
+        settled = true;
         player.pause();
         cleanup();
         reject(new Error('Fish phrase cancelled'));
@@ -361,25 +385,96 @@ export function useLiveApi({
         if (!signal.aborted) useUI.getState().setAgentState('Speaking');
       };
       player.onended = () => {
-        if (finished) return;
-        finished = true;
+        if (settled) return;
+        settled = true;
         cleanup();
         resolve();
       };
       player.onerror = () => {
-        if (finished) return;
-        finished = true;
+        if (settled) return;
+        settled = true;
         cleanup();
-        reject(new Error('Fish phrase audio playback failed'));
+        reject(new Error('Fish MP3 could not play'));
       };
       void player.play().catch(error => {
-        if (finished) return;
-        finished = true;
+        if (settled) return;
+        settled = true;
         cleanup();
         reject(error);
       });
     });
-  }, [attachFishMeter, detachFishMeter]);
+
+    let decoded: AudioBuffer | null = null;
+    let output: ReturnType<typeof ensureFishOutput> | null = null;
+    try {
+      output = ensureFishOutput();
+      if (output.ctx.state === 'suspended') await output.ctx.resume();
+      if (output.ctx.state === 'running') {
+        // decodeAudioData accepts MP3 blobs and preserves pitch and voice ID.
+        decoded = await output.ctx.decodeAudioData(await blob.arrayBuffer());
+      }
+    } catch (error) {
+      console.warn('Web Audio phrase playback unsupported; using native MP3:', error);
+    }
+    if (signal.aborted) throw new Error('Fish phrase cancelled');
+    if (!decoded || !output || output.ctx.state !== 'running') {
+      return playNativeFallback();
+    }
+
+    const { ctx, master } = output;
+    const audio = decoded;
+    return new Promise<void>((resolve, reject) => {
+      if (signal.aborted) { reject(new Error('Fish phrase cancelled')); return; }
+      const source = ctx.createBufferSource();
+      const gain = ctx.createGain();
+      const normalized = estimateSpeechPlaybackGain(audio);
+      source.buffer = audio;
+      source.connect(gain).connect(master);
+
+      const start = ctx.currentTime + .012;
+      const end = start + audio.duration;
+      const fade = Math.min(.016, audio.duration / 5);
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(normalized, start + fade);
+      gain.gain.setValueAtTime(normalized, Math.max(start + fade, end - fade));
+      gain.gain.linearRampToValueAtTime(0, end);
+
+      detachFishMeter();
+      fishMeterCleanup.current = () => {
+        try { source.disconnect(); gain.disconnect(); } catch { /* already stopped */ }
+      };
+      startFishMeter();
+      let settled = false;
+      const cleanup = () => {
+        source.onended = null;
+        signal.removeEventListener('abort', onAbort);
+        detachFishMeter();
+      };
+      const onAbort = () => {
+        if (settled) return;
+        settled = true;
+        try { source.stop(); } catch { /* already stopped */ }
+        cleanup();
+        reject(new Error('Fish phrase cancelled'));
+      };
+      signal.addEventListener('abort', onAbort, { once: true });
+      source.onended = () => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve();
+      };
+      try {
+        source.start(start);
+        useUI.getState().setAgentState('Speaking');
+      } catch (error) {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(error);
+      }
+    });
+  }, [attachFishMeter, detachFishMeter, ensureFishOutput, startFishMeter]);
 
   if (!fishPhraseQueue.current) {
     fishPhraseQueue.current = new FishPhraseQueue({
@@ -520,6 +615,14 @@ export function useLiveApi({
     fishMode.current = null;
     // Only enable Fish when the Vercel proxy confirms both API key and authorized voice ID.
     const id = useAgent.getState().current.id;
+    // Unlock the shared Web Audio speaker path from the connect-button gesture,
+    // before any network await. This also enables amplified Fish audio on iOS.
+    if (id === 'tian_xi_wei' || id === 'hao_zh') {
+      try {
+        const { ctx } = ensureFishOutput();
+        void ctx.resume().catch(() => {});
+      } catch (error) { console.warn('Fish output will use native audio:', error); }
+    }
     if (id === 'tian_xi_wei' || id === 'hao_zh') {
       try {
         const response = await fetch(`/api/fish-tts?character=${id}`);
@@ -557,7 +660,7 @@ export function useLiveApi({
     } finally {
       setIsConnecting(false);
     }
-  }, [client, config, addPerfLog, stopFish]);
+  }, [client, config, addPerfLog, stopFish, ensureFishOutput]);
 
   /**
    * Disconnects from the Live API and stops any ongoing audio playback.
