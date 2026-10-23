@@ -218,10 +218,7 @@ export function useLiveApi({
               try {
                 const chunk = queue.shift()!;
                 sourceBuffer.appendBuffer(chunk.buffer.slice(chunk.byteOffset, chunk.byteOffset + chunk.byteLength) as ArrayBuffer);
-                if (!hasStarted) {
-                  hasStarted = true;
-                  void player.play().catch(fail);
-                }
+
               } catch (err) { fail(err); }
             } else if (finished && activeSource.readyState === 'open') {
               try { activeSource.endOfStream(); resolve(); } catch (err) { fail(err); }
@@ -235,7 +232,13 @@ export function useLiveApi({
             try {
               sourceBuffer = activeSource.addSourceBuffer('audio/mpeg');
               sourceBuffer.mode = 'sequence';
-              sourceBuffer.addEventListener('updateend', push);
+              sourceBuffer.addEventListener('updateend', () => {
+                if (!hasStarted && receivedBytes > 0) {
+                  hasStarted = true;
+                  void player.play().catch(fail);
+                }
+                push();
+              });
               sourceBuffer.addEventListener('error', () => fail(new Error('MP3 stream buffer error')));
               void (async () => {
                 try {
