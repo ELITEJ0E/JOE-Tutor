@@ -158,8 +158,7 @@ const MathJaxRenderer = memo(({ htmlContent }: { htmlContent: string }) => {
     if (!htmlContent || !currentElement) return;
     // Most conversations never show mathematical notation. Avoid loading the
     // entire MathJax engine on those sessions, especially across China links.
-    if (!htmlContent.includes('mathjax_process') &&
-        !/\\\\\[|\\\\\(|\\$\\$/.test(htmlContent)) return;
+    if (!htmlContent.includes('mathjax_process')) return;
     mathJaxPromiseRef.current = mathJaxPromiseRef.current
       .then(async () => {
         await ensureMathJax();
