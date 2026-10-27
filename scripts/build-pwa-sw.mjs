@@ -7,15 +7,11 @@ import crypto from 'node:crypto';
 const dist = path.resolve('dist');
 const assets = path.join(dist, 'assets');
 const appShell = ['/', '/index.html', '/manifest.webmanifest', '/pwa-icon-192.png', '/pwa-icon-512.png', '/apple-touch-icon.png'];
-function walk(directory, base = 'assets') {
-  if (!fs.existsSync(directory)) return [];
-  return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry =>
-    entry.isDirectory()
-      ? walk(path.join(directory, entry.name), base + '/' + entry.name)
-      : /\.(?:js|css)$/.test(entry.name) ? ['/' + base + '/' + entry.name] : []
-  );
-}
-const precache = [...new Set([...appShell, ...walk(assets)])].sort();
+// Precache only Vite's entry CSS/JS, not every dynamically imported route
+// (PDF tooling and optional settings are intentionally loaded on demand).
+const builtHtml = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
+const entryAssets = [...builtHtml.matchAll(/(?:src|href)=["'](\\/assets\\/[^"'?]+\\.(?:js|css))["']/g)].map(match => match[1]);
+const precache = [...new Set([...appShell, ...entryAssets])].sort();
 const version = crypto.createHash('sha256').update(precache.join('\n')).digest('hex').slice(0, 12);
 const script = `/* JOE Tutor: offline static shell only. Voice conversations require Internet. */
 const CACHE = 'joe-tutor-shell-${version}';
