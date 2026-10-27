@@ -12,12 +12,10 @@ import { useAgent, useUI, useUser } from '../lib/state';
 import { Theme, themes } from '../lib/themes';
 import { FONT_OPTIONS, PLACEHOLDER_DOC } from '../lib/constants';
 import React, { useState, useRef, useEffect, useId } from 'react';
-import * as pdfjs from 'pdfjs-dist';
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { FileUp, X, FileText, Loader2, ChevronDown } from 'lucide-react';
 
-// Set up PDF.js worker
-// Using unpkg as it's often more reliable for specific versioned assets
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// PDF parsing loads on demand; its worker is served locally by Vite.
 
 type FormatOption = 'Markdown' | 'HTML';
 const FORMAT_OPTIONS: FormatOption[] = ['Markdown', 'HTML'];
@@ -173,6 +171,8 @@ export default function UserSettings() {
 
     setIsUploading(true);
     try {
+      const pdfjs = await import('pdfjs-dist');
+      pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
       for (const file of Array.from(files) as File[]) {
         if (file.type !== 'application/pdf') continue;
 
