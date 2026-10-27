@@ -6,6 +6,7 @@ import { Agent } from './presets/agents';
 import { User } from './state';
 import { buildAffectivePrompt } from './personalities/personality-system';
 import { buildMaleVoiceDirection } from './presets/male-voice-direction';
+import { LanguagePreference, NotesLanguage, preferenceLabel } from './language-preferences';
 
 /**
  * Dynamically constructs the system instructions prompt that is sent to the
@@ -22,10 +23,21 @@ export const createSystemInstructions = (
   user: User,
   currentDocument?: string,
   promptVersion?: number,
-  useSearch?: boolean
+  useSearch?: boolean,
+  conversationLanguage: LanguagePreference = 'companion',
+  notesLanguage: NotesLanguage = 'en',
 ) => {
-  // The whiteboard is an English-language study workspace even when the character speaks another language.
-  const boardLanguageRule = `\n\n**STUDY BOARD LANGUAGE (HIGHEST PRIORITY FOR DOCUMENT CONTENT):** Keep all whiteboard / Notes / written study document content in clear ENGLISH by default, regardless of the chosen companion's spoken language. Speak naturally in the selected companion's own language. If a persona preset orders the document to be Chinese, Korean, Japanese, Arabic, or another language, ignore that rule for the written board only. If and only if the user specifically requests another language for the written whiteboard, write the board in that requested language. UI labels and welcome features remain in English. Don't translate or overwrite existing notes merely because a different character was selected.`;
+  // Personal preference applies to generated notes only, not existing text.
+  const boardName = preferenceLabel(notesLanguage);
+  const boardLanguageRule = `\n\n**WRITTEN NOTES LANGUAGE — HIGH PRIORITY:** When creating or updating Notes/whiteboard content, write NEW material in ${boardName} by default. This overrides any conflicting preset instruction that mandates English or another document language. Preserve existing note content without translating or overwriting it unless requested. If the user explicitly asks for a different language for a particular document, honor that explicit request. The app's UI labels remain English.`;
+
+  // 'Companion default' leaves each character's existing native speech alone.
+  // 'Match my language' adjusts per message, not per preset or default script.
+  const speakingRule = conversationLanguage === 'companion'
+    ? ''
+    : conversationLanguage === 'auto'
+      ? '\n\n**USER LANGUAGE PREFERENCE — HIGH PRIORITY:** Reply in the same language the user is currently using, while preserving your own character personality and voice identity. For mixed-language requests, follow the main language and adapt naturally. An explicit user instruction to practice a different language takes priority.'
+      : `\n\n**USER LANGUAGE PREFERENCE — HIGH PRIORITY:** In ordinary conversation, speak ${preferenceLabel(conversationLanguage)} regardless of the preset's default speech language. Keep your character name, persona, warmth and voice model unchanged. If the user asks for translation or language practice, follow that specific request instead. Avoid switching back to the character's original language unless invited.`;
 
   // Add a specific instruction about the desired output format.
   const formatPrompt = `\n\nThe user wants the document written in ${
@@ -174,5 +186,7 @@ ${documentPrompt}
 ${searchPrompt}
 ${dateTimePrompt}
 ${versionPrompt}
+
+${speakingRule}
 `;
 };
