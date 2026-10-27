@@ -118,3 +118,47 @@
 @media(prefers-reduced-motion:reduce){
  .joe-settings-sheet-close,.joe-sheet-memory-grid button,.joe-settings-sheet-panel .custom-dropdown-trigger svg{transition:none}
 }
+
+
+/* Saved language settings and native app installation */
+.joe-language-prefs,.joe-pwa-install{
+  margin:14px 0;padding:16px;border:1px solid #efdbe6;
+  background:linear-gradient(125deg,#fff6fa,#fff);border-radius:16px;
+}
+.joe-prefs-heading h3,.joe-pwa-heading h3{
+  font-size:16px;font-weight:760;margin:0 0 5px;color:#482e41;
+}
+.joe-prefs-heading p,.joe-pwa-heading p,.joe-prefs-footer,.joe-pwa-disclaimer{
+  margin:0;color:#806979;font-size:12px;line-height:1.55;
+}
+.joe-language-fields{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;margin-top:15px;
+}
+.joe-language-fields label{display:flex;flex-direction:column;gap:8px;min-width:0;}
+.joe-language-fields label span{font-size:12px;font-weight:680;color:#715166;}
+.joe-settings-sheet-panel .joe-language-fields select{
+  width:100%;min-width:0;min-height:44px;padding:9px 34px 9px 12px;
+  border:1px solid #e8cddd;border-radius:11px;
+  font-family:inherit;font-size:14px;background:#fff;color:#432f40;
+  cursor:pointer;-webkit-user-select:auto;user-select:auto;
+}
+.joe-language-fields select:focus-visible,.joe-pwa-install-button:focus-visible{
+  outline:2px solid #b63f79;outline-offset:2px;
+}
+.joe-prefs-footer{margin-top:13px;}
+.joe-pwa-heading{display:flex;align-items:flex-start;gap:11px;}
+.joe-pwa-heading svg{flex:none;color:#c94e83;}
+.joe-pwa-install-button{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  min-height:44px;padding:10px 16px;margin-top:14px;
+  border:0;border-radius:12px;background:#b93274;color:#fff;
+  font-weight:730;font-size:13px;cursor:pointer;
+}
+.joe-pwa-install-button:disabled{cursor:wait;opacity:.6;}
+.joe-pwa-hint,.joe-pwa-success{
+  margin:13px 0 0;color:#75546a;font-size:13px;line-height:1.55;
+}
+.joe-pwa-success{display:flex;gap:9px;align-items:center;color:#28674c;}
+.joe-pwa-disclaimer{margin-top:12px;}
+@media(max-width:630px){.joe-language-fields{grid-template-columns:minmax(0,1fr)}}
