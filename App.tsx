@@ -18,13 +18,13 @@
  * limitations under the License.
  */
 
-import AgentEdit from './components/AgentEdit';
+const AgentEdit = React.lazy(() => import('./components/AgentEdit'));
 import ControlDeck from './components/deck/ControlDeck';
-import DebugModal from './components/DebugModal';
+const DebugModal = React.lazy(() => import('./components/DebugModal'));
 import ErrorScreen from './components/demo/ErrorScreen';
 import KeynoteCompanion from './components/demo/keynote-companion/KeynoteCompanion';
 import Header from './components/Header';
-import UserSettings from './components/UserSettings';
+const UserSettings = React.lazy(() => import('./components/UserSettings'));
 import { AnimatePresence } from 'motion/react';
 import WelcomeScreen from './components/WelcomeScreen';
 import { LiveAPIProvider, useLiveAPIContext } from './contexts/LiveAPIContext';
@@ -33,7 +33,7 @@ import { useAgent, useUI } from './lib/state';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { themes } from './lib/themes';
 import FloatingAvatar from './components/FloatingAvatar';
-import HelpModal from './components/HelpModal';
+const HelpModal = React.lazy(() => import('./components/HelpModal'));
 import './components/workspace-responsive.css';
 
 const API_KEY =
@@ -85,13 +85,15 @@ function AppContent() {
       <ErrorScreen />
       <Header />
 
-      {/* Conditionally render modals based on UI state */}
-      <AnimatePresence mode="sync">
-        {showUserConfig && <UserSettings key="joe-settings" />}
-      </AnimatePresence>
-      {showAgentEdit && <AgentEdit />}
-      {showDebugModal && <DebugModal />}
-      {showHelpModal && <HelpModal />}
+      {/* Large settings/PDF and debug bundles stay off the critical path. */}
+      <React.Suspense fallback={null}>
+        <AnimatePresence mode="sync">
+          {showUserConfig && <UserSettings key="joe-settings" />}
+        </AnimatePresence>
+        {showAgentEdit && <AgentEdit />}
+        {showDebugModal && <DebugModal />}
+        {showHelpModal && <HelpModal />}
+      </React.Suspense>
       <div className="streaming-console">
         <main>
           <div className="tutor-workspace-shell">
