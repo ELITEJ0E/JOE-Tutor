@@ -22,6 +22,18 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 import App from './App';
+import './lib/pwa-install';
+
+// Cache only the static application shell. Live Gemini/Fish requests and chat
+// history never enter the service worker's cache.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    void navigator.serviceWorker.register('/sw.js').catch(error => {
+      console.warn('JOE Tutor offline shell unavailable:', error);
+    });
+  }, { once: true });
+}
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
