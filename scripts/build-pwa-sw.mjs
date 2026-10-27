@@ -10,7 +10,7 @@ const appShell = ['/', '/index.html', '/manifest.webmanifest', '/pwa-icon-192.pn
 // Precache only Vite's entry CSS/JS, not every dynamically imported route
 // (PDF tooling and optional settings are intentionally loaded on demand).
 const builtHtml = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
-const entryAssets = [...builtHtml.matchAll(/(?:src|href)=["'](\\/assets\\/[^"'?]+\\.(?:js|css))["']/g)].map(match => match[1]);
+const entryAssets = [...builtHtml.matchAll(/(?:src|href)=["'](\/assets\/[^"'?]+\.(?:js|css))["']/g)].map(match => match[1]);
 const precache = [...new Set([...appShell, ...entryAssets])].sort();
 const version = crypto.createHash('sha256').update(precache.join('\n')).digest('hex').slice(0, 12);
 const script = `/* JOE Tutor: offline static shell only. Voice conversations require Internet. */
