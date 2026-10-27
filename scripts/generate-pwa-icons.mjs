@@ -76,4 +76,11 @@ function icon(size) {
   fs.writeFileSync(path.join(process.cwd(), 'public', size === 180 ? 'apple-touch-icon.png' : `pwa-icon-${size}.png`), png);
 }
 [192, 512, 180].forEach(icon);
+// Host MathJax alongside the app rather than relying on jsDelivr, which
+// may be slow or unavailable to users in mainland China. Equations still
+// load lazily, so most tutoring sessions never download this library.
+const mathSource = path.join(process.cwd(), 'node_modules', 'mathjax', 'es5');
+if (fs.existsSync(mathSource)) {
+  fs.cpSync(mathSource, path.join(process.cwd(), 'public', 'mathjax'), { recursive: true, force: true });
+}
 console.log('PWA app icons generated.');
