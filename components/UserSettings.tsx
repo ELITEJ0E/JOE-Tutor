@@ -4,6 +4,8 @@
 */
 import SettingsSheet from './SettingsSheet';
 import ConversationMemorySettings from './ConversationMemorySettings';
+import InstallAppSettings from './InstallAppSettings';
+import { LANGUAGE_OPTIONS, NOTES_LANGUAGE_OPTIONS, LanguagePreference, NotesLanguage } from '../lib/language-preferences';
 import { AnimatePresence, motion } from 'motion/react';
 import './companion-settings.css';
 import { useAgent, useUI, useUser } from '../lib/state';
@@ -150,7 +152,7 @@ export default function UserSettings() {
   const { name, info, topic, format, setName, setInfo, setTopic, setFormat, pdfFiles, addPdfFile, removePdfFile } =
     useUser();
   // Hooks to manage UI state (modal visibility, current theme)
-  const { setShowUserConfig, font, setFont, useSearch, setUseSearch, documentContent } = useUI();
+  const { setShowUserConfig, font, setFont, useSearch, setUseSearch, documentContent, conversationLanguage, setConversationLanguage, notesLanguage, setNotesLanguage } = useUI();
   // Hooks to manage agent state (needed for updating agent color on theme change)
   const { current: agent, update: updateAgent } = useAgent();
 
@@ -208,6 +210,36 @@ export default function UserSettings() {
       <div className="userSettings jazzy">
         <h2>Companion & Session Settings</h2>
         <p className="config-description">Personalize conversations, study sessions, document appearance, and your companion experience.</p>
+        <section className="joe-language-prefs" aria-label="Saved language preferences">
+          <div className="joe-prefs-heading">
+            <h3>Language preferences</h3>
+            <p>Saved automatically on this device. Your companion's voice and personality stay the same.</p>
+          </div>
+          <div className="joe-language-fields">
+            <label htmlFor="joe-conversation-language">
+              <span>Conversation & spoken replies</span>
+              <select
+                id="joe-conversation-language"
+                value={conversationLanguage}
+                onChange={event => setConversationLanguage(event.target.value as LanguagePreference)}
+              >
+                {LANGUAGE_OPTIONS.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
+              </select>
+            </label>
+            <label htmlFor="joe-notes-language">
+              <span>Notes & study materials</span>
+              <select
+                id="joe-notes-language"
+                value={notesLanguage}
+                onChange={event => setNotesLanguage(event.target.value as NotesLanguage)}
+              >
+                {NOTES_LANGUAGE_OPTIONS.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
+              </select>
+            </label>
+          </div>
+          <p className="joe-prefs-footer">A new voice session will use the selected speech language. Written notes are not translated until you ask for changes. App menus remain in English.</p>
+        </section>
+        <InstallAppSettings />
         <ConversationMemorySettings />
 
         <form
