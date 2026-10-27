@@ -1,0 +1,27 @@
+{
+  "id": "/",
+  "name": "JOE Tutor — Learn Brighter Together",
+  "short_name": "JOE Tutor",
+  "description": "Talk naturally with AI language companions, practice, create notes, and explore ideas.",
+  "lang": "en",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fff5f9",
+  "theme_color": "#fff2f7",
+  "icons": [
+    {
+      "src": "/pwa-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
