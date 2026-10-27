@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 3000",
-    "build": "vite build",
+    "build": "node scripts/generate-pwa-icons.mjs && vite build && node scripts/build-pwa-sw.mjs",
     "lint": "tsc --noEmit",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predev": "node scripts/generate-pwa-icons.mjs"
   },
   "dependencies": {
     "@google/genai": "latest",
