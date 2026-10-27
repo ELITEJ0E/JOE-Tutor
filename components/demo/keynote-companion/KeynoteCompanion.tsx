@@ -28,6 +28,7 @@ import { jsPDF } from 'jspdf';
 
 import { useLiveAPIContext } from '../../../contexts/LiveAPIContext';
 import { createSystemInstructions } from '../../../lib/prompts';
+import { ensureMathJax } from '../../../lib/mathjax-loader';
 import { getCharacterIntroduction } from '../../../lib/presets/character-intros';
 import { FONT_OPTIONS, PLACEHOLDER_DOC } from '../../../lib/constants';
 import {
@@ -153,23 +154,21 @@ const MathJaxRenderer = memo(({ htmlContent }: { htmlContent: string }) => {
   const mathJaxPromiseRef = useRef(Promise.resolve());
 
   useEffect(() => {
-    if (htmlContent && containerRef.current) {
-      if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
-        const currentElement = containerRef.current;
-        // The promise chain ensures sequential typesetting if content changes rapidly.
-        mathJaxPromiseRef.current = mathJaxPromiseRef.current
-          .then(() => {
-            // Re-check for the element's existence before typesetting.
-            if (currentElement && currentElement.isConnected) {
-              return MathJax.typesetPromise([currentElement]);
-            }
-          })
-          .catch((err: Error) =>
-            console.error('MathJax typesetting error:', err),
-          );
-      }
-    }
-  }, [htmlContent]); // This effect re-runs only when the actual HTML content changes.
+    const currentElement = containerRef.current;
+    if (!htmlContent || !currentElement) return;
+    // Most conversations never show mathematical notation. Avoid loading the
+    // entire MathJax engine on those sessions, especially across China links.
+    if (!htmlContent.includes('mathjax_process') &&
+        !/\\\\\[|\\\\\(|\\$\\$/.test(htmlContent)) return;
+    mathJaxPromiseRef.current = mathJaxPromiseRef.current
+      .then(async () => {
+        await ensureMathJax();
+        if (currentElement.isConnected && typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+          await MathJax.typesetPromise([currentElement]);
+        }
+      })
+      .catch((error: Error) => console.error('MathJax typesetting unavailable:', error));
+  }, [htmlContent]);
 
   return (
     <div
