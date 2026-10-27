@@ -28,6 +28,7 @@ import {
   Ethan, Joon, Haruka, Hao, YuChen, Niran, Anika, Sofia, Julien, Noa, Lena, Maxim, Marco, Ada,
 } from './presets/agents';
 import { themes } from './themes';
+import { LanguagePreference, NotesLanguage, readLanguagePreference, saveLanguagePreference } from './language-preferences';
 import { FONT_OPTIONS, PLACEHOLDER_DOC } from './constants';
 
 /**
@@ -166,6 +167,10 @@ export const useUI = create<{
   setTheme: (themeName: string) => void;
   font: string;
   setFont: (fontName: string) => void;
+  conversationLanguage: LanguagePreference;
+  setConversationLanguage: (language: LanguagePreference) => void;
+  notesLanguage: NotesLanguage;
+  setNotesLanguage: (language: NotesLanguage) => void;
   suppressRedundantLogs: boolean;
   setSuppressRedundantLogs: (suppress: boolean) => void;
   suppressStaleAgentResponses: boolean;
@@ -211,6 +216,16 @@ export const useUI = create<{
   setTheme: (themeName: string) => set({ theme: themeName }),
   font: 'Plus Jakarta Sans',
   setFont: (fontName: string) => set({ font: fontName }),
+  conversationLanguage: readLanguagePreference('joe-tutor:conversation-language', 'companion'),
+  setConversationLanguage: (language: LanguagePreference) => {
+    saveLanguagePreference('joe-tutor:conversation-language', language);
+    set({ conversationLanguage: language });
+  },
+  notesLanguage: readLanguagePreference('joe-tutor:notes-language', 'en') as NotesLanguage,
+  setNotesLanguage: (language: NotesLanguage) => {
+    saveLanguagePreference('joe-tutor:notes-language', language);
+    set({ notesLanguage: language });
+  },
   suppressRedundantLogs: false, // Default to OFF
   setSuppressRedundantLogs: (suppress: boolean) =>
     set({ suppressRedundantLogs: suppress }),
