@@ -691,6 +691,8 @@ export default function KeynoteCompanion() {
     setDocumentContent,
     outputModality,
     useSearch,
+    conversationLanguage,
+    notesLanguage,
   } = useUI();
 
   // Update muted state when outputModality changes
@@ -1113,7 +1115,8 @@ export default function KeynoteCompanion() {
     if (connected && !hasSentGreetingRef.current) {
       const isWarmStart = documentContentRef.current !== PLACEHOLDER_DOC;
       const introduction = getCharacterIntroduction(current);
-      if (current.id === 'tian_xi_wei' || current.id === 'hao_zh') {
+      const overriddenGreetingLanguage = conversationLanguage !== 'companion';
+      if ((current.id === 'tian_xi_wei' || current.id === 'hao_zh') && !overriddenGreetingLanguage) {
         // Gemini Live voice transcription can end mid-name on the first turn.
         // Speak the complete, predetermined introduction DIRECTLY via Fish Audio.
         // Never ask Gemini to generate a second, competing greeting.
@@ -1129,9 +1132,17 @@ export default function KeynoteCompanion() {
         void speakFishGreeting(introduction.firstGreeting);
         return;
       }
+      // With a non-default conversation language, let Gemini create the
+      // opening phrase in that language instead of using a fixed Fish greeting.
+      // The same configured voice still synthesizes the output transcription.
+      const speechLanguageHint = conversationLanguage === 'companion'
+        ? ''
+        : conversationLanguage === 'auto'
+          ? 'Use the same language as the user once they speak; begin in your usual language until then.'
+          : 'Speak in the selected conversation language from the system prompt, even if this sample greeting is in your character\'s original language.';
       const message = isWarmStart
         ? `(System message: Welcome the user back naturally as ${current.name}. Your persona's greeting style is: ${introduction.firstGreeting}. Ask whether they would like to chat, continue working or do something else. Do not update the document during a greeting.)`
-        : `(System message: This is your first spoken turn. Introduce yourself naturally as ${current.name}, with this unique greeting as a guide: ${introduction.firstGreeting}. Speak ONE short complete sentence in your character's language, including your character name. Finish the sentence fully before stopping, and do not add a second topic or question. This is a social greeting, NOT a request to call document tools.)`;
+        : `(System message: This is your first spoken turn. Introduce yourself naturally as ${current.name}, with this unique greeting as a guide: ${introduction.firstGreeting}. Speak ONE short complete sentence in your selected conversation language, including your character name. ${speechLanguageHint} Finish the sentence fully before stopping, and do not add a second topic or question. This is a social greeting, NOT a request to call document tools.)`;
       
       greetingTranscriptPendingRef.current = true;
       setAgentState('Thinking');
@@ -1151,7 +1162,7 @@ export default function KeynoteCompanion() {
     } else if (!connected) {
       hasSentGreetingRef.current = false;
     }
-  }, [connected, client, current, isFishVoiceActive, speakFishGreeting, setAgentState, setSpeechBubbleText]);
+  }, [connected, client, current, isFishVoiceActive, speakFishGreeting, setAgentState, setSpeechBubbleText, conversationLanguage]);
 
   // Natural conversation continuations for EVERY companion.
   // Only nudge after a genuinely quiet period and never while audio plays or
@@ -1290,6 +1301,8 @@ export default function KeynoteCompanion() {
       documentContentRef.current,
       promptVersionRef.current,
       useSearch,
+      conversationLanguage,
+      notesLanguage,
     );
     systemInstructionTextRef.current = systemInstructionText;
 
@@ -1314,7 +1327,7 @@ export default function KeynoteCompanion() {
         },
       ],
     });
-  }, [setConfig, user, current, connected, useSearch]);
+  }, [setConfig, user, current, connected, useSearch, conversationLanguage, notesLanguage]);
 
   useEffect(() => {
     if (!client) return;
