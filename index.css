@@ -4234,3 +4234,10 @@ del {
 .header-brand-section .persona-dropdown-trigger:hover{background:rgba(232,86,142,.18)}
 .header-brand-section .persona-dropdown-trigger .chevron-icon{color:#cb3877;width:15px;height:15px}
 @media(max-width:560px){.header-brand-section{padding:3px 6px}.header-brand-section .brand-name{font-size:11px;letter-spacing:.04em}}
+
+
+/* Primary typeface is bundled with Vite; no Google Fonts request is needed. */
+body {
+  font-family: 'Plus Jakarta Sans Variable', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+}
