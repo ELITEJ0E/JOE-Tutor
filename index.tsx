@@ -19,6 +19,8 @@
  */
 
 import React from 'react';
+import '@fontsource-variable/plus-jakarta-sans/wght.css';
+import '@fontsource/material-symbols-outlined/400.css';
 import ReactDOM from 'react-dom/client';
 
 import App from './App';
