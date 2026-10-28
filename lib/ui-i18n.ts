@@ -146,6 +146,83 @@ for (const [language, line] of Object.entries(rows)) {
   const phrases = line.split('|');
   dictionaries[language] = Object.fromEntries(ENGLISH_KEYS.map((english, index) => [english, phrases[index] || english]));
 }
+
+const EXTRA_KEYS = [
+  "Practice & Retention Lab",
+  "Interactive practice based on your current study session.",
+  "Multiple Choice",
+  "Flashcards",
+  "Reset",
+  "Current Score:",
+  "answered",
+  "Question",
+  "Brilliant! Correct answer.",
+  "Good attempt! Review explanation:",
+  "Card",
+  "of",
+  "Answer & Explanation",
+  "Click to flip for answer ↻",
+  "Click to flip back ↻",
+  "Previous",
+  "Next Card",
+  "Visuals & Mathematical Plots Lab",
+  "Interactive mathematical curves and AI-generated concept illustrations from your session.",
+  "No visuals generated yet",
+  "Ask JOE to:",
+  "Plot a sine and cosine wave",
+  "Visualizes mathematical functions with interactive graphs",
+  "Draw an organic chemistry reaction mechanism diagram",
+  "Generates technical diagrams and illustrations",
+  "Graph the derivative of x^3 - 3x",
+  "Plots multiple curves side by side",
+  "Plotted Mathematical Curves",
+  "Diagrams & Concept Illustrations",
+  "Generating diagram with Imagen...",
+  "Error generating diagram:",
+  "Save High-Res",
+  "Actions",
+  "Undo",
+  "Redo",
+  "Clear",
+  "Start writing...",
+  "Accurate Transcript",
+  "Analyzing Audio...",
+  "Accurate Version",
+  "Replace Live Transcript",
+  "Back to live transcript",
+  "No transcript available yet.",
+  "Save Audio Log",
+  "Timestamp",
+  "Speaker",
+  "Duration",
+  "Playback",
+  "No audio has been recorded in this session yet.",
+  "Conversation memory",
+  "messages",
+  "Loading…",
+  "Export JSON",
+  "Export TXT",
+  "Import JSON",
+  "Clear memory",
+  "Only text is saved, not audio. Recent messages are included when you start a new voice session. Export JSON before clearing browser data or changing devices.",
+  "Private browser storage (IndexedDB) for",
+  "Saved separately for each companion."
+] as const;
+const extraRows: Partial<Record<UiLanguage,string>> = {
+  "zh-CN": "练习与巩固实验室|根据当前学习会话的互动练习。|选择题|记忆卡片|重置|当前得分：|已作答|题目|太棒了！回答正确。|不错的尝试！请查看解析：|卡片|共|答案与解析|点击翻转查看答案 ↻|点击翻转回正面 ↻|上一张|下一张|可视化与数学绘图实验室|来自当前会话的交互数学曲线和 AI 概念插图。|暂无可视化内容|试试让 JOE：|绘制正弦与余弦曲线|通过交互图表展示数学函数|绘制有机化学反应机理图|生成技术示意图与插图|绘制 x^3 - 3x 的导数图像|并排绘制多条曲线|已绘制的数学曲线|示意图与概念插图|正在用 Imagen 生成图表…|生成图表出错：|保存高清图片|操作|撤销|重做|清空|开始写作…|精准转录|分析音频中…|精准版本|替换实时转录|返回实时转录|暂无对话记录。|保存音频记录|时间戳|说话者|时长|播放|本次会话还没有录音。|对话记忆|条消息|加载中…|导出 JSON|导出 TXT|导入 JSON|清除记忆|只保存文字，不保存音频。开始新语音会话时会包含最近的消息。清除浏览器数据或更换设备前请导出 JSON。|为以下伙伴保存在浏览器中的私有记录：|每位伙伴的记录分开保存。",
+  "zh-TW": "練習與鞏固實驗室|根據目前學習對話的互動練習。|選擇題|記憶卡片|重設|目前得分：|已作答|題目|太棒了！答對了。|很好的嘗試！請查看解析：|卡片|共|答案與解析|點擊翻轉看答案 ↻|點擊翻回正面 ↻|上一張|下一張|視覺化與數學繪圖實驗室|來自目前對話的互動數學曲線與 AI 概念插圖。|目前沒有視覺化內容|試著請 JOE：|繪製正弦與餘弦曲線|以互動圖表呈現數學函數|繪製有機化學反應機制圖|產生技術示意圖與插圖|繪製 x^3 - 3x 的導數圖|並排繪製多條曲線|已繪製的數學曲線|示意圖與概念插圖|正在使用 Imagen 產生圖表…|產生圖表錯誤：|儲存高解析圖片|操作|復原|重做|清除|開始寫作…|精準逐字稿|分析音訊中…|精準版本|取代即時逐字稿|返回即時逐字稿|目前沒有對話紀錄。|儲存音訊紀錄|時間戳記|說話者|時長|播放|本次對話還沒有錄音。|對話記憶|則訊息|載入中…|匯出 JSON|匯出 TXT|匯入 JSON|清除記憶|只儲存文字，不儲存音訊。新語音對話會帶入近期訊息。清除瀏覽器資料或更換裝置前，請先匯出 JSON。|為以下夥伴保存在瀏覽器的私密紀錄：|每位夥伴的紀錄分開儲存。",
+  "ms": "Makmal Latihan & Ingatan|Latihan interaktif berdasarkan sesi belajar semasa.|Aneka Pilihan|Kad Imbas|Tetapkan Semula|Skor Semasa:|dijawab|Soalan|Bagus! Jawapan betul.|Cubaan bagus! Lihat penerangan:|Kad|daripada|Jawapan & Penerangan|Klik untuk lihat jawapan ↻|Klik untuk balik semula ↻|Sebelumnya|Kad Seterusnya|Makmal Visual & Graf Matematik|Lengkung matematik interaktif dan ilustrasi konsep AI daripada sesi anda.|Belum ada visual|Cuba minta JOE:|Lukis gelombang sinus dan kosinus|Paparkan fungsi matematik dalam graf interaktif|Lukis mekanisme tindak balas kimia organik|Jana rajah teknikal dan ilustrasi|Graf terbitan x^3 - 3x|Lukis beberapa lengkung sebelah-menyebelah|Lengkung Matematik|Rajah & Ilustrasi Konsep|Menjana rajah dengan Imagen...|Ralat menjana rajah:|Simpan Resolusi Tinggi|Tindakan|Buat Asal|Buat Semula|Kosongkan|Mula menulis...|Transkrip Tepat|Menganalisis Audio...|Versi Tepat|Gantikan Transkrip Langsung|Kembali ke transkrip langsung|Tiada transkrip lagi.|Simpan Log Audio|Masa|Penutur|Tempoh|Main semula|Belum ada audio dirakam dalam sesi ini.|Memori perbualan|mesej|Memuatkan…|Eksport JSON|Eksport TXT|Import JSON|Padam memori|Hanya teks disimpan, bukan audio. Mesej terbaru digunakan pada sesi suara baharu. Eksport JSON sebelum memadam data pelayar atau menukar peranti.|Storan peribadi pelayar (IndexedDB) untuk|Disimpan berasingan bagi setiap teman.",
+  "ja": "練習・定着ラボ|現在の学習セッションに基づく対話型の練習。|選択問題|フラッシュカード|リセット|現在の得点：|回答済み|問題|素晴らしい！正解です。|よく頑張りました！解説を確認：|カード|／|答えと解説|タップで答えを見る ↻|タップで元に戻す ↻|前へ|次のカード|ビジュアル・数学グラフラボ|セッション中のインタラクティブな数学曲線と AI 図解。|まだ図はありません|JOE に頼んでみましょう：|正弦と余弦の波を描く|数学関数をインタラクティブなグラフで表示|有機化学反応機構の図を描く|技術的な図解やイラストを生成|x^3 - 3x の導関数を描く|複数の曲線を並べて表示|数学曲線|図解・概念イラスト|Imagen で図を生成中…|図の生成エラー：|高解像度で保存|操作|元に戻す|やり直す|クリア|入力を開始…|正確な文字起こし|音声を解析中…|正確な版|ライブ文字起こしを置き換え|ライブ文字起こしに戻る|文字起こしはまだありません。|音声ログを保存|時刻|話者|長さ|再生|このセッションにはまだ録音がありません。|会話メモリー|件のメッセージ|読み込み中…|JSON を書き出す|TXT を書き出す|JSON を読み込む|メモリーを消去|文字だけ保存し、音声は保存しません。新しい音声セッションに直近のメッセージが使われます。データ消去や端末変更前に JSON を書き出してください。|ブラウザー内の個人用保存領域（IndexedDB）：|キャラクターごとに保存されます。",
+  "ko": "연습 및 기억 연구실|현재 학습 세션에 맞춘 인터랙티브 연습.|객관식|플래시카드|초기화|현재 점수:|응답 완료|문제|훌륭해요! 정답입니다.|좋은 시도예요! 해설을 확인하세요:|카드|중|정답 및 해설|탭해서 정답 보기 ↻|탭해서 앞면 보기 ↻|이전|다음 카드|시각화 및 수학 그래프 연구실|세션에서 생성된 인터랙티브 수학 그래프 및 AI 개념 삽화.|아직 시각 자료가 없습니다|JOE에게 요청해 보세요:|사인 및 코사인 그래프 그리기|대화형 그래프로 수학 함수 시각화|유기화학 반응 메커니즘 그리기|기술 다이어그램 및 삽화 생성|x^3 - 3x 의 도함수 그래프|여러 곡선 나란히 그리기|수학 곡선|다이어그램 및 개념 삽화|Imagen으로 그림 생성 중…|그림 생성 오류:|고해상도로 저장|동작|실행 취소|다시 실행|지우기|입력 시작…|정확한 대화 기록|오디오 분석 중…|정확한 버전|실시간 대화 기록 교체|실시간 대화 기록으로 돌아가기|아직 대화 기록이 없습니다.|오디오 기록 저장|시간|화자|길이|재생|이번 세션에서 녹음된 오디오가 없습니다.|대화 메모리|개 메시지|불러오는 중…|JSON 내보내기|TXT 내보내기|JSON 가져오기|메모리 지우기|음성이 아닌 텍스트만 저장됩니다. 새 음성 세션에 최근 메시지가 포함됩니다. 브라우저 데이터를 삭제하거나 기기를 바꾸기 전에 JSON을 내보내세요.|브라우저 개인 저장소(IndexedDB):|캐릭터별로 따로 저장됩니다.",
+  "es": "Laboratorio de práctica y memoria|Práctica interactiva basada en la sesión actual.|Opción múltiple|Tarjetas|Reiniciar|Puntuación actual:|respondidas|Pregunta|¡Excelente! Respuesta correcta.|¡Buen intento! Revisa la explicación:|Tarjeta|de|Respuesta y explicación|Toca para ver la respuesta ↻|Toca para volver ↻|Anterior|Siguiente tarjeta|Laboratorio de visuales y gráficas matemáticas|Curvas matemáticas interactivas e ilustraciones conceptuales creadas por IA.|Aún no hay visualizaciones|Pide a JOE que:|Trace una onda sinusoidal y cosenoidal|Visualiza funciones matemáticas con gráficas interactivas|Dibuje el mecanismo de una reacción orgánica|Genera diagramas técnicos e ilustraciones|Grafique la derivada de x^3 - 3x|Traza varias curvas en paralelo|Curvas matemáticas|Diagramas e ilustraciones conceptuales|Generando diagrama con Imagen…|Error al generar diagrama:|Guardar en alta resolución|Acciones|Deshacer|Rehacer|Borrar|Empieza a escribir…|Transcripción precisa|Analizando audio…|Versión precisa|Reemplazar transcripción en vivo|Volver a transcripción en vivo|Aún no hay transcripción.|Guardar historial de audio|Hora|Hablante|Duración|Reproducir|Todavía no hay audio grabado en esta sesión.|Memoria de conversación|mensajes|Cargando…|Exportar JSON|Exportar TXT|Importar JSON|Borrar memoria|Solo se guarda texto, no audio. Los mensajes recientes se incluyen al iniciar una nueva sesión. Exporta JSON antes de borrar datos del navegador o cambiar de dispositivo.|Almacenamiento privado del navegador (IndexedDB) para|Se guarda por separado para cada acompañante.",
+  "fr": "Laboratoire de pratique et mémorisation|Exercices interactifs basés sur votre séance actuelle.|Choix multiples|Cartes mémoire|Réinitialiser|Score actuel :|réponses|Question|Bravo ! Bonne réponse.|Bien essayé ! Consultez l’explication :|Carte|sur|Réponse et explication|Cliquez pour voir la réponse ↻|Cliquez pour retourner ↻|Précédent|Carte suivante|Laboratoire de visuels et graphiques|Courbes mathématiques interactives et illustrations générées par IA.|Aucun visuel pour le moment|Demandez à JOE de :|Tracer une onde sinus et cosinus|Visualise les fonctions avec des graphiques interactifs|Dessiner un mécanisme de réaction organique|Crée des schémas techniques|Tracer la dérivée de x^3 - 3x|Trace plusieurs courbes côte à côte|Courbes mathématiques|Schémas et illustrations|Génération avec Imagen…|Erreur de génération :|Enregistrer en haute résolution|Actions|Annuler|Rétablir|Effacer|Commencez à écrire…|Transcription précise|Analyse audio…|Version précise|Remplacer la transcription en direct|Retour à la transcription en direct|Aucune transcription pour l’instant.|Enregistrer le journal audio|Heure|Intervenant|Durée|Lecture|Aucun audio enregistré pendant cette séance.|Mémoire de conversation|messages|Chargement…|Exporter JSON|Exporter TXT|Importer JSON|Effacer la mémoire|Seul le texte est sauvegardé, pas l’audio. Les derniers messages sont utilisés à la prochaine séance. Exportez JSON avant de vider le navigateur ou de changer d’appareil.|Stockage privé du navigateur (IndexedDB) pour|Sauvegardé séparément pour chaque compagnon."
+};
+for (const [language, line] of Object.entries(extraRows)) {
+  const phrases = line.split('|');
+  const dictionary = dictionaries[language] || (dictionaries[language] = {});
+  EXTRA_KEYS.forEach((english,index) => { dictionary[english] = phrases[index] || english; });
+}
+
 export function translateUi(language: UiLanguage, english: string, params?: Record<string,string|number>): string {
   const translated = dictionaries[language]?.[english] || english;
   return params ? translated.replace(/\\{(\\w+)\\}/g, (match, key: string) => params[key] === undefined ? match : String(params[key])) : translated;
