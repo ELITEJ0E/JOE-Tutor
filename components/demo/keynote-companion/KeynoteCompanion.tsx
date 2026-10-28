@@ -720,12 +720,43 @@ export default function KeynoteCompanion() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [showMobileToolbar, setShowMobileToolbar] = useState(false);
 
+  const transcriptViewRef = useRef<HTMLDivElement>(null);
+  const followTranscriptRef = useRef(true);
   const renderedViewRef = useRef<HTMLDivElement>(null);
   const minutesViewRef = useRef<HTMLDivElement>(null);
 
   // =================================================================
   // STABLE REFS FOR EVENT HANDLERS
   // =================================================================
+  // Keep the latest messages visible on entry. When a reader scrolls up,
+  // don't pull them down on every streamed transcription fragment.
+  useEffect(() => {
+    if (mainTab !== 'transcript') return;
+    followTranscriptRef.current = true;
+    const scrollLatest = () => {
+      const view = transcriptViewRef.current;
+      if (!view) return;
+      const outer = view.closest('.document-view-container') as HTMLElement | null;
+      const scroller = outer && outer.scrollHeight > outer.clientHeight ? outer : view;
+      scroller.scrollTop = scroller.scrollHeight;
+    };
+    scrollLatest();
+    const id = requestAnimationFrame(scrollLatest);
+    return () => cancelAnimationFrame(id);
+  }, [mainTab]);
+
+  useEffect(() => {
+    if (mainTab !== 'transcript' || !followTranscriptRef.current) return;
+    const id = requestAnimationFrame(() => {
+      const view = transcriptViewRef.current;
+      if (!view) return;
+      const outer = view.closest('.document-view-container') as HTMLElement | null;
+      const scroller = outer && outer.scrollHeight > outer.clientHeight ? outer : view;
+      scroller.scrollTop = scroller.scrollHeight;
+    });
+    return () => cancelAnimationFrame(id);
+  }, [mainTab, transcript, accurateTranscript]);
+
   const transcriptRef = useRef(transcript);
   transcriptRef.current = transcript;
   const documentContentRef = useRef(documentContent);
@@ -1962,10 +1993,17 @@ ${recentTranscript}`;
               text: lastEntry.text.trim() === cleanFinal ? cleanFinal : lastEntry.text + ' ' + cleanFinal,
             };
           } else {
-            nextTranscript.push({
-              speaker: agentRef.current.name,
-              text: cleanFinal,
-            });
+            const previousAgent = [...nextTranscript].reverse().find(entry => entry.speaker === agentRef.current.name);
+            const previousUser = [...nextTranscript].reverse().find(entry => entry.speaker === (userRef.current.name || 'User'));
+            const userAskedToRepeat = /\\b(repeat|again|say it|one more time|再说|再讲|重复|もう一度|다시)\\b/i.test(previousUser?.text || '');
+            // Live transcription can replay the previous assistant utterance
+            // around a user boundary. Do not display that verbatim echo twice.
+            if (!(previousAgent && previousAgent.text.trim() === cleanFinal && !userAskedToRepeat)) {
+              nextTranscript.push({
+                speaker: agentRef.current.name,
+                text: cleanFinal,
+              });
+            }
           }
         }
         return nextTranscript;
@@ -2716,7 +2754,13 @@ ${recentTranscript}`;
         )}
 
         {mainTab === 'transcript' && (
-          <div className="transcript-content">
+          <div className="transcript-content" ref={transcriptViewRef}
+            onScroll={event => {
+              const el = event.currentTarget;
+              if (el.scrollHeight > el.clientHeight + 4) {
+                followTranscriptRef.current = el.scrollHeight - el.clientHeight - el.scrollTop < 120;
+              }
+            }}>
             <div className="document-actions exclude-from-pdf mb-4">
               <button 
                 className="pdf-button flex items-center gap-2"
