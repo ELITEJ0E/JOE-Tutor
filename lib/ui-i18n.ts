@@ -225,5 +225,7 @@ for (const [language, line] of Object.entries(extraRows)) {
 
 export function translateUi(language: UiLanguage, english: string, params?: Record<string,string|number>): string {
   const translated = dictionaries[language]?.[english] || english;
-  return params ? translated.replace(/\\{(\\w+)\\}/g, (match, key: string) => params[key] === undefined ? match : String(params[key])) : translated;
+  return params
+    ? Object.entries(params).reduce((text, [key, value]) => text.split('{' + key + '}').join(String(value)), translated)
+    : translated;
 }
