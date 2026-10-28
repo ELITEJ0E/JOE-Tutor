@@ -5,10 +5,12 @@
 
 import React, { useMemo } from 'react';
 import { useInsertStore, useUI } from '../../lib/state';
+import { useUiTranslation } from '../../hooks/use-ui-translation';
 import FunctionPlotter from '../demo/keynote-companion/FunctionPlotter';
 import { Sparkles, Eye, Download, Image as ImageIcon, LineChart, MapPin } from 'lucide-react';
 
 export default function VisualsGallery() {
+  const t = useUiTranslation();
   const { documentContent } = useUI();
   const { inserts } = useInsertStore();
 
@@ -99,9 +101,9 @@ export default function VisualsGallery() {
             <LineChart size={20} className="text-cherry-500" />
           </div>
           <div>
-            <h2 className="visuals-title">Visuals & Mathematical Plots Lab</h2>
+            <h2 className="visuals-title">{t('Visuals & Mathematical Plots Lab')}</h2>
             <p className="visuals-subtitle">
-              Interactive mathematical curves and AI-generated concept illustrations from your session.
+              {t('Interactive mathematical curves and AI-generated concept illustrations from your session.')}
             </p>
           </div>
         </div>
@@ -112,22 +114,22 @@ export default function VisualsGallery() {
           <div className="empty-icon-circle">
             <Sparkles size={32} className="text-cherry-500" />
           </div>
-          <h3 className="empty-title">No visuals generated yet</h3>
+          <h3 className="empty-title">{t('No visuals generated yet')}</h3>
           <p className="empty-desc">
-            Ask JOE to:
+            {t('Ask JOE to:')}
           </p>
           <div className="empty-suggestions-grid">
             <div className="empty-suggestion-pill">
-              <strong>"Plot a sine and cosine wave"</strong>
-              <span>Visualizes mathematical functions with interactive graphs</span>
+              <strong>“{t('Plot a sine and cosine wave')}”</strong>
+              <span>{t('Visualizes mathematical functions with interactive graphs')}</span>
             </div>
             <div className="empty-suggestion-pill">
-              <strong>"Draw an organic chemistry reaction mechanism diagram"</strong>
-              <span>Generates technical diagrams and illustrations</span>
+              <strong>“{t('Draw an organic chemistry reaction mechanism diagram')}”</strong>
+              <span>{t('Generates technical diagrams and illustrations')}</span>
             </div>
             <div className="empty-suggestion-pill">
-              <strong>"Graph the derivative of x^3 - 3x"</strong>
-              <span>Plots multiple curves side by side</span>
+              <strong>“{t('Graph the derivative of x^3 - 3x')}”</strong>
+              <span>{t('Plots multiple curves side by side')}</span>
             </div>
           </div>
         </div>
@@ -138,7 +140,7 @@ export default function VisualsGallery() {
             <div className="visuals-section">
               <div className="section-title-wrap">
                 <LineChart size={18} className="text-cherry-500" />
-                <h3 className="section-title">Plotted Mathematical Curves ({graphs.length})</h3>
+                <h3 className="section-title">{t('Plotted Mathematical Curves')} ({graphs.length})</h3>
               </div>
               <div className="graphs-grid">
                 {graphs.map(g => (
@@ -187,7 +189,7 @@ export default function VisualsGallery() {
             <div className="visuals-section">
               <div className="section-title-wrap">
                 <ImageIcon size={18} className="text-cherry-500" />
-                <h3 className="section-title">Diagrams & Concept Illustrations ({illustrations.length})</h3>
+                <h3 className="section-title">{t('Diagrams & Concept Illustrations')} ({illustrations.length})</h3>
               </div>
               <div className="illustrations-grid">
                 {illustrations.map(ins => (
@@ -202,11 +204,11 @@ export default function VisualsGallery() {
                       ) : ins.status === 'loading' ? (
                         <div className="illustration-loading-gallery">
                           <div className="spinner"></div>
-                          <span>Generating diagram with Imagen...</span>
+                          <span>{t('Generating diagram with Imagen...')}</span>
                         </div>
                       ) : (
                         <div className="illustration-error-gallery">
-                          <span>Error generating diagram: {ins.error}</span>
+                          <span>{t('Error generating diagram:')} {ins.error}</span>
                         </div>
                       )}
                     </div>
@@ -220,7 +222,7 @@ export default function VisualsGallery() {
                           title="Download Image"
                         >
                           <Download size={14} />
-                          <span>Save High-Res</span>
+                          <span>{t('Save High-Res')}</span>
                         </a>
                       )}
                     </div>
