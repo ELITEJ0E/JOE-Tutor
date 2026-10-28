@@ -29,6 +29,7 @@ import {
 } from './presets/agents';
 import { themes } from './themes';
 import { LanguagePreference, NotesLanguage, readLanguagePreference, saveLanguagePreference } from './language-preferences';
+import { UiLanguage, UI_LANGUAGE_OPTIONS } from './ui-i18n';
 import { FONT_OPTIONS, PLACEHOLDER_DOC } from './constants';
 
 /**
@@ -167,6 +168,8 @@ export const useUI = create<{
   setTheme: (themeName: string) => void;
   font: string;
   setFont: (fontName: string) => void;
+  uiLanguage: UiLanguage;
+  setUiLanguage: (language: UiLanguage) => void;
   conversationLanguage: LanguagePreference;
   setConversationLanguage: (language: LanguagePreference) => void;
   notesLanguage: NotesLanguage;
@@ -216,6 +219,17 @@ export const useUI = create<{
   setTheme: (themeName: string) => set({ theme: themeName }),
   font: 'Plus Jakarta Sans',
   setFont: (fontName: string) => set({ font: fontName }),
+  uiLanguage: (() => {
+    try {
+      const saved = window.localStorage.getItem('joe-tutor:ui-language');
+      return UI_LANGUAGE_OPTIONS.find(option => option.id === saved)?.id || 'en';
+    } catch { return 'en'; }
+  })(),
+  setUiLanguage: (language: UiLanguage) => {
+    try { window.localStorage.setItem('joe-tutor:ui-language', language); }
+    catch { /* Storage may be blocked. */ }
+    set({ uiLanguage: language });
+  },
   conversationLanguage: readLanguagePreference('joe-tutor:conversation-language', 'companion'),
   setConversationLanguage: (language: LanguagePreference) => {
     saveLanguagePreference('joe-tutor:conversation-language', language);
