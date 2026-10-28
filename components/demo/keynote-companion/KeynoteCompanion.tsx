@@ -671,6 +671,7 @@ const DocumentRenderer = memo(
  * for the document, transcript, minutes, and audio log.
  */
 export default function KeynoteCompanion() {
+  const t = useUiTranslation();
   const { client, setConfig, stopAudio, connected, setMuted, audioStreamerRef, isFishVoiceActive, speakFishGreeting } = useLiveAPIContext();
   const user = useUser();
   const { current } = useAgent();
@@ -2592,7 +2593,7 @@ ${recentTranscript}`;
                 <div className="document-toolbar">
                   {isMobile ? (
                     <div className="mobile-toolbar-container">
-                      <span style={{ fontWeight: 500, opacity: 0.7 }}>Actions</span>
+                      <span style={{ fontWeight: 500, opacity: 0.7 }}>{t('Actions')}</span>
                       <button
                         className="mobile-menu-trigger"
                         onClick={() => setShowMobileToolbar(!showMobileToolbar)}
@@ -2608,13 +2609,13 @@ ${recentTranscript}`;
                           />
                           <div className="mobile-menu-dropdown">
                             <button onClick={() => { handleUndo(); setShowMobileToolbar(false); }} disabled={documentHistory.length === 0}>
-                              <span className="material-symbols-outlined">undo</span> Undo
+                              <span className="material-symbols-outlined">undo</span> {t('Undo')}
                             </button>
                             <button onClick={() => { handleRedo(); setShowMobileToolbar(false); }} disabled={redoHistory.length === 0}>
-                              <span className="material-symbols-outlined">redo</span> Redo
+                              <span className="material-symbols-outlined">redo</span> {t('Redo')}
                             </button>
                             <button onClick={() => { handleClear(); setShowMobileToolbar(false); }}>
-                              <span className="material-symbols-outlined">delete</span> Clear
+                              <span className="material-symbols-outlined">delete</span> {t('Clear')}
                             </button>
                           </div>
                         </>
@@ -2622,9 +2623,9 @@ ${recentTranscript}`;
                     </div>
                   ) : (
                     <>
-                      <button onClick={handleUndo} disabled={documentHistory.length === 0}>Undo</button>
-                      <button onClick={handleRedo} disabled={redoHistory.length === 0}>Redo</button>
-                      <button onClick={handleClear}>Clear</button>
+                      <button onClick={handleUndo} disabled={documentHistory.length === 0}>{t('Undo')}</button>
+                      <button onClick={handleRedo} disabled={redoHistory.length === 0}>{t('Redo')}</button>
+                      <button onClick={handleClear}>{t('Clear')}</button>
                       <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                         <select
                           className="font-selector"
@@ -2646,7 +2647,7 @@ ${recentTranscript}`;
                   className="document-textarea"
                   value={documentContent}
                   onChange={handleDocumentChange}
-                  placeholder="Start writing..."
+                  placeholder={t("Start writing...")}
                 />
               </>
             )}
@@ -2724,7 +2725,7 @@ ${recentTranscript}`;
                 title="Generate a more accurate transcript from audio"
               >
                 <span className="icon">auto_fix_high</span>
-                <span>{isGeneratingAccurateTranscript ? 'Analyzing Audio...' : 'Accurate Transcript'}</span>
+                <span>{t(isGeneratingAccurateTranscript ? 'Analyzing Audio...' : 'Accurate Transcript')}</span>
               </button>
               {accurateTranscript && (
                 <button 
@@ -2742,13 +2743,13 @@ ${recentTranscript}`;
             ) : accurateTranscript ? (
               <div className="accurate-transcript-view prose-view">
                 <div className="flex items-center justify-between mb-6 pb-4 border-b border-black/5">
-                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Accurate Version</h4>
+                  <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">{t('Accurate Version')}</h4>
                   <button 
                     className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white text-xs font-medium rounded-lg hover:bg-blue-600 transition-colors shadow-sm"
                     onClick={handleReplaceTranscript}
                   >
                     <span className="icon text-sm">swap_horiz</span>
-                    Replace Live Transcript
+                    {t('Replace Live Transcript')}
                   </button>
                 </div>
                 <div className="accurate-content-body" dangerouslySetInnerHTML={{ __html: marked.parse(accurateTranscript) }} />
@@ -2757,7 +2758,7 @@ ${recentTranscript}`;
                   onClick={() => setAccurateTranscript('')}
                 >
                   <span className="icon text-sm">arrow_back</span>
-                  Back to live transcript
+                  {t('Back to live transcript')}
                 </button>
               </div>
             ) : transcript.length > 0 ? (
@@ -2769,7 +2770,7 @@ ${recentTranscript}`;
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-gray-400 opacity-50">
                 <span className="icon text-4xl mb-2">forum</span>
-                <p>No transcript available yet.</p>
+                <p>{t('No transcript available yet.')}</p>
               </div>
             )}
           </div>
@@ -2812,15 +2813,15 @@ ${recentTranscript}`;
           <div className="audio-log-view">
             <div className="audio-log-controls">
                <button onClick={handleSaveAudioLog} disabled={audioLog.length === 0}>
-                  Save Audio Log
+                  {t('Save Audio Log')}
                 </button>
             </div>
             <div className="audio-log-content">
               <div className="audio-log-header">
-                <div>Timestamp</div>
-                <div>Speaker</div>
-                <div>Duration</div>
-                <div className="audio-log-playback">Playback</div>
+                <div>{t('Timestamp')}</div>
+                <div>{t('Speaker')}</div>
+                <div>{t('Duration')}</div>
+                <div className="audio-log-playback">{t('Playback')}</div>
               </div>
               {audioLog.length > 0 ? (
                 audioLog.map((entry, index) => (
@@ -2839,7 +2840,7 @@ ${recentTranscript}`;
                 ))
               ) : (
                 <div className="audio-log-empty">
-                  <p>No audio has been recorded in this session yet.</p>
+                  <p>{t('No audio has been recorded in this session yet.')}</p>
                 </div>
               )}
             </div>
