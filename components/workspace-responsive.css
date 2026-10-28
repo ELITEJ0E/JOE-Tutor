@@ -619,3 +619,50 @@
     mask-image:linear-gradient(to bottom,#000 0%,#000 75%,transparent 100%);
   }
 }
+
+
+/* Avatar toggle alignment: reset inherited global button and SVG transforms.
+   Keep the circular click target exactly centered at every viewport width. */
+.tutor-companion-column .chloe-dock-base > button {
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 34px!important;
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  min-height:34px!important;
+  padding:0!important;
+  margin:0!important;
+  line-height:1!important;
+  border-radius:50%!important;
+  transform:none!important;
+  position:relative;
+}
+.tutor-companion-column .chloe-dock-base > button svg {
+  display:block;
+  flex:none;
+  width:18px;
+  height:18px;
+  margin:0!important;
+  position:static!important;
+  transform:none!important;
+  stroke-width:2.1;
+}
+.tutor-companion-column .chloe-dock-base > button:hover {background:#f4dae5;}
+.tutor-companion-column .chloe-dock-base > button:focus-visible {
+  outline:2px solid #d15b90;outline-offset:2px;
+}
+@media(max-width:600px){
+  .tutor-companion-column .chloe-dock-base > button {
+    flex-basis:30px!important;width:30px!important;height:30px!important;
+    min-width:30px!important;min-height:30px!important;
+  }
+}
+/* Speaking bars stay visible and animate independently of any UI renders.
+   JS sets actual audio-driven heights; CSS is fallback for restricted iOS. */
+.tutor-companion-column .joe-voice-eq.active i,
+.joe-voice-bars.joe-voice-eq.active i {
+  background:#d93679;
+  opacity:1;
+}
