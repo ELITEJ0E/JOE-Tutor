@@ -480,3 +480,24 @@
   .joe-voice-eq i {transition:none!important;transform:scaleY(.35)!important;}
   .tutor-companion-column .chloe-dock-portrait img {transition:none!important;transform:scale(1.08)!important;}
 }
+
+
+/* Always-visible app-language picker, independent from chat/notes language. */
+.joe-header-language{
+  display:inline-flex;align-items:center;gap:5px;flex:0 1 auto;
+  min-width:0;max-width:170px;min-height:35px;padding:0 8px;
+  border:1px solid #f0dce6;border-radius:10px;background:#fffafd;
+  color:#92536f;cursor:pointer;
+}
+.joe-header-language select{
+  display:block;min-width:0;width:100%;max-width:136px;
+  border:0!important;background:transparent!important;
+  font:inherit;font-size:12px;font-weight:650;color:#71445e;
+  padding:5px 2px;cursor:pointer;
+  -webkit-user-select:auto;user-select:auto;
+}
+.joe-header-language select:focus-visible{outline:2px solid #c05284;outline-offset:3px;}
+@media(max-width:700px){
+  .joe-header-language{min-height:32px;max-width:115px;padding:0 5px;}
+  .joe-header-language select{max-width:87px;font-size:11px;}
+}
