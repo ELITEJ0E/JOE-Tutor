@@ -130,7 +130,13 @@ function App() {
     );
   }
 
-  const { showWelcomeScreen, theme, font } = useUI();
+  const { showWelcomeScreen, theme, font, uiLanguage } = useUI();
+
+  useEffect(() => {
+    document.documentElement.lang = uiLanguage;
+    document.documentElement.dir = 'ltr';
+    document.title = 'JOE Tutor — Learn Brighter Together';
+  }, [uiLanguage]);
 
   // This effect applies the selected theme's colors as CSS variables to the root element,
   // allowing for dynamic theming of the entire application.
