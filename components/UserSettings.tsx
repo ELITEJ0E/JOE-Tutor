@@ -132,6 +132,9 @@ export default function UserSettings() {
               />
             </div>
           </div>
+          <p className="joe-prefs-footer" role="status" aria-live="polite">
+            {t('App language')}: <strong>{UI_LANGUAGE_OPTIONS.find(option => option.id === uiLanguage)?.label || uiLanguage}</strong>
+          </p>
           <p className="joe-prefs-footer">{t('App menus now switch languages immediately. Speech and notes languages are separate.')}</p>
           <p className="joe-prefs-footer">{t('A new voice session will use the selected speech language. Existing notes stay unchanged.')}</p>
         </section>
