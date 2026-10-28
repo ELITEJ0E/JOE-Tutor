@@ -27,16 +27,23 @@ function VoiceVisualizer({
     }
     let frame = 0;
     let lastDraw = 0;
+    let smoothed = .16;
     const draw = (now: number) => {
-      if (now - lastDraw >= 75) {
+      if (now - lastDraw >= 50) {
         lastDraw = now;
-        // The floor keeps the speaking indicator alive on devices that cannot
-        // provide real audio metering; louder speech produces higher bars.
-        const measured = Math.min(1, volumeRef.current * 3);
-        const amplitude = Math.max(.28, measured);
+        // Smooth the real Gemini/Fish PCM output level without causing
+        // component re-renders. On restricted mobile devices, retain a
+        // moving fallback so active speech never looks like a static icon.
+        const measured = Math.min(1, Math.max(0, volumeRef.current) * 4.5);
+        const target = measured > .025 ? measured : .38;
+        smoothed += (target - smoothed) * .30;
         bars.forEach((bar, index) => {
-          const wave = .48 + .52 * (.5 + .5 * Math.sin(now / 115 + index * 1.75));
-          bar.style.transform = `scaleY(${Math.min(1, .17 + amplitude * wave).toFixed(3)})`;
+          const phase = now / 123 + index * 1.7;
+          const oscillation = .38 + .62 * (.5 + .5 * Math.sin(phase));
+          const beat = .08 * Math.sin(now / 210 + index * 2.3);
+          const height = Math.max(.18, Math.min(1, .18 + smoothed * oscillation + beat));
+          bar.style.transform = `scaleY(${height.toFixed(3)})`;
+          bar.style.opacity = String(Math.min(1, .6 + height * .45));
         });
       }
       frame = requestAnimationFrame(draw);
