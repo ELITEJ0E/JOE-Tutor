@@ -1993,7 +1993,7 @@ ${recentTranscript}`;
               text: lastEntry.text.trim() === cleanFinal ? cleanFinal : lastEntry.text + ' ' + cleanFinal,
             };
           } else {
-            const previousAgent = [...nextTranscript].reverse().find(entry => entry.speaker === agentRef.current.name);
+            const previousAgent = nextTranscript.slice(-3).reverse().find(entry => entry.speaker === agentRef.current.name);
             const previousUser = [...nextTranscript].reverse().find(entry => entry.speaker === (userRef.current.name || 'User'));
             const userAskedToRepeat = /\\b(repeat|again|say it|one more time|再说|再讲|重复|もう一度|다시)\\b/i.test(previousUser?.text || '');
             // Live transcription can replay the previous assistant utterance
@@ -2755,8 +2755,8 @@ ${recentTranscript}`;
 
         {mainTab === 'transcript' && (
           <div className="transcript-content" ref={transcriptViewRef}
-            onScroll={event => {
-              const el = event.currentTarget;
+            onScrollCapture={event => {
+              const el = event.target as HTMLElement;
               if (el.scrollHeight > el.clientHeight + 4) {
                 followTranscriptRef.current = el.scrollHeight - el.clientHeight - el.scrollTop < 120;
               }
