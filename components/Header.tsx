@@ -13,6 +13,8 @@ import { Agent } from '../lib/presets/agents';
 import { getCharacterIntroduction } from '../lib/presets/character-intros';
 import { useAgent, useUI, useUser } from '../lib/state';
 import { useUiTranslation } from '../hooks/use-ui-translation';
+import { UI_LANGUAGE_OPTIONS, UiLanguage } from '../lib/ui-i18n';
+import { Languages } from 'lucide-react';
 import {
   Sparkles,
   BookOpen,
@@ -45,6 +47,8 @@ export default function Header() {
     setDocumentTab,
     outputModality,
     setOutputModality,
+    uiLanguage,
+    setUiLanguage,
   } = useUI();
   const { name, topic } = useUser();
   const { current, setCurrent, availablePresets } = useAgent();
@@ -312,6 +316,18 @@ export default function Header() {
 
       {/* Right Controls Area */}
       <div className="header-right-controls">
+        <label className="joe-header-language" title="Change app display language">
+          <Languages size={16} aria-hidden="true" />
+          <select
+            aria-label="App display language"
+            value={uiLanguage}
+            onChange={event => setUiLanguage(event.currentTarget.value as UiLanguage)}
+          >
+            {UI_LANGUAGE_OPTIONS.map(option =>
+              <option key={option.id} value={option.id}>{option.label}</option>
+            )}
+          </select>
+        </label>
         {/* Topic Badge if set */}
         {topic && (
           <div className="header-topic-badge" title={`Active Study Subject: ${topic}`}>
