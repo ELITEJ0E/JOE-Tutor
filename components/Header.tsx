@@ -11,6 +11,7 @@ import cn from 'classnames';
 import { useLiveAPIContext } from '../contexts/LiveAPIContext';
 import { Agent } from '../lib/presets/agents';
 import { getCharacterIntroduction } from '../lib/presets/character-intros';
+import { localizedCompanionTagline, localizedCompanionName } from '../lib/companion-display-i18n';
 import { useAgent, useUI, useUser } from '../lib/state';
 import { useUiTranslation } from '../hooks/use-ui-translation';
 import { UI_LANGUAGE_OPTIONS, UiLanguage } from '../lib/ui-i18n';
@@ -199,7 +200,7 @@ export default function Header() {
                 <li key={agent.id}>
                   <button
                     className={cn('persona-option-btn', { active: agent.id === current.id })}
-                    title={getCharacterIntroduction(agent).introText}
+                    title={localizedCompanionTagline(agent, uiLanguage)}
                     onClick={() => {
                       changeAgent(agent);
                       setShowRoomList(false);
@@ -239,8 +240,8 @@ export default function Header() {
                       </div>
                     )}
                     <div className="persona-info-wrap">
-                      <span className="persona-name-text">{agent.name}</span>
-                      <span className="persona-voice-text">{getCharacterIntroduction(agent).tagline}</span>
+                      <span className="persona-name-text">{localizedCompanionName(agent, uiLanguage)}</span>
+                      <span className="persona-voice-text">{localizedCompanionTagline(agent, uiLanguage)}</span>
                     </div>
                     {agent.id === current.id && (
                       <CheckCircle2 size={14} className="text-cherry-500 ml-auto" />
