@@ -580,3 +580,42 @@
     transition:none;
   }
 }
+
+
+/* Seamless portrait compositing. Some avatar files end at the waist or carry
+   rectangular image backgrounds; fitting them cannot restore missing pixels.
+   Fade their visible edges into the companion rail so no hard horizontal
+   cutoff appears against the status pill. */
+@media (min-width:1021px) {
+  .tutor-companion-column .chloe-dock-portrait {
+    position:relative;
+    isolation:isolate;
+    background:transparent!important;
+  }
+  .tutor-companion-column .chloe-dock-portrait img,
+  .tutor-companion-column .chloe-dock--speaking .chloe-dock-portrait img {
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    object-position:center bottom;
+    transform:none!important;
+    -webkit-mask-image:linear-gradient(to bottom,
+      transparent 0%, #000 3%, #000 68%, rgba(0,0,0,.88) 77%,
+      rgba(0,0,0,.54) 88%, transparent 100%);
+    mask-image:linear-gradient(to bottom,
+      transparent 0%, #000 3%, #000 68%, rgba(0,0,0,.88) 77%,
+      rgba(0,0,0,.54) 88%, transparent 100%);
+    -webkit-mask-size:100% 100%;
+    mask-size:100% 100%;
+    filter:drop-shadow(0 8px 16px rgba(120,64,84,.08));
+  }
+  .tutor-companion-column .chloe-dock-base {
+    margin-top:-2px;
+  }
+}
+@media (max-width:1020px) {
+  .tutor-companion-column .chloe-dock-portrait img {
+    -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 75%,transparent 100%);
+    mask-image:linear-gradient(to bottom,#000 0%,#000 75%,transparent 100%);
+  }
+}
