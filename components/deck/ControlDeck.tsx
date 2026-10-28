@@ -6,6 +6,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 import { useLiveAPIContext } from '../../contexts/LiveAPIContext';
+import { useUiTranslation } from '../../hooks/use-ui-translation';
 import VoiceVisualizer from '../tutor/VoiceVisualizer';
 import { usePerfLogStore, useUI, useUser, useAgent } from '../../lib/state';
 import { AudioRecorder } from '../../lib/audio-recorder';
@@ -52,6 +53,7 @@ export default function ControlDeck({
   canUndo = false,
   canRedo = false,
 }: ControlDeckProps) {
+  const t = useUiTranslation();
   const [audioRecorder] = useState(() => new AudioRecorder());
   const [muted, setMuted] = useState(false);
   const [showTextInput, setShowTextInput] = useState(false);
@@ -246,7 +248,7 @@ export default function ControlDeck({
             onClick={() => setShowTopicDrawer(!showTopicDrawer)}
           >
             <Sparkles size={13} className="text-cherry-500" />
-            <span>Topics ({topic || 'Select'})</span>
+            <span>{t('Topics')} ({topic || t('Select')})</span>
             <ChevronUp size={13} className={cn('chip-chevron', { open: showTopicDrawer })} />
           </button>
 
@@ -258,7 +260,7 @@ export default function ControlDeck({
               )
             }
           >
-            <span>Explain Step-by-Step</span>
+            <span>{t('Explain Step-by-Step')}</span>
           </button>
 
           <button
@@ -271,7 +273,7 @@ export default function ControlDeck({
             }}
           >
             <LineChart size={13} />
-            <span>Plot Math Graph</span>
+            <span>{t('Plot Math Graph')}</span>
           </button>
 
           <button
@@ -283,7 +285,7 @@ export default function ControlDeck({
               );
             }}
           >
-            <span>Generate Diagram</span>
+            <span>{t('Generate Diagram')}</span>
           </button>
 
           <button
@@ -296,7 +298,7 @@ export default function ControlDeck({
             }}
           >
             <HelpCircle size={13} />
-            <span>Quiz Me</span>
+            <span>{t('Quiz Me')}</span>
           </button>
 
           <button
@@ -309,7 +311,7 @@ export default function ControlDeck({
             }}
           >
             <BookOpen size={13} />
-            <span>Summarize Notes</span>
+            <span>{t('Summarize Notes')}</span>
           </button>
         </div>
       </div>
@@ -318,7 +320,7 @@ export default function ControlDeck({
       {showTopicDrawer && (
         <div className="deck-topics-drawer">
           <div className="drawer-header">
-            <span className="drawer-title">Choose a Subject or Problem to Master:</span>
+            <span className="drawer-title">{t('Choose a Subject or Problem to Master:')}</span>
             <button
               className="drawer-close-btn"
               onClick={() => setShowTopicDrawer(false)}
@@ -354,7 +356,7 @@ export default function ControlDeck({
               ref={inputRef}
               type="text"
               className="deck-input-field"
-              placeholder={`Ask ${current.name.split(" (")[0]} anything…`}
+              placeholder={t('Ask {name} anything…', { name: current.name.split(' (')[0] })}
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
               onKeyDown={(e) => {
@@ -368,7 +370,7 @@ export default function ControlDeck({
               disabled={!textInput.trim() || !connected}
             >
               <Send size={15} />
-              <span>Send</span>
+              <span>{t('Send')}</span>
             </button>
             <button
               className="deck-input-close"
@@ -407,7 +409,7 @@ export default function ControlDeck({
           <button
             className="deck-tool-btn"
             onClick={handleCopyNotes}
-            title="Copy Study Notes"
+            title={t('Notes')}
           >
             {copied ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} />}
           </button>
@@ -428,7 +430,7 @@ export default function ControlDeck({
           <button
             id="tutor-session-action"
             type="button"
-            aria-label={connected ? 'Pause active voice session' : 'Start a voice session with your tutor'}
+            aria-label={t(connected ? 'Pause Session' : 'Start Tutoring')}
             className={cn('hero-connect-button', {
               'is-connected': connected,
               'is-connecting': isConnecting,
@@ -441,7 +443,7 @@ export default function ControlDeck({
               }
             }}
             disabled={isConnecting}
-            title={connected ? 'Pause Session' : 'Start Session with JOE Tutor'}
+            title={t(connected ? 'Pause Session' : 'Start Tutoring')}
           >
             <div className="hero-button-inner">
               {isConnecting ? (
@@ -449,12 +451,12 @@ export default function ControlDeck({
               ) : connected ? (
                 <>
                   <Square size={18} className="fill-current" />
-                  <span className="hero-button-text">Pause Session</span>
+                  <span className="hero-button-text">{t('Pause Session')}</span>
                 </>
               ) : (
                 <>
                   <Play size={20} className="fill-current translate-x-0.5" />
-                  <span className="hero-button-text">Start Tutoring</span>
+                  <span className="hero-button-text">{t('Start Tutoring')}</span>
                 </>
               )}
             </div>
@@ -467,17 +469,17 @@ export default function ControlDeck({
         {connected && (
           <div className="joe-voice-state" role="status" aria-live="polite" aria-label={agentState === 'Microphone unavailable' ? 'Microphone access unavailable' : agentState === 'Fish Audio unavailable' ? 'Fish Audio voice is unavailable' : agentState === 'Speaking' ? 'Companion speaking' : agentState === 'Thinking' ? 'Companion preparing a reply' : 'Listening'}>
             {agentState === 'Thinking' ? (
-              <><LoaderCircle size={16} className="joe-voice-spinner" /><span>Composing reply…</span></>
+              <><LoaderCircle size={16} className="joe-voice-spinner" /><span>{t('Composing reply…')}</span></>
             ) : agentState === 'Generating voice' ? (
-              <><LoaderCircle size={16} className="joe-voice-spinner" /><span>Preparing voice…</span></>
+              <><LoaderCircle size={16} className="joe-voice-spinner" /><span>{t('Preparing voice…')}</span></>
             ) : agentState === 'Speaking' ? (
-              <><VoiceVisualizer active={true} className="joe-voice-bars"/><span>Speaking</span></>
+              <><VoiceVisualizer active={true} className="joe-voice-bars"/><span>{t('Speaking')}</span></>
             ) : agentState === 'Fish Audio unavailable' ? (
-              <><AlertCircle size={16} /><span>Fish Audio unavailable</span></>
+              <><AlertCircle size={16} /><span>{t('Fish Audio unavailable')}</span></>
             ) : agentState === 'Microphone unavailable' ? (
-              <><AlertCircle size={16} /><span>Microphone unavailable</span></>
+              <><AlertCircle size={16} /><span>{t('Microphone unavailable')}</span></>
             ) : (
-              <><AudioLines size={16} /><span>{agentState === 'Listening' ? 'Listening…' : 'Ready to listen'}</span></>
+              <><AudioLines size={16} /><span>{t(agentState === 'Listening' ? 'Listening…' : 'Ready to listen')}</span></>
             )}
           </div>
         )}
@@ -492,7 +494,7 @@ export default function ControlDeck({
             })}
             onClick={() => setMuted(!muted)}
             disabled={!connected}
-            title={muted ? 'Unmute Microphone' : 'Mute Microphone'}
+            title={t(muted ? 'Mic' : 'Muted')}
           >
             {muted ? (
               <MicOff size={18} className="text-cherry-500" />
@@ -509,17 +511,17 @@ export default function ControlDeck({
                 )}
               </div>
             )}
-            <span className="tool-btn-label">{muted ? 'Muted' : 'Mic'}</span>
+            <span className="tool-btn-label">{t(muted ? 'Muted' : 'Mic')}</span>
           </button>
 
           {/* Type / Text Toggle */}
           <button
             className={cn('deck-tool-btn', { active: showTextInput })}
             onClick={() => setShowTextInput(!showTextInput)}
-            title="Type a message or formula to tutor"
+            title={t('Text')}
           >
             <MessageSquare size={17} />
-            <span className="tool-btn-label">Text</span>
+            <span className="tool-btn-label">{t('Text')}</span>
           </button>
         </div>
       </div>
