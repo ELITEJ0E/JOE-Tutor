@@ -12,6 +12,7 @@ import { useLiveAPIContext } from '../contexts/LiveAPIContext';
 import { Agent } from '../lib/presets/agents';
 import { getCharacterIntroduction } from '../lib/presets/character-intros';
 import { useAgent, useUI, useUser } from '../lib/state';
+import { useUiTranslation } from '../hooks/use-ui-translation';
 import {
   Sparkles,
   BookOpen,
@@ -30,6 +31,7 @@ import {
 import chloeIdleImg from '../src/assets/images/chloe_tutor_idle_1790148991910.jpg';
 
 export default function Header() {
+  const t = useUiTranslation();
   const {
     showUserConfig,
     setShowUserConfig,
@@ -139,7 +141,7 @@ export default function Header() {
 
           <div className="brand-text-block">
             <div className="brand-title-row">
-              <span className="brand-name">TUTORS</span>
+              <span className="brand-name">{t('TUTORS')}</span>
             </div>
             <div className="brand-persona-selector">
               <button
@@ -173,7 +175,7 @@ export default function Header() {
             ref={personaMenuRef}
             id="joe-persona-menu"
             role="group"
-            aria-label="Choose a companion"
+            aria-label={t("Choose your tutor or companion")}
             className="persona-dropdown-menu"
             initial={{ opacity: 0, y: -8, scale: 0.985 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -182,11 +184,11 @@ export default function Header() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="dropdown-section-title">
-              <span>Choose your tutor or companion</span>
+              <span>{t('Choose your tutor or companion')}</span>
             </div>
             <div className="companion-gender-switch" role="group" aria-label="Companion gender">
-              <button type="button" aria-pressed={genderFilter === 'female'} className={genderFilter === 'female' ? 'active' : ''} onClick={() => setGenderFilter('female')}>Female</button>
-              <button type="button" aria-pressed={genderFilter === 'male'} className={genderFilter === 'male' ? 'active' : ''} onClick={() => setGenderFilter('male')}>Male</button>
+              <button type="button" aria-pressed={genderFilter === 'female'} className={genderFilter === 'female' ? 'active' : ''} onClick={() => setGenderFilter('female')}>{t('Female')}</button>
+              <button type="button" aria-pressed={genderFilter === 'male'} className={genderFilter === 'male' ? 'active' : ''} onClick={() => setGenderFilter('male')}>{t('Male')}</button>
             </div>
             <ul className="persona-list">
               {visiblePresets.map((agent) => (
@@ -259,7 +261,7 @@ export default function Header() {
           title="Interactive Study Notes and Mathematical Derivations"
         >
           <BookOpen size={15} />
-          <span className="tab-text">Notes</span>
+          <span className="tab-text">{t('Notes')}</span>
         </button>
 
         <button
@@ -268,7 +270,7 @@ export default function Header() {
           title="Mathematical Function Plots and Concept Diagrams"
         >
           <LineChart size={15} />
-          <span className="tab-text">Visuals Lab</span>
+          <span className="tab-text">{t('Visuals Lab')}</span>
         </button>
 
         <button
@@ -277,7 +279,7 @@ export default function Header() {
           title="Active Recall Practice and Flashcards"
         >
           <HelpCircle size={15} />
-          <span className="tab-text">Quiz & Recall</span>
+          <span className="tab-text">{t('Quiz & Recall')}</span>
         </button>
 
         <button
@@ -286,7 +288,7 @@ export default function Header() {
           title="Full Conversation Dialogue Transcript"
         >
           <MessageSquare size={15} />
-          <span className="tab-text">Transcript</span>
+          <span className="tab-text">{t('Transcript')}</span>
         </button>
 
         <button
@@ -295,7 +297,7 @@ export default function Header() {
           title="Structured Summary and Key Takeaways"
         >
           <ClipboardList size={15} />
-          <span className="tab-text">Minutes</span>
+          <span className="tab-text">{t('Minutes')}</span>
         </button>
 
         <button
@@ -304,7 +306,7 @@ export default function Header() {
           title="Raw Audio Snippets and Log"
         >
           <Volume2 size={15} />
-          <span className="tab-text">Audio</span>
+          <span className="tab-text">{t('Audio')}</span>
         </button>
       </nav>
 
@@ -320,7 +322,7 @@ export default function Header() {
 
         {/* Edit Counter */}
         <div className="header-stat-badge" title="Tutor Note Updates">
-          <span className="stat-label">Edits:</span>
+          <span className="stat-label">{t('Edits:')}</span>
           <span className="stat-value">{changeCount}</span>
         </div>
 
@@ -339,7 +341,7 @@ export default function Header() {
         <button
           className={cn('header-icon-button', { active: showUserConfig })}
           onClick={() => setShowUserConfig(!showUserConfig)}
-          title="Session & Companion Settings"
+          title={t("Companion & Session")}
         >
           <Settings size={18} />
         </button>
@@ -350,38 +352,38 @@ export default function Header() {
         <button type="button" className={cn('mobile-nav-item', {active: mainTab === 'document'})}
           aria-current={mainTab === 'document' ? 'page' : undefined}
           onClick={() => {setMainTab('document'); setShowMobileMore(false);}}>
-          <BookOpen size={20}/><span>Notes</span>
+          <BookOpen size={20}/><span>{t('Notes')}</span>
         </button>
         <button type="button" className={cn('mobile-nav-item', {active: mainTab === 'visuals'})}
           aria-current={mainTab === 'visuals' ? 'page' : undefined}
           onClick={() => {setMainTab('visuals'); setShowMobileMore(false);}}>
-          <LineChart size={20}/><span>Visuals</span>
+          <LineChart size={20}/><span>{t('Visuals')}</span>
         </button>
         <button type="button" className="mobile-nav-item mobile-nav-tutor"
           onClick={() => {setMainTab('document'); setShowMobileMore(false); document.getElementById('tutor-session-action')?.focus();}}
-          title="Focus voice session controls">
-          <Volume2 size={20}/><span>Tutor</span>
+          title={t("Tutor")}>
+          <Volume2 size={20}/><span>{t('Tutor')}</span>
         </button>
         <button type="button" className={cn('mobile-nav-item', {active: mainTab === 'quiz'})}
           aria-current={mainTab === 'quiz' ? 'page' : undefined}
           onClick={() => {setMainTab('quiz'); setShowMobileMore(false);}}>
-          <HelpCircle size={20}/><span>Quiz</span>
+          <HelpCircle size={20}/><span>{t('Quiz')}</span>
         </button>
         <button type="button" className={cn('mobile-nav-item', {active: showMobileMore || ['transcript','minutes','audio-log'].includes(mainTab)})}
           aria-expanded={showMobileMore} aria-controls="mobile-tutor-more"
           onClick={() => setShowMobileMore(v => !v)}>
-          <Layers size={20}/><span>More</span>
+          <Layers size={20}/><span>{t('More')}</span>
         </button>
       </nav>
       {showMobileMore && (
         <>
-          <button type="button" className="mobile-tutor-more-backdrop" aria-label="Close more menu" onClick={() => setShowMobileMore(false)} />
+          <button type="button" className="mobile-tutor-more-backdrop" aria-label={t("Close more menu")} onClick={() => setShowMobileMore(false)} />
           <div className="mobile-tutor-more-sheet" id="mobile-tutor-more" role="menu" aria-label="More workspace tools">
-            <strong>More tools</strong>
-            <button role="menuitem" type="button" onClick={() => {setMainTab('transcript');setShowMobileMore(false);}}><MessageSquare size={18}/> Transcript</button>
-            <button role="menuitem" type="button" onClick={() => {setMainTab('minutes');setShowMobileMore(false);}}><ClipboardList size={18}/> Minutes & summaries</button>
-            <button role="menuitem" type="button" onClick={() => {setMainTab('audio-log');setShowMobileMore(false);}}><Volume2 size={18}/> Audio history</button>
-            <button role="menuitem" type="button" onClick={() => {setShowUserConfig(true);setShowMobileMore(false);}}><Settings size={18}/> Preferences</button>
+            <strong>{t('More tools')}</strong>
+            <button role="menuitem" type="button" onClick={() => {setMainTab('transcript');setShowMobileMore(false);}}><MessageSquare size={18}/> {t('Transcript')}</button>
+            <button role="menuitem" type="button" onClick={() => {setMainTab('minutes');setShowMobileMore(false);}}><ClipboardList size={18}/> {t('Minutes & summaries')}</button>
+            <button role="menuitem" type="button" onClick={() => {setMainTab('audio-log');setShowMobileMore(false);}}><Volume2 size={18}/> {t('Audio history')}</button>
+            <button role="menuitem" type="button" onClick={() => {setShowUserConfig(true);setShowMobileMore(false);}}><Settings size={18}/> {t('Preferences')}</button>
           </div>
         </>
       )}
