@@ -8,9 +8,11 @@ import { useAgent, useUI } from '../../lib/state';
 import { getCharacterIntroduction } from '../../lib/presets/character-intros';
 import { ChevronDown, ChevronUp, Sparkles, X } from 'lucide-react';
 import VoiceVisualizer from './VoiceVisualizer';
+import { useUiTranslation } from '../../hooks/use-ui-translation';
 import './docked-companion.css';
 
 function TutorAvatar() {
+  const t = useUiTranslation();
   // Narrow Zustand selectors avoid rerendering the portrait for unrelated
   // settings, input status and transcript updates.
   const current = useAgent(state => state.current);
@@ -70,7 +72,7 @@ function TutorAvatar() {
     return () => window.clearTimeout(id);
   }, [connected, current.id]);
 
-  const status = !connected ? 'Ready to chat' : agentState === 'Fish Audio unavailable' ? 'Fish Audio unavailable' : (isTalking || agentState === 'Speaking') ? 'Speaking' : agentState === 'Generating voice' ? 'Preparing voice' : agentState === 'Thinking' ? 'Composing reply' : 'Listening';
+  const status = t(!connected ? 'Ready to chat' : agentState === 'Fish Audio unavailable' ? 'Fish Audio unavailable' : (isTalking || agentState === 'Speaking') ? 'Speaking' : agentState === 'Generating voice' ? 'Preparing voice' : agentState === 'Thinking' ? 'Composing reply' : 'Listening');
   const name = current.name.split(' (')[0];
   const bubbleText = visibleText || greetingPreview;
   return (
