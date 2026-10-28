@@ -29,6 +29,7 @@ import { jsPDF } from 'jspdf';
 import { useLiveAPIContext } from '../../../contexts/LiveAPIContext';
 import { createSystemInstructions } from '../../../lib/prompts';
 import { ensureMathJax } from '../../../lib/mathjax-loader';
+import { useUiTranslation } from '../../../hooks/use-ui-translation';
 import { getCharacterIntroduction } from '../../../lib/presets/character-intros';
 import { FONT_OPTIONS, PLACEHOLDER_DOC } from '../../../lib/constants';
 import {
@@ -106,39 +107,39 @@ declare const MathJax: any;
  * It introduces the key features of the application.
  */
 const WelcomePlaceholder = () => {
+  const t = useUiTranslation();
   const { current } = useAgent();
   const name = current.name.split(' (')[0];
   return (
-    <section className="welcome-placeholder joe-workspace-empty" aria-label="Get started">
-      <div className="joe-empty-eyebrow"><span className="joe-empty-status"/> YOUR LEARNING SPACE</div>
-      <h1 className="welcome-placeholder-title">A fresh page, <span>ready for you.</span></h1>
+    <section className="welcome-placeholder joe-workspace-empty" aria-label={t("Start Tutoring")}>
+      <div className="joe-empty-eyebrow"><span className="joe-empty-status"/> {t('YOUR LEARNING SPACE')}</div>
+      <h1 className="welcome-placeholder-title">{t('A fresh page,')} <span>{t('ready for you.')}</span></h1>
       <p className="welcome-placeholder-subtitle">
-        Start a voice conversation with {name}, explore a new topic, or simply chat.
-        Your notes and ideas can grow from here.
+        {t('Start a voice conversation with {name}, explore a new topic, or simply chat. Your notes and ideas can grow from here.', {name})}
       </p>
       <div className="joe-empty-companion-note">
         <span className="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
-        <span><strong>{name} is ready.</strong> Use the Start Tutoring button below when you want to talk.</span>
+        <span><strong>{name} {t('is ready.')}</strong> {t('Use the Start Tutoring button below when you want to talk.')}</span>
       </div>
       <div className="placeholder-features-grid">
         <div className="placeholder-feature">
           <span className="material-symbols-outlined icon" aria-hidden="true">record_voice_over</span>
-          <div><h3>Talk naturally</h3><p className="feature-desc">Ask questions, practice languages or share ideas.</p></div>
+          <div><h3>{t("Talk naturally")}</h3><p className="feature-desc">{t("Ask questions, practice languages or share ideas.")}</p></div>
         </div>
         <div className="placeholder-feature">
           <span className="material-symbols-outlined icon" aria-hidden="true">edit_note</span>
-          <div><h3>Capture your notes</h3><p className="feature-desc">Turn conversations into useful study material.</p></div>
+          <div><h3>{t("Capture your notes")}</h3><p className="feature-desc">{t("Turn conversations into useful study material.")}</p></div>
         </div>
         <div className="placeholder-feature">
           <span className="material-symbols-outlined icon" aria-hidden="true">monitoring</span>
-          <div><h3>Make it visual</h3><p className="feature-desc">Explore equations, graphs and explanations.</p></div>
+          <div><h3>{t("Make it visual")}</h3><p className="feature-desc">{t("Explore equations, graphs and explanations.")}</p></div>
         </div>
         <div className="placeholder-feature">
           <span className="material-symbols-outlined icon" aria-hidden="true">psychology</span>
-          <div><h3>Practice and recall</h3><p className="feature-desc">Reinforce what you've learned with quick quizzes.</p></div>
+          <div><h3>{t("Practice and recall")}</h3><p className="feature-desc">{t("Reinforce what you've learned with quick quizzes.")}</p></div>
         </div>
       </div>
-      <p className="joe-empty-footnote">You can also type a message using <strong>Text</strong> in the voice controls.</p>
+      <p className="joe-empty-footnote">{t('You can also type a message using')} <strong>{t('Text')}</strong> {t('in the voice controls.')}</p>
     </section>
   );
 };
