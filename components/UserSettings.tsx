@@ -6,140 +6,21 @@ import SettingsSheet from './SettingsSheet';
 import ConversationMemorySettings from './ConversationMemorySettings';
 import InstallAppSettings from './InstallAppSettings';
 import { LANGUAGE_OPTIONS, NOTES_LANGUAGE_OPTIONS, LanguagePreference, NotesLanguage } from '../lib/language-preferences';
-import { AnimatePresence, motion } from 'motion/react';
+import { UiLanguage, UI_LANGUAGE_OPTIONS } from '../lib/ui-i18n';
+import SettingsDropdown from './SettingsDropdown';
+import { useUiTranslation } from '../hooks/use-ui-translation';
 import './companion-settings.css';
 import { useAgent, useUI, useUser } from '../lib/state';
 import { Theme, themes } from '../lib/themes';
 import { FONT_OPTIONS, PLACEHOLDER_DOC } from '../lib/constants';
-import React, { useState, useRef, useEffect, useId } from 'react';
+import React, { useState, useRef } from 'react';
 import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-import { FileUp, X, FileText, Loader2, ChevronDown } from 'lucide-react';
+import { FileUp, X, FileText, Loader2 } from 'lucide-react';
 
 // PDF parsing loads on demand; its worker is served locally by Vite.
 
 type FormatOption = 'Markdown' | 'HTML';
 const FORMAT_OPTIONS: FormatOption[] = ['Markdown', 'HTML'];
-
-/**
- * A custom dropdown component for settings.
- */
-const CustomDropdown = React.memo(function CustomDropdown({
-  value, options, onChange, placeholder,
-}: {
-  value: string;
-  options: string[];
-  onChange: (val: string) => void;
-  placeholder?: string;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const listId = useId();
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const dismiss = (event: PointerEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) setIsOpen(false);
-    };
-    const keyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.stopPropagation();
-        setIsOpen(false);
-        triggerRef.current?.focus();
-      }
-    };
-    document.addEventListener('pointerdown', dismiss);
-    document.addEventListener('keydown', keyDown);
-    return () => {
-      document.removeEventListener('pointerdown', dismiss);
-      document.removeEventListener('keydown', keyDown);
-    };
-  }, [isOpen]);
-
-  const choose = (option: string) => {
-    onChange(option);
-    setIsOpen(false);
-    triggerRef.current?.focus();
-  };
-
-  return (
-    <div className="custom-dropdown-container" ref={containerRef}>
-      <button
-        ref={triggerRef}
-        type="button"
-        className="custom-dropdown-trigger"
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
-        aria-controls={listId}
-        onClick={() => setIsOpen(open => !open)}
-        onKeyDown={event => {
-          if (event.key === 'Escape' && isOpen) {
-            event.stopPropagation();
-            setIsOpen(false);
-            return;
-          }
-          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-            event.preventDefault();
-            setIsOpen(true);
-            requestAnimationFrame(() => {
-              const selected = containerRef.current?.querySelector<HTMLElement>('[aria-selected="true"]');
-              (selected || containerRef.current?.querySelector<HTMLElement>('[role="option"]'))?.focus();
-            });
-          }
-        }}
-      >
-        <span>{value || placeholder}</span>
-        <ChevronDown size={16} className={isOpen ? 'joe-dropdown-chevron-open' : ''} aria-hidden="true" />
-      </button>
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            id={listId}
-            role="listbox"
-            aria-label="Choose document font"
-            className="custom-dropdown-menu"
-            onKeyDown={event => {
-              if (event.key === 'Escape') {
-                event.stopPropagation();
-                setIsOpen(false);
-                triggerRef.current?.focus();
-              }
-            }}
-            initial={{ opacity: 0, y: -7, scale: 0.985 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -5, scale: 0.985 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-          >
-            {options.map((option, index) => (
-              <button
-                key={option}
-                type="button"
-                role="option"
-                aria-selected={value === option}
-                tabIndex={value === option ? 0 : -1}
-                className={`custom-dropdown-item ${value === option ? 'active' : ''}`}
-                onClick={() => choose(option)}
-                onKeyDown={event => {
-                  if (event.key === 'Enter' || event.key === ' ') {
-                    event.preventDefault();
-                    choose(option);
-                  } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-                    event.preventDefault();
-                    const next = (index + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
-                    const items = containerRef.current?.querySelectorAll<HTMLElement>('[role="option"]');
-                    items?.[next]?.focus();
-                  }
-                }}
-              >
-                {option}
-              </button>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-});
 
 /**
  * A modal for configuring user settings for the writing session.
@@ -150,7 +31,8 @@ export default function UserSettings() {
   const { name, info, topic, format, setName, setInfo, setTopic, setFormat, pdfFiles, addPdfFile, removePdfFile } =
     useUser();
   // Hooks to manage UI state (modal visibility, current theme)
-  const { setShowUserConfig, font, setFont, useSearch, setUseSearch, documentContent, conversationLanguage, setConversationLanguage, notesLanguage, setNotesLanguage } = useUI();
+  const { setShowUserConfig, font, setFont, useSearch, setUseSearch, documentContent, conversationLanguage, setConversationLanguage, notesLanguage, setNotesLanguage, uiLanguage, setUiLanguage } = useUI();
+  const t = useUiTranslation();
   // Hooks to manage agent state (needed for updating agent color on theme change)
   const { current: agent, update: updateAgent } = useAgent();
 
@@ -205,39 +87,53 @@ export default function UserSettings() {
   };
 
   return (
-    <SettingsSheet onClose={() => setShowUserConfig(false)} title="Companion & Session">
+    <SettingsSheet onClose={() => setShowUserConfig(false)} title={t("Companion & Session")}>
 
       <div className="userSettings jazzy">
-        <h2>Companion & Session Settings</h2>
+        <h2>{t("Companion & Session Settings")}</h2>
         <p className="config-description">Personalize conversations, study sessions, document appearance, and your companion experience.</p>
         <section className="joe-language-prefs" aria-label="Saved language preferences">
           <div className="joe-prefs-heading">
-            <h3>Language preferences</h3>
-            <p>Saved automatically on this device. Your companion's voice and personality stay the same.</p>
+            <h3>{t("Language preferences")}</h3>
+            <p>{t("Saved automatically on this device. Your companion's voice and personality stay the same.")}</p>
           </div>
           <div className="joe-language-fields">
-            <label htmlFor="joe-conversation-language">
-              <span>Conversation & spoken replies</span>
-              <select
+            <div className="joe-language-field">
+              <label htmlFor="joe-ui-language">{t('App language')}</label>
+              <SettingsDropdown
+                id="joe-ui-language"
+                label={t('App language')}
+                value={uiLanguage}
+                options={UI_LANGUAGE_OPTIONS}
+                onChange={value => setUiLanguage(value as UiLanguage)}
+              />
+            </div>
+            <div className="joe-language-field">
+              <label htmlFor="joe-conversation-language">{t('Conversation & spoken replies')}</label>
+              <SettingsDropdown
                 id="joe-conversation-language"
+                label={t('Conversation & spoken replies')}
                 value={conversationLanguage}
-                onChange={event => setConversationLanguage(event.target.value as LanguagePreference)}
-              >
-                {LANGUAGE_OPTIONS.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
-              </select>
-            </label>
-            <label htmlFor="joe-notes-language">
-              <span>Notes & study materials</span>
-              <select
+                options={LANGUAGE_OPTIONS.map(option => ({
+                  value: option.id,
+                  label: option.id === 'companion' ? t('Companion default') : option.id === 'auto' ? t('Match my language') : option.label,
+                }))}
+                onChange={value => setConversationLanguage(value as LanguagePreference)}
+              />
+            </div>
+            <div className="joe-language-field">
+              <label htmlFor="joe-notes-language">{t('Notes & study materials')}</label>
+              <SettingsDropdown
                 id="joe-notes-language"
+                label={t('Notes & study materials')}
                 value={notesLanguage}
-                onChange={event => setNotesLanguage(event.target.value as NotesLanguage)}
-              >
-                {NOTES_LANGUAGE_OPTIONS.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
-              </select>
-            </label>
+                options={NOTES_LANGUAGE_OPTIONS.map(option => ({ value: option.id, label: option.label }))}
+                onChange={value => setNotesLanguage(value as NotesLanguage)}
+              />
+            </div>
           </div>
-          <p className="joe-prefs-footer">A new voice session will use the selected speech language. Written notes are not translated until you ask for changes. App menus remain in English.</p>
+          <p className="joe-prefs-footer">{t('App menus now switch languages immediately. Speech and notes languages are separate.')}</p>
+          <p className="joe-prefs-footer">{t('A new voice session will use the selected speech language. Existing notes stay unchanged.')}</p>
         </section>
         <InstallAppSettings />
         <ConversationMemorySettings />
@@ -251,7 +147,7 @@ export default function UserSettings() {
         >
           <div className="settings-grid">
             <div>
-              <p>Your Name</p>
+              <p>{t("Your Name")}</p>
               <input
                 type="text"
                 name="name"
@@ -262,7 +158,7 @@ export default function UserSettings() {
             </div>
 
             <div>
-              <p>Topic or Conversation Focus (Optional)</p>
+              <p>{t("Topic or Conversation Focus (Optional)")}</p>
               <input
                 type="text"
                 name="topic"
@@ -275,20 +171,21 @@ export default function UserSettings() {
 
           <div className="settings-grid">
             <div>
-              <p>Document Font</p>
-              <CustomDropdown
+              <p>{t("Document Font")}</p>
+              <SettingsDropdown
+                label={t('Document Font')}
                 value={font}
                 options={FONT_OPTIONS}
                 onChange={setFont}
-                placeholder="Select a font"
+                placeholder={t('Select a font')}
               />
             </div>
 
             <div>
-              <p>Voice Companion</p>
+              <p>{t("Voice Companion")}</p>
               <div className="companion-settings-display">
                 <strong>{agent.name}</strong>
-                <span>Choose another character from the companion menu at the top left.</span>
+                <span>{t("Choose another character from the companion menu at the top left.")}</span>
               </div>
             </div>
           </div>
@@ -301,12 +198,12 @@ export default function UserSettings() {
                 onChange={e => setUseSearch(e.target.checked)}
                 style={{ width: '18px', height: '18px' }}
               />
-              <span>Allow web search when helpful</span>
+              <span>{t("Allow web search when helpful")}</span>
             </label>
           </div>
 
           <details style={{ marginTop: '15px' }}>
-            <summary>About You (Optional)</summary>
+            <summary>{t("About You (Optional)")}</summary>
             <div className="details-content">
               <p className="context-description">
                 Share background details or preferences to help your companion respond more naturally.
@@ -320,7 +217,7 @@ export default function UserSettings() {
               />
 
               <div className="context-section" style={{ marginTop: '20px' }}>
-                <p>PDF Context</p>
+                <p>{t("PDF Context")}</p>
                 <div className="pdf-upload-container">
                   <input
                     type="file"
@@ -341,7 +238,7 @@ export default function UserSettings() {
                     ) : (
                       <FileUp size={18} />
                     )}
-                    <span>{isUploading ? 'Processing...' : 'Upload PDFs'}</span>
+                    <span>{isUploading ? t('Processing...') : t('Upload PDFs')}</span>
                   </button>
 
                   {pdfFiles.length > 0 && (
@@ -368,7 +265,7 @@ export default function UserSettings() {
 
           {documentContent === PLACEHOLDER_DOC && (
             <div>
-              <p>Output Format</p>
+              <p>{t("Output Format")}</p>
               <div className="format-selector">
                 {FORMAT_OPTIONS.map(f => (
                   <label key={f} className="format-option">
@@ -386,7 +283,7 @@ export default function UserSettings() {
             </div>
           )}
 
-          <button className="button primary" style={{ marginTop: '20px' }}>Let’s go!</button>
+          <button className="button primary" style={{ marginTop: '20px' }}>{t('Let’s go!')}</button>
         </form>
       </div>
     </SettingsSheet>
