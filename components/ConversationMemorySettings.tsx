@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Download, FileJson, FileText, Trash2, Upload } from 'lucide-react';
 import { useAgent } from '../lib/state';
+import { useUiTranslation } from '../hooks/use-ui-translation';
 import {
   loadConversation, saveConversation, deleteConversation, sanitizeMemoryTurns,
   type MemoryTurn,
@@ -12,6 +13,7 @@ const announceChange = (detail: MemoryChangeDetail) =>
 
 /** Conversation backups live in settings rather than covering the transcript toolbar. */
 export default function ConversationMemorySettings() {
+  const t = useUiTranslation();
   const agent = useAgent(state => state.current);
   const [turns, setTurns] = useState<MemoryTurn[]>([]);
   const [status, setStatus] = useState('');
@@ -91,22 +93,22 @@ export default function ConversationMemorySettings() {
     <section className="joe-sheet-memory" aria-labelledby="joe-memory-heading">
       <div className="joe-sheet-section-heading">
         <div>
-          <h3 id="joe-memory-heading">Conversation memory</h3>
-          <p>Private browser storage (IndexedDB) for <strong>{agent.name.split(' (')[0]}</strong>. Saved separately for each companion.</p>
+          <h3 id="joe-memory-heading">{t('Conversation memory')}</h3>
+          <p>{t('Private browser storage (IndexedDB) for')} <strong>{agent.name.split(' (')[0]}</strong>. {t('Saved separately for each companion.')}</p>
         </div>
-        <span className="joe-memory-counter">{loading ? 'Loading…' : turns.length + ' messages'}</span>
+        <span className="joe-memory-counter">{loading ? t('Loading…') : `${turns.length} ${t('messages')}`}</span>
       </div>
       <div className="joe-sheet-memory-grid">
-        <button type="button" onClick={() => download('json')} disabled={loading || !turns.length}><FileJson size={17} /> Export JSON</button>
-        <button type="button" onClick={() => download('txt')} disabled={loading || !turns.length}><FileText size={17} /> Export TXT</button>
-        <button type="button" onClick={() => inputRef.current?.click()} disabled={loading}><Upload size={17} /> Import JSON</button>
-        <button type="button" className="danger" onClick={() => void clearHistory()} disabled={loading || !turns.length}><Trash2 size={17} /> Clear memory</button>
+        <button type="button" onClick={() => download('json')} disabled={loading || !turns.length}><FileJson size={17} /> {t('Export JSON')}</button>
+        <button type="button" onClick={() => download('txt')} disabled={loading || !turns.length}><FileText size={17} /> {t('Export TXT')}</button>
+        <button type="button" onClick={() => inputRef.current?.click()} disabled={loading}><Upload size={17} /> {t('Import JSON')}</button>
+        <button type="button" className="danger" onClick={() => void clearHistory()} disabled={loading || !turns.length}><Trash2 size={17} /> {t('Clear memory')}</button>
       </div>
       <input ref={inputRef} type="file" accept=".json,application/json" hidden onChange={event => {
         const file = event.target.files?.[0];
         if (file) void importBackup(file);
       }} />
-      <p className="joe-sheet-memory-hint">Only text is saved, not audio. Recent messages are included when you start a new voice session. Export JSON before clearing browser data or changing devices.</p>
+      <p className="joe-sheet-memory-hint">{t('Only text is saved, not audio. Recent messages are included when you start a new voice session. Export JSON before clearing browser data or changing devices.')}</p>
       {status && <p className="joe-sheet-memory-status" role="status">{status}</p>}
     </section>
   );
