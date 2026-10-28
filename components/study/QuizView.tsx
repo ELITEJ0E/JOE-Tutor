@@ -5,6 +5,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useUI, useUser } from '../../lib/state';
+import { useUiTranslation } from '../../hooks/use-ui-translation';
 import { Sparkles, HelpCircle, CheckCircle2, RotateCcw, ArrowRight, Lightbulb, BookOpen } from 'lucide-react';
 
 interface QuizQuestion {
@@ -16,6 +17,7 @@ interface QuizQuestion {
 }
 
 export default function QuizView() {
+  const t = useUiTranslation();
   const { documentContent } = useUI();
   const { topic } = useUser();
 
@@ -172,9 +174,9 @@ export default function QuizView() {
             <Sparkles size={20} className="text-cherry-500" />
           </div>
           <div>
-            <h2 className="quiz-title">Practice & Retention Lab</h2>
+            <h2 className="quiz-title">{t('Practice & Retention Lab')}</h2>
             <p className="quiz-subtitle">
-              Interactive check-for-understanding questions based on {topic ? `"${topic}"` : 'your current study session'}.
+              {t('Interactive practice based on your current study session.')} {topic ? `“${topic}”` : ''}
             </p>
           </div>
         </div>
@@ -186,21 +188,21 @@ export default function QuizView() {
               onClick={() => setActiveTab('quiz')}
             >
               <HelpCircle size={14} />
-              <span>Multiple Choice</span>
+              <span>{t('Multiple Choice')}</span>
             </button>
             <button
               className={`quiz-tab-btn ${activeTab === 'flashcards' ? 'active' : ''}`}
               onClick={() => setActiveTab('flashcards')}
             >
               <BookOpen size={14} />
-              <span>Flashcards</span>
+              <span>{t('Flashcards')}</span>
             </button>
           </div>
 
           {activeTab === 'quiz' && (
-            <button className="quiz-reset-btn" onClick={handleReset} title="Reset Quiz">
+            <button className="quiz-reset-btn" onClick={handleReset} title={t('Reset')}>
               <RotateCcw size={14} />
-              <span>Reset</span>
+              <span>{t('Reset')}</span>
             </button>
           )}
         </div>
@@ -212,7 +214,7 @@ export default function QuizView() {
           {Object.keys(selectedAnswers).length > 0 && (
             <div className="quiz-score-banner">
               <span className="score-text">
-                Current Score: <strong>{totalScore}</strong> / {questions.length} answered
+                {t('Current Score:')} <strong>{totalScore}</strong> / {questions.length} {t('answered')}
               </span>
               <span className="score-percentage">
                 ({Math.round((totalScore / questions.length) * 100)}%)
@@ -227,7 +229,7 @@ export default function QuizView() {
 
             return (
               <div key={q.id} className="quiz-question-card">
-                <div className="question-number">Question {qIndex + 1}</div>
+                <div className="question-number">{t('Question')} {qIndex + 1}</div>
                 <h3 className="question-text">{q.question}</h3>
 
                 <div className="question-options-grid">
@@ -266,7 +268,7 @@ export default function QuizView() {
                   <div className={`quiz-explanation ${isCorrect ? 'correct' : 'incorrect'}`}>
                     <div className="explanation-header">
                       <Lightbulb size={16} />
-                      <span>{isCorrect ? 'Brilliant! Correct answer.' : 'Good attempt! Review explanation:'}</span>
+                      <span>{t(isCorrect ? 'Brilliant! Correct answer.' : 'Good attempt! Review explanation:')}</span>
                     </div>
                     <p className="explanation-text">{q.explanation}</p>
                   </div>
@@ -279,7 +281,7 @@ export default function QuizView() {
         /* Flashcards Mode */
         <div className="flashcards-container">
           <div className="flashcard-counter">
-            Card {cardIndex + 1} of {flashcards.length}
+            {t('Card')} {cardIndex + 1} {t('of')} {flashcards.length}
           </div>
 
           <div
@@ -287,14 +289,14 @@ export default function QuizView() {
             onClick={() => setIsFlipped(!isFlipped)}
           >
             <div className="flashcard-face flashcard-front">
-              <span className="face-label">Question</span>
+              <span className="face-label">{t('Question')}</span>
               <p className="flashcard-text">{flashcards[cardIndex].front}</p>
-              <span className="click-to-flip">Click to flip for answer ↻</span>
+              <span className="click-to-flip">{t('Click to flip for answer ↻')}</span>
             </div>
             <div className="flashcard-face flashcard-back">
-              <span className="face-label">Answer & Explanation</span>
+              <span className="face-label">{t('Answer & Explanation')}</span>
               <p className="flashcard-text">{flashcards[cardIndex].back}</p>
-              <span className="click-to-flip">Click to flip back ↻</span>
+              <span className="click-to-flip">{t('Click to flip back ↻')}</span>
             </div>
           </div>
 
@@ -307,7 +309,7 @@ export default function QuizView() {
                 setCardIndex(prev => Math.max(0, prev - 1));
               }}
             >
-              Previous
+              {t('Previous')}
             </button>
             <button
               className="flashcard-btn primary"
@@ -317,7 +319,7 @@ export default function QuizView() {
                 setCardIndex(prev => Math.min(flashcards.length - 1, prev + 1));
               }}
             >
-              <span>Next Card</span>
+              <span>{t('Next Card')}</span>
               <ArrowRight size={14} />
             </button>
           </div>
