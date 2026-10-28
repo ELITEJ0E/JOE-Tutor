@@ -501,3 +501,82 @@
   .joe-header-language{min-height:32px;max-width:115px;padding:0 5px;}
   .joe-header-language select{max-width:87px;font-size:11px;}
 }
+
+
+/* Final avatar fit: never zoom/crop the original art. Keep the whole image
+   under the navbar and above the status pill, regardless of source aspect.
+   Previous scale(1.12) cropped the head and clothes inside overflow:hidden. */
+@media (min-width:1021px) {
+  .tutor-companion-column {
+    overflow:hidden;
+    min-width:0;
+    border-radius:0;
+  }
+  .tutor-companion-column .chloe-dock {
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    min-width:0;
+    max-height:100%;
+    height:100%;
+    overflow:hidden;
+  }
+  .tutor-companion-column .chloe-dock-portrait {
+    flex:1 1 0;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    width:100%;
+    height:0;
+    max-height:none;
+    min-height:0;
+    min-width:0;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+    animation:none;
+    transform:none;
+  }
+  .tutor-companion-column .chloe-dock-portrait img,
+  .tutor-companion-column .chloe-dock--speaking .chloe-dock-portrait img {
+    display:block;
+    width:100%;
+    height:100%;
+    max-width:100%;
+    max-height:100%;
+    object-fit:contain;
+    object-position:center bottom;
+    transform:none;
+    transition:none;
+    filter:drop-shadow(0 7px 15px rgba(126,65,89,.12));
+  }
+  .tutor-companion-column .chloe-dock-base {
+    flex:0 0 auto;
+    width:100%;
+    box-sizing:border-box;
+    min-height:48px;
+    margin:0;
+    z-index:3;
+  }
+  .tutor-companion-column .chloe-dock--minimized {
+    justify-content:flex-end;
+  }
+}
+@media (max-width:1020px) {
+  .tutor-companion-column .chloe-dock-portrait {
+    overflow:hidden;
+    animation:none;
+    transform:none;
+  }
+  .tutor-companion-column .chloe-dock-portrait img,
+  .tutor-companion-column .chloe-dock--speaking .chloe-dock-portrait img {
+    width:100%;
+    height:100%;
+    max-height:100%;
+    object-fit:contain;
+    object-position:center bottom;
+    transform:none;
+    transition:none;
+  }
+}
