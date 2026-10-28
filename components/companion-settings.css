@@ -194,3 +194,28 @@
 @media (min-width:631px){
  .joe-language-fields{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
+
+
+/* Shared native dropdown: same look as previous styled menu, reliable touch
+   selection and keyboard operation inside the scrollable settings dialog. */
+.joe-settings-sheet-panel .joe-native-dropdown{
+  position:relative;display:block;width:100%;min-width:0;
+}
+.joe-settings-sheet-panel .joe-native-dropdown-select{
+  appearance:none;-webkit-appearance:none;display:block;width:100%;
+  min-width:0;min-height:46px;padding:11px 36px 11px 13px;
+  border-radius:12px;border:1px solid #ead8e4;
+  background:#fff;color:#3b3040;font:inherit;font-size:14px;
+  line-height:1.4;cursor:pointer;
+  -webkit-user-select:auto;user-select:auto;
+}
+.joe-settings-sheet-panel .joe-native-dropdown-chevron{
+  position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  color:#926c85;pointer-events:none;
+}
+.joe-settings-sheet-panel .joe-native-dropdown-select:focus-visible{
+  outline:2px solid #b63f79;outline-offset:2px;
+}
+.joe-settings-sheet-panel .joe-native-dropdown-select:disabled{
+  opacity:.55;cursor:not-allowed;
+}
