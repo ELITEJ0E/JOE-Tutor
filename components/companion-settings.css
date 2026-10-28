@@ -162,3 +162,35 @@
 .joe-pwa-success{display:flex;gap:9px;align-items:center;color:#28674c;}
 .joe-pwa-disclaimer{margin-top:12px;}
 @media(max-width:630px){.joe-language-fields{grid-template-columns:minmax(0,1fr)}}
+
+
+/* The same dropdown component now serves fonts, notes, speech and app language. */
+.joe-language-fields .joe-language-field{
+  display:flex;flex-direction:column;gap:8px;min-width:0;
+}
+.joe-language-fields .joe-language-field > label{
+  display:block;min-width:0;font-size:12px;font-weight:700;color:#715166;
+}
+.joe-language-fields .custom-dropdown-container{
+  position:relative;min-width:0;width:100%;
+}
+.joe-language-fields .custom-dropdown-trigger{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  gap:9px;min-height:44px;
+}
+.joe-language-fields .custom-dropdown-trigger span{
+  min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.joe-language-fields .custom-dropdown-menu{
+  position:absolute;left:0;right:0;top:calc(100% + 5px);
+  max-height:min(285px,40dvh);overflow-y:auto;
+  overscroll-behavior:contain;z-index:300;
+}
+.joe-language-fields .custom-dropdown-item{width:100%;text-align:left;}
+.joe-settings-sheet-panel .custom-dropdown-trigger:focus-visible,
+.joe-settings-sheet-panel .custom-dropdown-item:focus-visible{
+  outline:2px solid #b63f79;outline-offset:2px;
+}
+@media (min-width:631px){
+ .joe-language-fields{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
