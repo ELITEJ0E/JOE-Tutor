@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useAgent, useUI } from '../lib/state';
 import { useUiTranslation } from '../hooks/use-ui-translation';
 import { getCharacterIntroduction } from '../lib/presets/character-intros';
+import { localizedCompanionTagline } from '../lib/companion-display-i18n';
 import {
   ArrowRight, AudioLines, BookOpen, BrainCircuit, ChartNoAxesCombined,
   CheckCircle2, Heart, Sparkles, WandSparkles,
@@ -14,7 +15,7 @@ import './welcome-redesign.css';
 
 export default function WelcomeScreen() {
   const t = useUiTranslation();
-  const { setShowWelcomeScreen } = useUI();
+  const { setShowWelcomeScreen, uiLanguage } = useUI();
   const { current } = useAgent();
   const intro = getCharacterIntroduction(current);
   const [isExiting, setIsExiting] = useState(false);
@@ -62,7 +63,7 @@ export default function WelcomeScreen() {
             <div className="joe-home-identity">
               <span>{t('MEET YOUR COMPANION')}</span>
               <h2>{current.name.split(' (')[0]}</h2>
-              <p>{intro.tagline}</p>
+              <p>{localizedCompanionTagline(current, uiLanguage)}</p>
             </div>
             <div className="joe-home-talk"><span><Heart size={14}/></span> “{intro.firstGreeting}”</div>
           </section>
