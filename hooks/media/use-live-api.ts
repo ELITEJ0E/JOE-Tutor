@@ -30,6 +30,11 @@ import { loadConversation, formatConversationContext } from '../../lib/conversat
 import { FishPhraseQueue, FishVoiceId } from '../../lib/fish-phrase-queue';
 import { estimateSpeechPlaybackGain } from '../../lib/audio-loudness';
 
+// Boost only these two companions, regardless of whether Fish or Gemini speaks.
+const BOOSTED_COMPANION_GAIN_MULTIPLIER = 1.45;
+const isBoostedCompanionVoice = (id: string): boolean =>
+  id === 'ju_jingyi' || id === 'karina_aespa';
+
 /**
  * The shape of the object returned by the `useLiveApi` hook.
  * It provides access to the API client, its configuration, connection state,
@@ -159,7 +164,9 @@ export function useLiveApi({
       if (ctx.state !== 'running') return;
       const source = ctx.createMediaElementSource(player);
       const gain = ctx.createGain();
-      gain.gain.value = voice === 'tian_xi_wei' ? 1.55 : voice === 'hao_zh' ? 1.6 : 1.15;
+      gain.gain.value = isBoostedCompanionVoice(voice)
+        ? 1.15 * BOOSTED_COMPANION_GAIN_MULTIPLIER
+        : voice === 'tian_xi_wei' ? 1.55 : voice === 'hao_zh' ? 1.6 : 1.15;
       source.connect(gain).connect(master);
       fishGainSource.current = source;
       fishGainNode.current = gain;
@@ -437,7 +444,11 @@ export function useLiveApi({
       if (signal.aborted) { reject(new Error('Fish phrase cancelled')); return; }
       const source = ctx.createBufferSource();
       const gain = ctx.createGain();
-      const normalized = estimateSpeechPlaybackGain(audio);
+      const normalized = Math.min(
+        3,
+        estimateSpeechPlaybackGain(audio) *
+          (isBoostedCompanionVoice(voice) ? BOOSTED_COMPANION_GAIN_MULTIPLIER : 1)
+      );
       source.buffer = audio;
       source.connect(gain).connect(master);
 
@@ -597,7 +608,13 @@ export function useLiveApi({
       // New companions use Gemini's generic voice until their Fish IDs are added.
       const activeId = useAgent.getState().current.id;
       if (fishMode.current || activeId === 'tian_xi_wei' || activeId === 'hao_zh') return;
-      audioStreamerRef.current?.addPCM16(new Uint8Array(data));
+      const streamer = audioStreamerRef.current;
+      if (!streamer) return;
+      // Restore standard output for every other companion when the agent changes.
+      streamer.setPlaybackGainMultiplier(
+        isBoostedCompanionVoice(activeId) ? BOOSTED_COMPANION_GAIN_MULTIPLIER : 1
+      );
+      streamer.addPCM16(new Uint8Array(data));
     };
 
     // Bind event listeners.

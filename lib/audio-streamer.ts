@@ -48,6 +48,7 @@ export class AudioStreamer {
   public source: AudioBufferSourceNode;
   private readonly compressor: DynamicsCompressorNode;
   private readonly outputGain = 1.55;
+  private playbackGainMultiplier = 1;
   private stopGeneration = 0;
   // A reference to the last scheduled audio source to detect when the queue has finished playing.
   private endOfQueueAudioSource: AudioBufferSourceNode | null = null;
@@ -70,9 +71,24 @@ export class AudioStreamer {
 
   private createOutputGain(): GainNode {
     const node = this.context.createGain();
-    node.gain.value = this.outputGain;
+    node.gain.value = this.outputGain * this.playbackGainMultiplier;
     node.connect(this.compressor);
     return node;
+  }
+
+  /**
+   * Apply a character-specific playback boost to Gemini audio without
+   * changing speech synthesis or the other agents' volume.
+   */
+  public setPlaybackGainMultiplier(multiplier: number) {
+    const safeMultiplier = Number.isFinite(multiplier)
+      ? Math.min(1.5, Math.max(1, multiplier))
+      : 1;
+    if (this.playbackGainMultiplier === safeMultiplier) return;
+    this.playbackGainMultiplier = safeMultiplier;
+    this.gainNode.gain.setTargetAtTime(
+      this.outputGain * safeMultiplier, this.context.currentTime, 0.02
+    );
   }
 
   /**
@@ -293,7 +309,7 @@ export class AudioStreamer {
     this.isStreamComplete = false;
     this.scheduledTime = this.context.currentTime + this.initialBufferTime;
     this.gainNode.gain.cancelScheduledValues(this.context.currentTime);
-    this.gainNode.gain.setValueAtTime(this.outputGain, this.context.currentTime);
+    this.gainNode.gain.setValueAtTime(this.outputGain * this.playbackGainMultiplier, this.context.currentTime);
   }
 
   /**

@@ -75,3 +75,14 @@ for (const id of ['ju_jingyi', 'karina_aespa']) {
 }
 assert.ok(fishProxy.includes('FISH_VOICE_JU_JINGYI_ID'), 'Ju Jingyi must have a voice env variable');
 assert.ok(fishProxy.includes('FISH_VOICE_KARINA_AESPA_ID'), 'Karina must have a voice env variable');
+
+
+// Volume boost applies only to Ju Jingyi and Karina, in both Fish and Gemini paths.
+const streamerCode = readFileSync('lib/audio-streamer.ts', 'utf8');
+assert.match(liveHook, /BOOSTED_COMPANION_GAIN_MULTIPLIER = 1\.45/, 'New companion gain factor must be declared');
+assert.match(liveHook, /id === 'ju_jingyi' \|\| id === 'karina_aespa'/, 'Only two new agents get the boost');
+assert.match(liveHook, /gain\.gain\.value = isBoostedCompanionVoice\(voice\)/, 'Fish MP3 playback must use per-character gain');
+assert.match(liveHook, /estimateSpeechPlaybackGain\(audio\)[\s\S]*?isBoostedCompanionVoice\(voice\)/, 'Fish streaming chunks must use per-character boost');
+assert.match(liveHook, /streamer\.setPlaybackGainMultiplier\([\s\S]*?isBoostedCompanionVoice\(activeId\)/, 'Gemini fallback must use character-specific boost');
+assert.match(streamerCode, /setPlaybackGainMultiplier\(multiplier: number\)/, 'Gemini streamer must support output-gain changes');
+assert.match(streamerCode, /this\.outputGain \* this\.playbackGainMultiplier/, 'Gemini streamer must retain gain between playback sessions');
