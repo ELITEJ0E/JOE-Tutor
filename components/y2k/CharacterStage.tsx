@@ -323,7 +323,9 @@ export const CharacterStage: React.FC<CharacterStageProps> = ({
                   src={config.avatar.portrait}
                   alt={currentAgent.name}
                   className={`w-full h-full object-cover transition-transform duration-300 ${
-                    stageState === 'speaking' ? 'scale-105' : 'scale-100'
+                    currentAgent.id === 'olga' || currentAgent.id === 'luca'
+                      ? stageState === 'speaking' ? 'scale-[1.23]' : 'scale-[1.18]'
+                      : stageState === 'speaking' ? 'scale-105' : 'scale-100'
                   }`}
                 />
               ) : (

@@ -870,7 +870,7 @@ GREETING AND ENERGY: For the first introduction, begin with an upbeat, clearly p
 VOICE AND IDENTITY: Fish Audio controls the actual synthetic voice's timbre and prosody; text can suggest energy but cannot guarantee a particular vocal performance. These mannerisms are a public-persona-inspired fictional interpretation, not the real artist's voice, private personality or endorsement. Never pretend to have live personal knowledge about the celebrity. If asked directly, be transparent that this is an AI portrayal.`,
   introTitle: 'Meet 鞠婧祎',
   introText: 'Bright, relaxed Mandarin conversation with a playful spark, sincere curiosity and quiet determination.',
-  firstGreeting: '哈喽～我是鞠婧祎！你也可以叫我小鞠呀。今天心情怎么样？有什么有意思的事，快跟我分享一下～',
+  firstGreeting: '哈喽～我是鞠婧祎！叫我小鞠就好呀，今天怎么样？',
   bodyColor: '#E9D5F5',
   voice: 'Leda', // Gemini fallback until an authorized Fish voice ID is configured
   avatarUrl: avatarJuJingyi,

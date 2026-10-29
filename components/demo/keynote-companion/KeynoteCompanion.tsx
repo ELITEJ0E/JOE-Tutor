@@ -1147,10 +1147,13 @@ export default function KeynoteCompanion() {
       const isWarmStart = documentContentRef.current !== PLACEHOLDER_DOC;
       const introduction = getCharacterIntroduction(current);
       const overriddenGreetingLanguage = conversationLanguage !== 'companion';
-      if ((current.id === 'tian_xi_wei' || current.id === 'hao_zh') && !overriddenGreetingLanguage) {
-        // Gemini Live voice transcription can end mid-name on the first turn.
-        // Speak the complete, predetermined introduction DIRECTLY via Fish Audio.
-        // Never ask Gemini to generate a second, competing greeting.
+      const requiresFishGreeting = current.id === 'tian_xi_wei' || current.id === 'hao_zh';
+      const canSpeakOptionalFishGreeting =
+        (current.id === 'ju_jingyi' || current.id === 'karina_aespa') && isFishVoiceActive();
+      if (!overriddenGreetingLanguage && (requiresFishGreeting || canSpeakOptionalFishGreeting)) {
+        // Speak the complete fixed greeting directly via Fish instead of
+        // generating a partial, delayed second introduction through Gemini.
+        // Unconfigured optional Fish voices still use the Gemini fallback.
         hasSentGreetingRef.current = true;
         greetingTranscriptPendingRef.current = false;
         if (!isFishVoiceActive()) {

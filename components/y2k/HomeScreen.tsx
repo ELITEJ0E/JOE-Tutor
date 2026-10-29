@@ -120,7 +120,7 @@ export const HomeScreen: React.FC = () => {
               <img
                 src={(currentAgent.avatarUrl || activeConfig.avatar.portrait)}
                 alt={currentAgent.name}
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover ${currentAgent.id === 'olga' || currentAgent.id === 'luca' ? 'scale-[1.18]' : ''}`}
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-4xl">

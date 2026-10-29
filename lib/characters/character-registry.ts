@@ -5,6 +5,8 @@
 
 import { EmotionStyleId, TeachingStyleId, ExplanationLevelId } from '../personalities/personality-system';
 import tianXiWeiImg from '../../src/assets/images/avatars/TianXiwei-avatar.png';
+import olgaImg from '../../src/assets/images/avatars/Olga.webp';
+import luciaImg from '../../src/assets/images/avatars/Lucia.webp';
 import juJingyiImg from '../../src/assets/images/avatars/Ju_Jingyi_transparent_avatar.png';
 import karinaImg from '../../src/assets/images/avatars/Karina_transparent_avatar.png';
 
@@ -592,7 +594,7 @@ export const CHARACTER_REGISTRY: Record<string, CharacterConfig> = {
     name: 'Olga',
     title: 'Russian Tutor',
     avatar: {
-      portrait: createStylizedFallbackPortrait('Olga', ['#457B9D', '#1D3557'], '🇷🇺'),
+      portrait: olgaImg,
     },
     appearance: {
       accentColor: '#457B9D',
@@ -615,10 +617,10 @@ export const CHARACTER_REGISTRY: Record<string, CharacterConfig> = {
 
   'luca': {
     id: 'luca',
-    name: 'Luca',
-    title: 'Italian Tutor',
+    name: 'Lucia',
+    title: 'Italian Companion',
     avatar: {
-      portrait: createStylizedFallbackPortrait('Luca', ['#2A9D8F', '#E76F51'], '🇮🇹'),
+      portrait: luciaImg,
     },
     appearance: {
       accentColor: '#E76F51',
@@ -628,7 +630,7 @@ export const CHARACTER_REGISTRY: Record<string, CharacterConfig> = {
       flag: '🇮🇹',
       language: 'Italian',
       level: 'All Levels',
-      gender: 'male',
+      gender: 'female',
       favoriteTopic: 'Italian cuisine, gestures & cinema',
       samplePhrase: 'Ciao a tutti! Learning Italian is a journey of pure joy and flavor!',
     },

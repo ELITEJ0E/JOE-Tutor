@@ -101,3 +101,20 @@ assert.ok(agents.includes("firstGreeting: '" + juGreeting + "'"), 'Ju Jingyi mus
 assert.ok(introSource.includes("firstGreeting: '" + juGreeting + "'"), 'Ju Jingyi intro card must match the voice greeting');
 assert.ok(agents.includes('GREETING AND ENERGY: For the first introduction'), 'Ju Jingyi should greet with a lively but natural style');
 assert.ok(registrySource.includes("tagline: 'Bright, curious, warmly playful & determined'"), 'Ju Jingyi display personality should match');
+
+
+// Direct Fish introductions prevent Ju Jingyi's partial Gemini-generated opening.
+const companionLayout = readFileSync('components/demo/keynote-companion/KeynoteCompanion.tsx', 'utf8');
+const juGreetingShort = '哈喽～我是鞠婧祎！叫我小鞠就好呀，今天怎么样？';
+assert.ok(agents.includes("firstGreeting: '" + juGreetingShort + "'"), 'Ju Jingyi short greeting must be in agent preset');
+assert.ok(introSource.includes("firstGreeting: '" + juGreetingShort + "'"), 'Ju Jingyi intro and preset must match');
+assert.match(companionLayout, /const canSpeakOptionalFishGreeting =/, 'Fish introductions must include optional companions');
+assert.match(companionLayout, /\(current\.id === 'ju_jingyi' \|\| current\.id === 'karina_aespa'\) && isFishVoiceActive\(\)/, 'Optional Fish should be used only when enabled');
+assert.match(companionLayout, /requiresFishGreeting \|\| canSpeakOptionalFishGreeting/, 'Fish intro must bypass Gemini generation');
+
+// Olga and Lucia use their real portraits and a zoomed presentation.
+const characterRegistrySource = readFileSync('lib/characters/character-registry.ts', 'utf8');
+assert.match(characterRegistrySource, /portrait: olgaImg/, 'Olga profile must use uploaded portrait');
+assert.match(characterRegistrySource, /portrait: luciaImg/, 'Lucia profile must use uploaded portrait');
+assert.match(readFileSync('components/tutor/TutorAvatar.tsx', 'utf8'), /chloe-dock--portrait-zoom/, 'Dock must size the two portraits');
+assert.match(readFileSync('components/tutor/docked-companion.css', 'utf8'), /chloe-dock--portrait-zoom \.chloe-dock-portrait img/, 'Portrait zoom CSS must be present');
