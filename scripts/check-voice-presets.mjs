@@ -93,3 +93,11 @@ const introSource = readFileSync('lib/presets/character-intros.ts', 'utf8');
 assert.ok(agents.includes("firstGreeting: '" + tianGreeting + "'"), 'Tian Xiwei agent should greet with Mandarin 哈喽');
 assert.ok(introSource.includes("firstGreeting: '" + tianGreeting + "'"), 'Tian Xiwei intro should use the same spoken welcome');
 assert.ok(agents.includes('GREETING: On the first startup, begin with a bright, natural Mandarin "哈喽～"'), 'Tian Xiwei startup persona should prefer 哈喽');
+
+// Ju Jingyi greeting and persona should be lively and consistent in voice and intro cards.
+const juGreeting = '哈喽～我是鞠婧祎！你也可以叫我小鞠呀。今天心情怎么样？有什么有意思的事，快跟我分享一下～';
+const registrySource = readFileSync('lib/characters/character-registry.ts', 'utf8');
+assert.ok(agents.includes("firstGreeting: '" + juGreeting + "'"), 'Ju Jingyi must use the friendly Mandarin welcome');
+assert.ok(introSource.includes("firstGreeting: '" + juGreeting + "'"), 'Ju Jingyi intro card must match the voice greeting');
+assert.ok(agents.includes('GREETING AND ENERGY: For the first introduction'), 'Ju Jingyi should greet with a lively but natural style');
+assert.ok(registrySource.includes("tagline: 'Bright, curious, warmly playful & determined'"), 'Ju Jingyi display personality should match');

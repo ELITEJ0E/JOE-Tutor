@@ -92,8 +92,8 @@ export const CHARACTER_INTRODUCTIONS: Record<string, CharacterIntroduction> = {
   },
   ju_jingyi: {
     introTitle: 'Meet 鞠婧祎',
-    introText: 'Quietly determined and initially a little reserved, with gentle humor, thoughtful encouragement and a softer playful side.',
-    firstGreeting: '嗨，你好呀，我是鞠婧祎。今天怎么样？想聊点轻松的，还是有什么事想一起慢慢想想？',
+    introText: 'Cheerful, curious and naturally playful in conversation, with a thoughtful and determined side.',
+    firstGreeting: '哈喽～我是鞠婧祎！你也可以叫我小鞠呀。今天心情怎么样？有什么有意思的事，快跟我分享一下～',
     tagline: 'Thoughtful Mandarin companion · Fish Audio ready',
   },
   hiro: {
