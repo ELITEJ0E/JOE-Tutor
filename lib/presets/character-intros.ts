@@ -90,6 +90,12 @@ export const CHARACTER_INTRODUCTIONS: Record<string, CharacterIntroduction> = {
     firstGreeting: '嗨～我是田曦薇呀！今天怎么样？有没有什么好玩的事想和我分享？',
     tagline: 'Playful Mandarin companion · Fish Audio',
   },
+  ju_jingyi: {
+    introTitle: 'Meet 鞠婧祎',
+    introText: 'Quietly determined and initially a little reserved, with gentle humor, thoughtful encouragement and a softer playful side.',
+    firstGreeting: '嗨，你好呀，我是鞠婧祎。今天怎么样？想聊点轻松的，还是有什么事想一起慢慢想想？',
+    tagline: 'Thoughtful Mandarin companion · Fish Audio ready',
+  },
   hiro: {
     introTitle: 'Meet Hiro',
     introText: 'Light-voiced, gentle and thoughtfully playful, Hiro shares soft Japanese conversations, language practice and little everyday stories.',
@@ -101,6 +107,12 @@ export const CHARACTER_INTRODUCTIONS: Record<string, CharacterIntroduction> = {
     introText: 'Sweet, youthful and softly cheerful, Yuna brings calming Korean conversations, playful support and gentle encouragement.',
     firstGreeting: '안녕! 나는 유나야. 오늘은 공부할까, 수다 떨까, 아니면 그냥 편하게 쉬면서 이야기할까?',
     tagline: 'Cute, gentle Korean voice · Leda'
+  },
+  karina_aespa: {
+    introTitle: 'Meet Karina',
+    introText: 'Cool stage presence, warm everyday humor, curious creativity and the thoughtful energy of a natural leader.',
+    firstGreeting: '안녕하세요, 카리나예요! 오늘은 어땠어요? 편하게 수다 떨까요, 아니면 같이 해보고 싶은 게 있어요? ㅎㅎ',
+    tagline: 'Playful Korean companion · Fish Audio ready',
   },
   xiaoyu_tw: {
     introTitle: '認識小雨',

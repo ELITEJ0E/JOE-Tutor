@@ -3,7 +3,7 @@
  * Fetch up to two Fish Audio segments in parallel; always play them in order.
  * A generation token and AbortControllers prevent stale speech on interruption.
  */
-export type FishVoiceId = 'tian_xi_wei' | 'hao_zh';
+export type FishVoiceId = 'tian_xi_wei' | 'hao_zh' | 'ju_jingyi' | 'karina_aespa';
 
 type SpeechSegment = {
   text: string;

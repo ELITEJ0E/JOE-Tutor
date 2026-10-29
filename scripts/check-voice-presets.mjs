@@ -9,16 +9,17 @@ assert.ok(rosterMatch, 'Main companion roster must exist');
 const roster = rosterMatch[1].split('\n')
   .flatMap(line => line.replace(/\/\/.*$/, '').split(',').map(item => item.trim()).filter(Boolean))
   .filter(Boolean);
-const expected = ['ChloeTutor','Alice','Irene','Sam','Tom','Ethan','Yuna','Joon','Haruka','Hiro','XiaoYuTaiwan','YuChen','Nicha','Niran','Mei','Hao','Rahul','Anika','Ramon','Sofia','Amelie','Julien','Ari','Noa','Hans','Lena','Newton','Ada','Olga','Maxim','Luca','Marco'];
+const expected = ['ChloeTutor','Alice','Irene','Sam','Tom','Ethan','Yuna','Karina','Joon','Haruka','Hiro','XiaoYuTaiwan','YuChen','Nicha','Niran','TianXiWei','JuJingyi','Hao','Rahul','Anika','Ramon','Sofia','Amelie','Julien','Ari','Noa','Hans','Lena','Newton','Ada','Olga','Maxim','Luca','Marco'];
 assert.deepEqual(roster, expected, 'Roster order differs from English > Asian > other requested order');
 for (const removed of ['Defne','Karim','Reza','Ines']) assert.ok(!roster.includes(removed), removed + ' must be removed from selector');
 const checks = {
   Yuna: 'Leda',
+  Karina: 'Leda',
+  JuJingyi: 'Leda',
   Hiro: 'Iapetus',
   XiaoYuTaiwan: 'Leda',
   Nicha: 'Leda',
   Luca: 'Aoede',
-  Mei: 'Leda',
 };
 for (const [name, voice] of Object.entries(checks)) {
   const m = agents.match(new RegExp('export const ' + name + ': Agent = \\{([\\s\\S]*?)\\n\\};'));
@@ -56,7 +57,7 @@ assert.ok(readFileSync('lib/prompts.ts', 'utf8').includes("agent.id === 'yuchen_
 
 assert.match(agents, /name: 'Lucia \(Italian\)'/, 'Italian must be introduced as Lucia');
 assert.match(agents, /'Achernar'/, 'Voice options must include Achernar');
-for (const id of ['yuna','hiro','xiaoyu_tw','nicha_th','luca']) {
+for (const id of ['yuna','karina_aespa','ju_jingyi','hiro','xiaoyu_tw','nicha_th','luca']) {
   assert.ok(intros.includes('  ' + id + ': {'), 'Unique introduction missing for ' + id);
 }
 console.log('PASS: ' + roster.length + ' companions, 16 validated male voice styles, feminine presets and greetings');
@@ -67,4 +68,10 @@ const liveHook = readFileSync('hooks/media/use-live-api.ts', 'utf8');
 assert.match(fishProxy, /process\.env\.FISH_AUDIO_API_KEY/, 'Fish API key must stay on server');
 assert.match(fishProxy, /s2\.1-pro-free/, 'Request free Fish Audio model explicitly');
 assert.match(liveHook, /fishMode\.current/, 'Live audio must support per-character Fish route');
-assert.match(liveHook, /fishFallbackAudio/, 'Live audio must retain Gemini playback fallback');
+assert.match(liveHook, /fishMode\.current \|\| activeId === 'tian_xi_wei'/, 'New characters must be allowed Gemini fallback until Fish is configured');
+for (const id of ['ju_jingyi', 'karina_aespa']) {
+  assert.ok(fishProxy.includes(id + ':'), id + ' must be registered in the server-side Fish proxy');
+  assert.ok(liveHook.includes("id === '" + id + "'"), id + ' must participate in Fish preflight');
+}
+assert.ok(fishProxy.includes('FISH_VOICE_JU_JINGYI_ID'), 'Ju Jingyi must have a voice env variable');
+assert.ok(fishProxy.includes('FISH_VOICE_KARINA_AESPA_ID'), 'Karina must have a voice env variable');

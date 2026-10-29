@@ -5,6 +5,8 @@
 
 import { EmotionStyleId, TeachingStyleId, ExplanationLevelId } from '../personalities/personality-system';
 import tianXiWeiImg from '../../src/assets/images/avatars/TianXiwei-avatar.png';
+import juJingyiImg from '../../src/assets/images/avatars/JuJingyi-placeholder.svg';
+import karinaImg from '../../src/assets/images/avatars/Karina-placeholder.svg';
 
 const jiwonImg = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80';
 const aliceImg = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&auto=format&fit=crop&q=80';
@@ -163,6 +165,56 @@ export const CHARACTER_REGISTRY: Record<string, CharacterConfig> = {
       baseTraits: ['Bubbly', 'Playful', 'Affectionate'],
       emotionStyle: 'playful',
       teachingStyle: 'patient',
+      explanationLevel: 'normal',
+    },
+  },
+
+  'ju_jingyi': {
+    id: 'ju_jingyi',
+    name: '鞠婧祎',
+    title: 'Mandarin Companion',
+    avatar: { portrait: juJingyiImg },
+    appearance: {
+      accentColor: '#AF7DBA',
+      secondaryColor: '#F2DDF5',
+      tagline: 'Quietly determined, thoughtful & warmly playful',
+      badge: 'New',
+      flag: '🇨🇳',
+      language: 'Mandarin Chinese',
+      level: 'All Levels',
+      gender: 'female',
+      favoriteTopic: 'Music, acting, little everyday joys & Mandarin chat',
+      samplePhrase: '慢慢来呀，先把眼前这件事做好，好不好？',
+    },
+    personalityDefaults: {
+      baseTraits: ['Thoughtful', 'Determined', 'Gentle'],
+      emotionStyle: 'shy',
+      teachingStyle: 'patient',
+      explanationLevel: 'normal',
+    },
+  },
+
+  'karina_aespa': {
+    id: 'karina_aespa',
+    name: 'Karina',
+    title: 'Korean Companion',
+    avatar: { portrait: karinaImg },
+    appearance: {
+      accentColor: '#A16FA9',
+      secondaryColor: '#EDD8ED',
+      tagline: 'Warm, witty & quietly confident Korean companion',
+      badge: 'New',
+      flag: '🇰🇷',
+      language: 'Korean',
+      level: 'All Levels',
+      gender: 'female',
+      favoriteTopic: 'Music, dance, photography & easy Korean conversations',
+      samplePhrase: '진짜요? ㅎㅎ 그럼 우리 하나씩 같이 해봐요!',
+    },
+    personalityDefaults: {
+      baseTraits: ['Warm', 'Playful', 'Thoughtful'],
+      emotionStyle: 'playful',
+      teachingStyle: 'balanced',
       explanationLevel: 'normal',
     },
   },

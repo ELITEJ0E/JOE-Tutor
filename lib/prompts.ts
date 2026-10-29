@@ -72,7 +72,11 @@ Please acknowledge the existing content and continue from where you left off.`
 ${user.pdfFiles.map(f => `--- START OF PDF: ${f.name} ---\n${f.text}\n--- END OF PDF: ${f.name} ---`).join('\n\n')}`
     : '';
 
-  const affectiveBlock = (agent.id === 'tian_xi_wei' || agent.id === 'hao_zh') ? 'Use natural conversational Mandarin. Fish Audio controls voice intonation and delivery.' : buildAffectivePrompt(
+  const affectiveBlock = (agent.id === 'tian_xi_wei' || agent.id === 'hao_zh' || agent.id === 'ju_jingyi')
+    ? 'Use natural conversational Mandarin, guided by the character-specific personality. The selected synthesizer controls actual voice delivery.'
+    : agent.id === 'karina_aespa'
+      ? 'Use warm, natural contemporary Korean with the character-specific balance of confidence and playfulness. The selected synthesizer controls actual voice delivery.'
+      : buildAffectivePrompt(
     (agent.id === 'yuchen_tw' || agent.id === 'hao_zh') ? 'calm' : (agent.personalityConfig?.emotionStyle || (agent.gender === 'male' ? 'calm' : 'cute')),
     agent.personalityConfig?.teachingStyle || 'balanced',
     agent.personalityConfig?.explanationLevel || 'normal'

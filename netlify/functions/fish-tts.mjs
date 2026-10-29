@@ -5,7 +5,7 @@
  * Keep FISH_AUDIO_API_KEY and the authorized voice reference IDs in Netlify's
  * server-side environment variables. Never expose them through Vite defines.
  */
-const characters = new Set(['tian_xi_wei', 'hao_zh']);
+const characters = new Set(['tian_xi_wei', 'hao_zh', 'ju_jingyi', 'karina_aespa']);
 
 const noStore = {
   'Cache-Control': 'no-store',
@@ -20,9 +20,13 @@ function json(data, status = 200, extraHeaders = {}) {
 }
 
 function referenceIdFor(character) {
-  return character === 'tian_xi_wei'
-    ? process.env.FISH_VOICE_TIAN_XIWEI_ID?.trim()
-    : process.env.FISH_VOICE_ZHANG_LINGHE_ID?.trim();
+  const configured = {
+    tian_xi_wei: process.env.FISH_VOICE_TIAN_XIWEI_ID,
+    hao_zh: process.env.FISH_VOICE_ZHANG_LINGHE_ID,
+    ju_jingyi: process.env.FISH_VOICE_JU_JINGYI_ID,
+    karina_aespa: process.env.FISH_VOICE_KARINA_AESPA_ID,
+  };
+  return configured[character]?.trim();
 }
 
 export default async function handler(request) {

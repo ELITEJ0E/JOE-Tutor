@@ -1,11 +1,13 @@
 /**
- * Server-side Fish Audio proxy for two Mandarin companions.
+ * Server-side Fish Audio proxy for opted-in companion voices.
  * Configure FISH_AUDIO_API_KEY and authorized per-character voice IDs in Vercel.
  * Never expose the Fish API key or allow callers to supply arbitrary voice IDs.
  */
 const voices: Record<string, string | undefined> = {
   tian_xi_wei: process.env.FISH_VOICE_TIAN_XIWEI_ID,
   hao_zh: process.env.FISH_VOICE_ZHANG_LINGHE_ID,
+  ju_jingyi: process.env.FISH_VOICE_JU_JINGYI_ID,
+  karina_aespa: process.env.FISH_VOICE_KARINA_AESPA_ID,
 };
 
 export default async function handler(req: any, res: any) {

@@ -75,7 +75,7 @@ export function useLiveApi({
   );
 
   const audioStreamerRef = useRef<AudioStreamer | null>(null);
-  const fishMode = useRef<'tian_xi_wei' | 'hao_zh' | null>(null);
+  const fishMode = useRef<FishVoiceId | null>(null);
   const fishPhraseQueue = useRef<FishPhraseQueue | null>(null);
   const fishController = useRef<AbortController | null>(null);
   const fishPlayer = useRef<HTMLAudioElement | null>(null);
@@ -152,14 +152,14 @@ export function useLiveApi({
   // Welcome speech still uses progressive MP3 playback, but now the same
   // limiter as the chunked replies. Do not route a media element through a
   // suspended Web Audio context: that can make the whole clip silent on iOS.
-  const attachFishMeter = useCallback((player: HTMLAudioElement, voice: 'tian_xi_wei' | 'hao_zh') => {
+  const attachFishMeter = useCallback((player: HTMLAudioElement, voice: FishVoiceId) => {
     detachFishMeter();
     try {
       const { ctx, master } = ensureFishOutput();
       if (ctx.state !== 'running') return;
       const source = ctx.createMediaElementSource(player);
       const gain = ctx.createGain();
-      gain.gain.value = voice === 'tian_xi_wei' ? 1.55 : 1.6;
+      gain.gain.value = voice === 'tian_xi_wei' ? 1.55 : voice === 'hao_zh' ? 1.6 : 1.15;
       source.connect(gain).connect(master);
       fishGainSource.current = source;
       fishGainNode.current = gain;
@@ -233,7 +233,7 @@ export function useLiveApi({
         objectUrl = URL.createObjectURL(blob);
         player = new Audio(objectUrl);
       }
-      // Attach the output level meter (and Tian Xiwei's existing boost) without
+    // Attach the output level meter (and the existing Mandarin boosts) without
       // modifying Fish Audio synthesis or its reference voice.
       attachFishMeter(player, character);
       fishAudioUrl.current = objectUrl;
@@ -593,10 +593,10 @@ export function useLiveApi({
     // When the client receives audio data, it's passed to the AudioStreamer for playback.
     const onAudio = (data: ArrayBuffer) => {
       if (isMuted || client.suppressPlayback) return;
-      // Never play Gemini's voice for Mandarin Fish characters, even when
-      // the endpoint is unavailable. Report the configuration error instead.
+      // Existing Fish-only companions retain their no-fallback behavior.
+      // New companions use Gemini's generic voice until their Fish IDs are added.
       const activeId = useAgent.getState().current.id;
-      if (activeId === 'tian_xi_wei' || activeId === 'hao_zh') return;
+      if (fishMode.current || activeId === 'tian_xi_wei' || activeId === 'hao_zh') return;
       audioStreamerRef.current?.addPCM16(new Uint8Array(data));
     };
 
@@ -637,23 +637,25 @@ export function useLiveApi({
     const id = useAgent.getState().current.id;
     // Unlock the shared Web Audio speaker path from the connect-button gesture,
     // before any network await. This also enables amplified Fish audio on iOS.
-    if (id === 'tian_xi_wei' || id === 'hao_zh') {
+    if (id === 'tian_xi_wei' || id === 'hao_zh' || id === 'ju_jingyi' || id === 'karina_aespa') {
       try {
         const { ctx } = ensureFishOutput();
         void ctx.resume().catch(() => {});
       } catch (error) { console.warn('Fish output will use native audio:', error); }
     }
-    if (id === 'tian_xi_wei' || id === 'hao_zh') {
+    if (id === 'tian_xi_wei' || id === 'hao_zh' || id === 'ju_jingyi' || id === 'karina_aespa') {
       try {
         const response = await fetch(`/api/fish-tts?character=${id}`);
         if (response.ok && (await response.json()).enabled) fishMode.current = id;
-        else {
+        else if (id === 'tian_xi_wei' || id === 'hao_zh') {
           console.error('Fish Audio is not configured for ' + id + ' in this deployment.');
           useUI.getState().setAgentState('Fish Audio unavailable');
         }
       } catch {
-        console.error('Fish Audio backend is missing or unreachable. Check /api/fish-tts in the deployed app.');
-        useUI.getState().setAgentState('Fish Audio unavailable');
+        if (id === 'tian_xi_wei' || id === 'hao_zh') {
+          console.error('Fish Audio backend is missing or unreachable. Check /api/fish-tts in the deployed app.');
+          useUI.getState().setAgentState('Fish Audio unavailable');
+        }
       }
     }
     // Load the character's own recent history before connecting, so its new
