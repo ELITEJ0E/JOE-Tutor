@@ -12,8 +12,6 @@ import avatarAlice from '../../src/assets/images/avatars/Alice.webp';
 import avatarIrene from '../../src/assets/images/avatars/Irene.webp';
 import avatarAmelie from '../../src/assets/images/avatars/Amelie.webp';
 import avatarTianXiWei from '../../src/assets/images/avatars/TianXiwei-avatar.png';
-import avatarJuJingyi from '../../src/assets/images/avatars/JuJingyi-placeholder.svg';
-import avatarKarina from '../../src/assets/images/avatars/Karina-placeholder.svg';
 import avatarZhangLinghe from '../../src/assets/images/avatars/ZhangLinghe-avatar.png';
 import avatarXiaoYu from '../../src/assets/images/avatars/XiaoYu.webp';
 import avatarNicha from '../../src/assets/images/avatars/Nicha.webp';
@@ -871,7 +869,7 @@ VOICE AND IDENTITY: Fish Audio controls any configured voice; language and phras
   firstGreeting: '嗨，你好呀，我是鞠婧祎。今天怎么样？想聊点轻松的，还是有什么事想一起慢慢想想？',
   bodyColor: '#E9D5F5',
   voice: 'Leda', // Gemini fallback until an authorized Fish voice ID is configured
-  avatarUrl: avatarJuJingyi, // replace this import with a user-uploaded portrait later
+  avatarUrl: undefined, // Add user-provided photo later
 };
 
 const TAIWAN_COMPANION_PERSONALITY = `
@@ -958,7 +956,7 @@ VOICE AND IDENTITY: A separate licensed Fish voice may be configured later; Gemi
   firstGreeting: '안녕하세요, 카리나예요! 오늘은 어땠어요? 편하게 수다 떨까요, 아니면 같이 해보고 싶은 게 있어요? ㅎㅎ',
   bodyColor: '#E9C8E8',
   voice: 'Leda', // Gemini fallback until an authorized Fish voice ID is configured
-  avatarUrl: avatarKarina, // replace this import with a user-uploaded portrait later
+  avatarUrl: undefined, // Add user-provided photo later
 };
 
 export const Jiwon: Agent = Yuna;

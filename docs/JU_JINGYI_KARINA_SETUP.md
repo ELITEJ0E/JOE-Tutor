@@ -9,11 +9,11 @@ Their profile prompts are fictional interpretations based on publicly available 
 
 ## Replace the thumbnail portraits
 
-The currently displayed thumbnail images are intentionally illustrated **placeholders**, not photographs of the artists.
+No thumbnail is currently assigned to these two characters. Upload the images when ready; no SVG placeholder is used.
 
 1. Upload approved photos into the directory: src/assets/images/avatars/
-2. In lib/presets/agents.ts, replace the JuJingyi-placeholder.svg and Karina-placeholder.svg imports with your uploaded image filenames.
-3. Make the same import changes in lib/characters/character-registry.ts so profile cards stay consistent.
+2. In lib/presets/agents.ts, import your uploaded image files and assign them to the new agents' avatarUrl fields.
+3. In lib/characters/character-registry.ts, import the same images and set each agent's avatar.portrait.
 4. Commit the photos and changes; deploy the new version.
 
 PNG, JPG, or WebP all work. Portraits roughly 4:5 work well, with the face near the center so the round selection thumbnail does not crop it awkwardly.

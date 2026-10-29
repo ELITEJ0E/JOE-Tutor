@@ -5,8 +5,6 @@
 
 import { EmotionStyleId, TeachingStyleId, ExplanationLevelId } from '../personalities/personality-system';
 import tianXiWeiImg from '../../src/assets/images/avatars/TianXiwei-avatar.png';
-import juJingyiImg from '../../src/assets/images/avatars/JuJingyi-placeholder.svg';
-import karinaImg from '../../src/assets/images/avatars/Karina-placeholder.svg';
 
 const jiwonImg = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80';
 const aliceImg = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&auto=format&fit=crop&q=80';
@@ -173,7 +171,7 @@ export const CHARACTER_REGISTRY: Record<string, CharacterConfig> = {
     id: 'ju_jingyi',
     name: '鞠婧祎',
     title: 'Mandarin Companion',
-    avatar: { portrait: juJingyiImg },
+    avatar: {}, // Add portrait after upload
     appearance: {
       accentColor: '#AF7DBA',
       secondaryColor: '#F2DDF5',
@@ -198,7 +196,7 @@ export const CHARACTER_REGISTRY: Record<string, CharacterConfig> = {
     id: 'karina_aespa',
     name: 'Karina',
     title: 'Korean Companion',
-    avatar: { portrait: karinaImg },
+    avatar: {}, // Add portrait after upload
     appearance: {
       accentColor: '#A16FA9',
       secondaryColor: '#EDD8ED',
