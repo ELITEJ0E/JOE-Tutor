@@ -1,0 +1,23 @@
+# Netlify hosts the Vite SPA in dist and server APIs in netlify/functions.
+# Vercel-only /api/*.ts handlers are not recognized by Netlify.
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Preserve the same /api/fish-tts URL used by the existing JOE Tutor frontend.
+# This must appear BEFORE the SPA fallback rewrite.
+[[redirects]]
+  from = "/api/fish-tts"
+  to = "/.netlify/functions/fish-tts"
+  status = 200
+  force = true
+
+# Let direct links to the React app load; no API route is sent to index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
