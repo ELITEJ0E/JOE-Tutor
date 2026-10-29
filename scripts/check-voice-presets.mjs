@@ -19,7 +19,9 @@ const checks = {
   Hiro: 'Iapetus',
   XiaoYuTaiwan: 'Leda',
   Nicha: 'Leda',
-  Luca: 'Aoede',
+  Olga: 'Achernar',
+  Luca: 'Leda',
+  Lena: 'Despina',
 };
 for (const [name, voice] of Object.entries(checks)) {
   const m = agents.match(new RegExp('export const ' + name + ': Agent = \\{([\\s\\S]*?)\\n\\};'));
@@ -118,3 +120,14 @@ assert.match(characterRegistrySource, /portrait: olgaImg/, 'Olga profile must us
 assert.match(characterRegistrySource, /portrait: luciaImg/, 'Lucia profile must use uploaded portrait');
 assert.match(readFileSync('components/tutor/TutorAvatar.tsx', 'utf8'), /chloe-dock--portrait-zoom/, 'Dock must size the two portraits');
 assert.match(readFileSync('components/tutor/docked-companion.css', 'utf8'), /chloe-dock--portrait-zoom \.chloe-dock-portrait img/, 'Portrait zoom CSS must be present');
+
+// Specific feminine delivery styles and enlarged portrait presentation.
+for (const id of ['olga', 'luca', 'lena_de']) {
+  assert.ok(prompts.includes(id + ':'), id + ' should have a gentle feminine delivery instruction');
+}
+assert.ok(agents.includes("'Despina'"), 'New smooth Gemini voice must be in allowed list');
+const dockCss = readFileSync('components/tutor/docked-companion.css', 'utf8');
+const photoCardCode = readFileSync('components/y2k/TutorPhotoCard.tsx', 'utf8');
+assert.ok(dockCss.includes('transform:scale(1.82)'), 'Olga/Lucia desktop dock portraits need a clearly visible size increase');
+assert.ok(dockCss.includes('transform:scale(1.50)'), 'Mobile portraits should use a smaller safe zoom');
+assert.ok(photoCardCode.includes('scale-[1.46]'), 'Olga/Lucia avatar cards need a larger crop');

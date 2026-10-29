@@ -95,7 +95,7 @@ export const TutorProfileModal: React.FC = () => {
                 <img
                   src={config.avatar.portrait}
                   alt={agent.name}
-                  className={`w-full h-full object-cover ${agent.id === 'olga' || agent.id === 'luca' ? 'scale-[1.18]' : ''}`}
+                  className={`w-full h-full object-cover ${agent.id === 'olga' || agent.id === 'luca' ? 'scale-[1.43]' : ''}`}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-3xl">

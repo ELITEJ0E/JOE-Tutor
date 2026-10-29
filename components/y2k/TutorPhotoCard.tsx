@@ -49,7 +49,7 @@ export const TutorPhotoCard: React.FC<TutorPhotoCardProps> = ({
           <img
             src={(agent.avatarUrl || config.avatar.portrait)}
             alt={agent.name}
-            className={`w-full h-full object-cover transition-transform duration-500 ease-out ${agent.id === 'olga' || agent.id === 'luca' ? 'scale-[1.18] group-hover:scale-[1.23]' : 'group-hover:scale-105'}`}
+            className={`w-full h-full object-cover transition-transform duration-500 ease-out ${agent.id === 'olga' || agent.id === 'luca' ? 'scale-[1.46] group-hover:scale-[1.52]' : 'group-hover:scale-105'}`}
             loading="lazy"
           />
         ) : (

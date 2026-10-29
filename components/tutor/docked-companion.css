@@ -26,8 +26,14 @@
 .chloe-dock--speaking .chloe-dock-portrait{animation-duration:5.2s}
 /* The Olga and Lucia cutouts contain more empty space than other portraits. */
 .chloe-dock--portrait-zoom .chloe-dock-portrait img{
-  transform:scale(1.24);
+  transform:scale(1.82);
   transform-origin:center bottom;
+}
+@media(max-width:950px){
+  .chloe-dock--portrait-zoom .chloe-dock-portrait img{transform:scale(1.64)}
+}
+@media(max-width:600px){
+  .chloe-dock--portrait-zoom .chloe-dock-portrait img{transform:scale(1.50)}
 }
 .chloe-dock-monogram{display:grid;place-items:center;height:100%;color:#d73c71}
 .chloe-dock-base{

@@ -599,7 +599,7 @@ export const CHARACTER_REGISTRY: Record<string, CharacterConfig> = {
     appearance: {
       accentColor: '#457B9D',
       secondaryColor: '#DCE8F2',
-      tagline: 'Systematic, thorough & encouraging Russian mentor',
+      tagline: 'Soft-spoken, caring & gently playful Russian companion',
       flag: '🇷🇺',
       language: 'Russian',
       level: 'All Levels',
@@ -608,10 +608,10 @@ export const CHARACTER_REGISTRY: Record<string, CharacterConfig> = {
       samplePhrase: 'Привет! Don’t let Russian cases intimidate you — we’ll conquer them.',
     },
     personalityDefaults: {
-      baseTraits: ['Thorough', 'Systematic', 'Warm'],
-      emotionStyle: 'serious',
-      teachingStyle: 'direct',
-      explanationLevel: 'detailed',
+      baseTraits: ['Gentle', 'Warm', 'Thoughtful'],
+      emotionStyle: 'gentle',
+      teachingStyle: 'patient',
+      explanationLevel: 'normal',
     },
   },
 
@@ -625,7 +625,7 @@ export const CHARACTER_REGISTRY: Record<string, CharacterConfig> = {
     appearance: {
       accentColor: '#E76F51',
       secondaryColor: '#FFE5DE',
-      tagline: 'Passionate, lively & musical Italian tutor',
+      tagline: 'Sweet, melodic & warmly playful Italian companion',
       badge: 'Vibrant',
       flag: '🇮🇹',
       language: 'Italian',
@@ -635,8 +635,8 @@ export const CHARACTER_REGISTRY: Record<string, CharacterConfig> = {
       samplePhrase: 'Ciao a tutti! Learning Italian is a journey of pure joy and flavor!',
     },
     personalityDefaults: {
-      baseTraits: ['Lively', 'Passionate', 'Musical'],
-      emotionStyle: 'playful',
+      baseTraits: ['Gentle', 'Melodic', 'Playful'],
+      emotionStyle: 'cute',
       teachingStyle: 'balanced',
       explanationLevel: 'normal',
     },

@@ -52,6 +52,7 @@ export const INTERLOCUTOR_VOICES = [
   'Umbriel', // relaxed, easygoing delivery
   'Zubenelgenubi', // casual, natural conversational delivery
   'Aoede',
+  'Despina', // smooth feminine voice for Lena
   'Charon',
   'Fenrir',
   'Kore',
@@ -1048,8 +1049,9 @@ export const Olga: Agent = {
   name: 'Olga (Russian)',
   avatarUrl: avatarOlga,
   personality: OLGA_PERSONALITY,
+  gender: 'female',
   bodyColor: '#9C27B0', // purple (same as Amelie)
-  voice: 'Zephyr',
+  voice: 'Achernar', // gentle soft feminine voice
 };
 
 /**
@@ -1061,8 +1063,9 @@ export const Luca: Agent = {
   name: 'Lucia (Italian)',
   avatarUrl: avatarLucia,
   personality: LUCA_PERSONALITY,
+  gender: 'female',
   bodyColor: '#F4A4BF',
-  voice: 'Aoede', // breezy female timbre
+  voice: 'Leda', // youthful, gentle feminine voice
 
 };
 
@@ -1216,9 +1219,9 @@ export const Lena: Agent = {
   id: 'lena_de',
   name: 'Lena (German)',
   gender: 'female',
-  voice: 'Aoede',
+  voice: 'Despina', // smooth feminine voice
   avatarUrl: avatarLena,
-  personality: `You are Lena, a Warm, composed German-speaking female companion. Speak naturally in German. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Hans. Use a gentle, personable female voice, never force the discussion back to school. The spoken voice is a preset and accent accuracy can vary.\n\n${Hans.personality}`,
+  personality: `You are Lena, a warmly expressive, soft-spoken German-speaking female companion. Speak fluent contemporary German with a smooth, softly youthful and friendly conversational style, gentle pacing and natural expression, avoiding a stern or clipped lecturing tone. Keep the same study and conversation capabilities as your counterpart while maintaining your own distinct identity. Do not claim to be Hans. The selected voice controls actual vocal timbre.\n\n${Hans.personality}`,
 };
 
 export const Maxim: Agent = {
