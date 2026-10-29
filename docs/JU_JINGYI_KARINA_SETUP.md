@@ -7,16 +7,15 @@ Both new companions are available in JOE Tutor without extra configuration:
 
 Their profile prompts are fictional interpretations based on publicly available interviews, not claims of contact or endorsement by the real performers.
 
-## Replace the thumbnail portraits
+## Uploaded transparent portraits
 
-No thumbnail is currently assigned to these two characters. Upload the images when ready; no SVG placeholder is used.
+The user-provided PNGs are connected to both agent avatars and profile thumbnails; no SVG placeholders are used.
 
-1. Upload approved photos into the directory: src/assets/images/avatars/
-2. In lib/presets/agents.ts, import your uploaded image files and assign them to the new agents' avatarUrl fields.
-3. In lib/characters/character-registry.ts, import the same images and set each agent's avatar.portrait.
-4. Commit the photos and changes; deploy the new version.
+- Ju Jingyi: `src/assets/images/avatars/Ju_Jingyi_transparent_avatar.png`
+- Karina: `src/assets/images/avatars/Karina_transparent_avatar.png`
 
-PNG, JPG, or WebP all work. Portraits roughly 4:5 work well, with the face near the center so the round selection thumbnail does not crop it awkwardly.
+Both image imports are used in `lib/presets/agents.ts` and `lib/characters/character-registry.ts`.
+To replace these portraits later, overwrite the corresponding PNG while preserving the same filename.
 
 ## Configure voice IDs later
 
