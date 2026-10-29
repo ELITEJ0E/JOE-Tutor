@@ -87,7 +87,7 @@ export const CHARACTER_INTRODUCTIONS: Record<string, CharacterIntroduction> = {
   tian_xi_wei: {
     introTitle: 'Meet 田曦薇',
     introText: 'Bubbly Mandarin conversations and playful, warm companionship.',
-    firstGreeting: '嗨～我是田曦薇呀！今天怎么样？有没有什么好玩的事想和我分享？',
+    firstGreeting: '哈喽～我是田曦薇呀！今天过得怎么样？有没有什么好玩的事想跟我分享？',
     tagline: 'Playful Mandarin companion · Fish Audio',
   },
   ju_jingyi: {

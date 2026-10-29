@@ -86,3 +86,10 @@ assert.match(liveHook, /estimateSpeechPlaybackGain\(audio\)[\s\S]*?isBoostedComp
 assert.match(liveHook, /streamer\.setPlaybackGainMultiplier\([\s\S]*?isBoostedCompanionVoice\(activeId\)/, 'Gemini fallback must use character-specific boost');
 assert.match(streamerCode, /setPlaybackGainMultiplier\(multiplier: number\)/, 'Gemini streamer must support output-gain changes');
 assert.match(streamerCode, /this\.outputGain \* this\.playbackGainMultiplier/, 'Gemini streamer must retain gain between playback sessions');
+
+// The saved intro and personality must agree: Fish Audio speaks the exact greeting text.
+const tianGreeting = '哈喽～我是田曦薇呀！今天过得怎么样？有没有什么好玩的事想跟我分享？';
+const introSource = readFileSync('lib/presets/character-intros.ts', 'utf8');
+assert.ok(agents.includes("firstGreeting: '" + tianGreeting + "'"), 'Tian Xiwei agent should greet with Mandarin 哈喽');
+assert.ok(introSource.includes("firstGreeting: '" + tianGreeting + "'"), 'Tian Xiwei intro should use the same spoken welcome');
+assert.ok(agents.includes('GREETING: On the first startup, begin with a bright, natural Mandarin "哈喽～"'), 'Tian Xiwei startup persona should prefer 哈喽');
