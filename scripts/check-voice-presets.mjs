@@ -114,20 +114,21 @@ assert.match(companionLayout, /const canSpeakOptionalFishGreeting =/, 'Fish intr
 assert.match(companionLayout, /\(current\.id === 'ju_jingyi' \|\| current\.id === 'karina_aespa'\) && isFishVoiceActive\(\)/, 'Optional Fish should be used only when enabled');
 assert.match(companionLayout, /requiresFishGreeting \|\| canSpeakOptionalFishGreeting/, 'Fish intro must bypass Gemini generation');
 
-// Olga and Lucia use their real portraits and a zoomed presentation.
+// The newly uploaded tall PNGs must be used in all character views.
 const characterRegistrySource = readFileSync('lib/characters/character-registry.ts', 'utf8');
-assert.match(characterRegistrySource, /portrait: olgaImg/, 'Olga profile must use uploaded portrait');
-assert.match(characterRegistrySource, /portrait: luciaImg/, 'Lucia profile must use uploaded portrait');
-assert.match(readFileSync('components/tutor/TutorAvatar.tsx', 'utf8'), /chloe-dock--portrait-zoom/, 'Dock must size the two portraits');
-assert.match(readFileSync('components/tutor/docked-companion.css', 'utf8'), /chloe-dock--portrait-zoom \.chloe-dock-portrait img/, 'Portrait zoom CSS must be present');
+assert.match(characterRegistrySource, /portrait: olgaImg/, 'Olga profile uses its imported portrait');
+assert.match(characterRegistrySource, /portrait: luciaImg/, 'Lucia profile uses its imported portrait');
+for (const [label, source] of [['agents', agents], ['registry', characterRegistrySource]]) {
+  assert.match(source, /avatars\/Olga\.png'/, label + ' must import the new Olga PNG');
+  assert.match(source, /avatars\/Lucia\.png'/, label + ' must import the new Lucia PNG');
+}
 
-// Specific feminine delivery styles and enlarged portrait presentation.
+// Specific feminine delivery styles and standard tall-portrait presentation.
 for (const id of ['olga', 'luca', 'lena_de']) {
   assert.ok(prompts.includes(id + ':'), id + ' should have a gentle feminine delivery instruction');
 }
 assert.ok(agents.includes("'Despina'"), 'New smooth Gemini voice must be in allowed list');
 const dockCss = readFileSync('components/tutor/docked-companion.css', 'utf8');
 const photoCardCode = readFileSync('components/y2k/TutorPhotoCard.tsx', 'utf8');
-assert.ok(dockCss.includes('transform:scale(1.82)'), 'Olga/Lucia desktop dock portraits need a clearly visible size increase');
-assert.ok(dockCss.includes('transform:scale(1.50)'), 'Mobile portraits should use a smaller safe zoom');
-assert.ok(photoCardCode.includes('scale-[1.46]'), 'Olga/Lucia avatar cards need a larger crop');
+assert.ok(!dockCss.includes('chloe-dock--portrait-zoom'), 'Tall portraits must not inherit excessive old image zoom');
+assert.ok(!photoCardCode.includes('scale-[1.46]'), 'Tall avatars use the same framing as other companions');

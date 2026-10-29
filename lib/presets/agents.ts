@@ -18,8 +18,8 @@ import avatarZhangLinghe from '../../src/assets/images/avatars/ZhangLinghe-avata
 import avatarXiaoYu from '../../src/assets/images/avatars/XiaoYu.webp';
 import avatarNicha from '../../src/assets/images/avatars/Nicha.webp';
 import avatarYuna from '../../src/assets/images/avatars/Yuna.webp';
-import avatarOlga from '../../src/assets/images/avatars/Olga.webp';
-import avatarLucia from '../../src/assets/images/avatars/Lucia.webp';
+import avatarOlga from '../../src/assets/images/avatars/Olga.png';
+import avatarLucia from '../../src/assets/images/avatars/Lucia.png';
 import avatarHaruka from '../../src/assets/images/avatars/Haruka.webp';
 import avatarAnika from '../../src/assets/images/avatars/Anika.webp';
 import avatarSofia from '../../src/assets/images/avatars/Sofia.webp';

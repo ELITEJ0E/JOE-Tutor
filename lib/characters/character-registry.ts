@@ -5,8 +5,8 @@
 
 import { EmotionStyleId, TeachingStyleId, ExplanationLevelId } from '../personalities/personality-system';
 import tianXiWeiImg from '../../src/assets/images/avatars/TianXiwei-avatar.png';
-import olgaImg from '../../src/assets/images/avatars/Olga.webp';
-import luciaImg from '../../src/assets/images/avatars/Lucia.webp';
+import olgaImg from '../../src/assets/images/avatars/Olga.png';
+import luciaImg from '../../src/assets/images/avatars/Lucia.png';
 import juJingyiImg from '../../src/assets/images/avatars/Ju_Jingyi_transparent_avatar.png';
 import karinaImg from '../../src/assets/images/avatars/Karina_transparent_avatar.png';
 
